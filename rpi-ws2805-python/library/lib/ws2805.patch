@@ -1,0 +1,46 @@
+--- ws2811.c
++++ ws2811.c
+@@ -51,11 +51,11 @@
+-#define LED_COLOURS                                4
+-#define LED_RESET_uS                               55
++#define LED_COLOURS                                5
++#define LED_RESET_uS                               300
+ #define LED_BIT_COUNT(leds, freq)                 ((leds * LED_COLOURS * 8 * 3) + ((LED_RESET_uS * \
+                                                    (freq * 3)) / 1000000))
+ 
+ /* Minimum time to wait for reset to occur in microseconds. */
+-#define LED_RESET_WAIT_TIME                        300
++#define LED_RESET_WAIT_TIME                        400
+ 
+@@ -572,10 +572,16 @@
+         const int scale = (channel->brightness & 0xff) + 1;
+         uint8_t array_size = 3; // Assume 3 color LEDs, RGB
+ 
+-        if (channel->strip_type & SK6812_SHIFT_WMASK)
++        if (channel->strip_type & 0x1F000000) 
++        {
++            array_size = 5;
++        }
++        else if (channel->strip_type & SK6812_SHIFT_WMASK)
+         {
+             array_size = 4;
+         }
+ 
+-        const uint32_t channel_protocol_time = channel->count * array_size * 8 * 1.25;
++        const uint32_t channel_protocol_time = channel->count * array_size * 8 * 1.25;
+ 
+@@ -590,12 +596,13 @@
+         for (i = 0; i < channel->count; i++)                // Led
+         {
+-            uint8_t color[] =
++            uint8_t color[5] =
+             {
+                 channel->gamma[(((channel->leds[i] >> channel->rshift) & 0xff) * scale) >> 8], // R
+                 channel->gamma[(((channel->leds[i] >> channel->gshift) & 0xff) * scale) >> 8], // G
+                 channel->gamma[(((channel->leds[i] >> channel->bshift) & 0xff) * scale) >> 8], // B
+                 channel->gamma[(((channel->leds[i] >> channel->wshift) & 0xff) * scale) >> 8], // CW
++                channel->gamma[(((channel->leds[i] >> 32) & 0xff) * scale) >> 8],               // WW
+             };
+ 
+-            for (j = 0; j < array_size; j++)               // Color
++            for (j = 0; j < (unsigned)array_size; j++)     // Color

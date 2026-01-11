@@ -1,0 +1,5 @@
+--- ws2811.h
++++ ws2811.h
+@@ -62,7 +62,7 @@
+-typedef uint32_t ws2811_led_t;                   //< 0xWWRRGGBB
++typedef uint64_t ws2811_led_t;                   //< 0xXXWWCCBBRRGGBB
