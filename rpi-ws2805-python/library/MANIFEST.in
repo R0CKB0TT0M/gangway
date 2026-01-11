@@ -1,0 +1,11 @@
+include lib/*.c
+include lib/*.h
+include lib/LICENSE
+include version.h
+include setup.py
+include rpi_ws2805_wrap.c
+include rpi_ws2805/*.py
+include README.rst
+include CHANGELOG.txt
+include LICENSE
+include Makefile
