@@ -13,10 +13,7 @@ LED_COUNT: int = 30
 def run_led_cycle(device: WS2805Controller) -> None:
     colors = [
         RGBCCT(r=255),
-        RGBCCT(g=255),
         RGBCCT(b=255),
-        RGBCCT(cw=255),
-        RGBCCT(ww=255),
     ]
 
     while True:
@@ -24,7 +21,7 @@ def run_led_cycle(device: WS2805Controller) -> None:
             device.clear()
             device.fill(color)
             device.show()
-            time.sleep(1)
+            time.sleep(0.01)
 
 
 def handle_event(objects: Iterable[EventObject]) -> None:
