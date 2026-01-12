@@ -23,6 +23,10 @@ class Point:
         return Point(x=self.x / other, y=self.y / other)
 
     @property
+    def tuple(self) -> tuple:
+        return (self.x, self.y)
+
+    @property
     def length(self) -> float:
         return (self.x**2 + self.y**2) ** 0.5
 

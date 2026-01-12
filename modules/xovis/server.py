@@ -9,7 +9,9 @@ from numpy.typing import NDArray
 
 from ..strips_conf import Point
 from .homographic_projection import apply_transform
-from .model import Event, EventObject, create_events_from_json
+from .model import DeleteTrack, Event, EventObject, ZoneExit, create_events_from_json
+
+GLOBAL_ZONE_ID = 16
 
 
 class XOVISServer:
@@ -46,6 +48,16 @@ class XOVISServer:
 
     def _notify_position(self, events) -> None:
         object_ids = set([event.object.id for event in events])
+
+        for event in events:
+            if isinstance(event, DeleteTrack) and event.object.id in object_ids:
+                object_ids.remove(event.object.id)
+
+        if len(object_ids) == 0:
+            for callback in self._subscribers_position:
+                callback([])
+            return
+
         latest_objects: Iterable[EventObject] = (
             sorted(
                 (event for event in events if event.object.id == object_id),

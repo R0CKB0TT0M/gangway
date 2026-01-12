@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
 import time
 from threading import Thread
-from typing import Iterable, List
-
-from numpy import float64
-from numpy.typing import NDArray
+from typing import Callable, Dict, Iterable, List, Tuple
 
 from modules.strips_conf import LED, LEDS, Point
 from modules.ws2805_controller import RGBCCT, WS2805Controller
 from modules.xovis.server import XOVISServer
 
 LED_COUNT: int = 30
+TARGET_WEIGHT: float = 0.05
+
+
+def interpolate_rgbcct(
+    color_a: RGBCCT, color_b: RGBCCT, weight_a=TARGET_WEIGHT
+) -> RGBCCT:
+    return RGBCCT(
+        r=int(color_a.r * TARGET_WEIGHT + color_b.r * (1 - TARGET_WEIGHT)),
+        g=int(color_a.g * TARGET_WEIGHT + color_b.b * (1 - TARGET_WEIGHT)),
+        b=int(color_a.b * TARGET_WEIGHT + color_b.b * (1 - TARGET_WEIGHT)),
+        ww=int(color_a.ww * TARGET_WEIGHT + color_b.ww * (1 - TARGET_WEIGHT)),
+        cw=int(color_a.cw * TARGET_WEIGHT + color_b.cw * (1 - TARGET_WEIGHT)),
+    )
 
 
 def run_led_cycle(device: WS2805Controller) -> None:
@@ -27,60 +37,100 @@ def run_led_cycle(device: WS2805Controller) -> None:
             time.sleep(0.01)
 
 
+IdleColor = (
+    Dict[int, RGBCCT]
+    | RGBCCT
+    | Callable[[float, Tuple[float, float, float, float], Tuple[float, float]], RGBCCT]
+)
+
+
 class LEDController(Thread):
-    objects: Iterable[Point]
     leds: List[LED]
     running: bool = True
     device: WS2805Controller
 
-    def __init__(self, leds: List[LED] = LEDS) -> None:
-        # Wichtig: Basisklasse initialisieren
+    target_colors: Dict[int, RGBCCT]
+    current_colors: Dict[int, RGBCCT]
+    idle_color: IdleColor
+    init_time: float
+    idle: bool = True
+
+    def __init__(
+        self,
+        leds: List[LED] = LEDS,
+        idle_color: IdleColor = RGBCCT(cw=255),
+    ) -> None:
         super().__init__()
-        self.objects = []
         self.leds = leds
 
         self.device = WS2805Controller(count=len(self.leds))
+        self.idle_color = idle_color
+        self.init_time = time.time()
+
+    @property
+    def time(self):
+        return time.time() - self.init_time
 
     def stop(self) -> None:
         self.running = False
 
-    def notify(self, objects: NDArray[float64]) -> None:
-        self.objects = objects
+    def update_objects(self, objects: Iterable[Point]):
+        no_objects: bool = True
 
-    def update_direct(self, objects: Iterable[Point]):
         for object in objects:
             for led in self.leds:
-                if (led.p - object).length < 50:
-                    self.device.set_color(led.index, RGBCCT(r=255))
-                else:
-                    self.device.set_color(led.index, RGBCCT(cw=255))
-        self.device.show()
+                intensity = int(2 ** (-(led.p - object).length / 150) * 255)
+                self.target_colors[led.index] = RGBCCT(r=intensity, g=255 - intensity)
+            no_objects = False
+            self.idle = False
 
-    def update_leds(self):
-        for led in self.leds:
-            for object in self.objects:
-                if (led.p - object).length < 30:
-                    self.device.set_color(led.index, RGBCCT(cw=255))
-                else:
-                    self.device.set_color(led.index, RGBCCT())
-        self.device.show()
+        if no_objects:
+            self.idle = True
 
-    def run(self) -> None:
-        print(f"Handling {len(self.leds)} leds")
+            if isinstance(self.idle_color, dict):
+                self.target_colors = self.idle_color
+            elif isinstance(self.idle_color, RGBCCT):
+                self.target_colors = {led.index: RGBCCT(cw=255) for led in self.leds}
+
+    def run(self):
+        self.init_time = time.time()
+        self.current_colors = self.target_colors
 
         while self.running:
-            self.update_leds()
+            if self.idle and isinstance(self.idle_color, Callable):
+                self.current_colors = {
+                    i: self.idle_color(
+                        self.time, (0, 0, 115, 490), self.leds[i].p.tuple
+                    )
+                    for (i, cc) in self.current_colors.items()
+                }
+            else:
+                self.current_colors = {
+                    i: interpolate_rgbcct(self.target_colors[i], cc)
+                    for (i, cc) in self.current_colors.items()
+                }
+
+            _ = [
+                self.device.set_color(i, color)
+                for i, color in self.current_colors.items()
+            ]
+
+            self.device.show()
+            time.sleep(0.01)
+
+
+def wave(time: float, floor: Tuple[float, float, float, float], led_pos: Tuple[float, float]) -> RGBCCT:
 
 
 if __name__ == "__main__":
-    led_thread = LEDController()
-    led_thread.start()
+    led_controller = LEDController()
 
-    led_thread.device.fill(RGBCCT(cw=255))
-    led_thread.device.show()
+    led_controller.device.fill(RGBCCT(cw=255))
+    led_controller.device.show()
+    led_controller.start()
 
     xovis_server = XOVISServer()
-    xovis_server.subscribe_position(led_thread.update_direct)
+    xovis_server.subscribe_position(led_controller.update_objects)
     http_server = xovis_server.start_server()
 
     try:
