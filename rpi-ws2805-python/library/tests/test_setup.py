@@ -3,13 +3,15 @@ import pytest
 
 def test_setup(_rpi_ws2805):
     from rpi_ws2805 import PixelStrip
+
     strip = PixelStrip(10, 20)
     strip.begin()
 
 
 def test_setup_init_fail(_rpi_ws2805):
     from rpi_ws2805 import PixelStrip
-    _rpi_ws2805.ws2811_init.return_value = 1
+
+    _rpi_ws2805.ws2805_init.return_value = 1
     strip = PixelStrip(10, 20)
     with pytest.raises(RuntimeError):
         strip.begin()
@@ -17,6 +19,7 @@ def test_setup_init_fail(_rpi_ws2805):
 
 def test_num_pixels(_rpi_ws2805):
     from rpi_ws2805 import PixelStrip
+
     strip = PixelStrip(10, 20)
     strip.begin()
     assert len(strip[:]) == 10
@@ -25,7 +28,8 @@ def test_num_pixels(_rpi_ws2805):
 
 
 def test_set_pixel(_rpi_ws2805):
-    from rpi_ws2805 import PixelStrip, RGBW
+    from rpi_ws2805 import RGBW, PixelStrip
+
     strip = PixelStrip(10, 20)
     strip.begin()
     strip[0] = RGBW(255, 0, 0)
@@ -37,7 +41,8 @@ def test_set_pixel(_rpi_ws2805):
 
 
 def test_set_multiple(_rpi_ws2805):
-    from rpi_ws2805 import PixelStrip, RGBW
+    from rpi_ws2805 import RGBW, PixelStrip
+
     strip = PixelStrip(10, 20)
     strip.begin()
     strip[:] = RGBW(255, 0, 0)
@@ -45,7 +50,8 @@ def test_set_multiple(_rpi_ws2805):
 
 
 def test_set_odd(_rpi_ws2805):
-    from rpi_ws2805 import PixelStrip, RGBW
+    from rpi_ws2805 import RGBW, PixelStrip
+
     strip = PixelStrip(10, 20)
     strip.begin()
     strip[::2] = RGBW(255, 0, 0)

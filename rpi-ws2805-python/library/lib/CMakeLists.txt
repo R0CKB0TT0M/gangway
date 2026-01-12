@@ -16,11 +16,11 @@ option(BUILD_TEST "Build test application" ON)
 
 set(CMAKE_C_STANDARD 11)
 
-set(LIB_TARGET ws2811)
+set(LIB_TARGET ws2805)
 set(TEST_TARGET test)
 
 set(LIB_PUBLIC_HEADERS
-    ws2811.h
+    ws2805.h
     rpihw.h
     pwm.h
     clk.h
@@ -32,7 +32,7 @@ set(LIB_PUBLIC_HEADERS
 
 set(LIB_SOURCES
     mailbox.c
-    ws2811.c
+    ws2805.c
     pwm.c
     pcm.c
     dma.c
@@ -49,11 +49,11 @@ configure_file(version.h.in version.h)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/pkg-config.pc.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/libws2811.pc"
+    "${CMAKE_CURRENT_BINARY_DIR}/libws2805.pc"
     @ONLY
 )
 
-set(DEST_HEADERS_DIR include/ws2811)
+set(DEST_HEADERS_DIR include/ws2805)
 set(DEST_LIB_DIR lib)
 
 if(BUILD_SHARED)
@@ -70,7 +70,7 @@ install(TARGETS ${LIB_TARGET}
     PUBLIC_HEADER DESTINATION ${DEST_HEADERS_DIR}
 )
 
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/libws2811.pc"
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/libws2805.pc"
         DESTINATION lib/pkgconfig)
 
 install(CODE "execute_process(COMMAND /sbin/ldconfig

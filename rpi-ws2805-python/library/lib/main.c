@@ -50,17 +50,17 @@ static char VERSION[] = "XX.YY.ZZ";
 #include "pwm.h"
 #include "version.h"
 
-#include "ws2811.h"
+#include "ws2805.h"
 
 
 #define ARRAY_SIZE(stuff)       (sizeof(stuff) / sizeof(stuff[0]))
 
 // defaults for cmdline options
-#define TARGET_FREQ             WS2811_TARGET_FREQ
+#define TARGET_FREQ             ws2805_TARGET_FREQ
 #define GPIO_PIN                18
 #define DMA                     10
-//#define STRIP_TYPE            WS2811_STRIP_RGB		// WS2812/SK6812RGB integrated chip+leds
-#define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
+//#define STRIP_TYPE            ws2805_STRIP_RGB		// WS2812/SK6812RGB integrated chip+leds
+#define STRIP_TYPE              ws2805_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
 //#define STRIP_TYPE            SK6812_STRIP_RGBW		// SK6812RGBW (NOT SK6812RGB)
 
 #define WIDTH                   8
@@ -73,7 +73,7 @@ int led_count = LED_COUNT;
 
 int clear_on_exit = 0;
 
-ws2811_t ledstring =
+ws2805_t ledstring =
 {
     .freq = TARGET_FREQ,
     .dmanum = DMA,
@@ -97,7 +97,7 @@ ws2811_t ledstring =
     },
 };
 
-ws2811_led_t *matrix;
+ws2805_led_t *matrix;
 
 static uint8_t running = 1;
 
@@ -143,7 +143,7 @@ void matrix_clear(void)
 }
 
 int dotspos[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-ws2811_led_t dotcolors[] =
+ws2805_led_t dotcolors[] =
 {
     0x00200000,  // red
     0x00201000,  // orange
@@ -155,7 +155,7 @@ ws2811_led_t dotcolors[] =
     0x00200010,  // pink
 };
 
-ws2811_led_t dotcolors_rgbw[] =
+ws2805_led_t dotcolors_rgbw[] =
 {
     0x00200000,  // red
     0x10200000,  // red + W
@@ -206,7 +206,7 @@ static void setup_handlers(void)
 }
 
 
-void parseargs(int argc, char **argv, ws2811_t *ws2811)
+void parseargs(int argc, char **argv, ws2805_t *ws2805)
 {
 	int index;
 	int c;
@@ -276,12 +276,12 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 	on the specific model (from model B rev 1 till 3B)
 
 */
-				ws2811->channel[0].gpionum = gpio;
+				ws2805->channel[0].gpionum = gpio;
 			}
 			break;
 
 		case 'i':
-			ws2811->channel[0].invert=1;
+			ws2805->channel[0].invert=1;
 			break;
 
 		case 'c':
@@ -292,7 +292,7 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 			if (optarg) {
 				int dma = atoi(optarg);
 				if (dma < 14) {
-					ws2811->dmanum = dma;
+					ws2805->dmanum = dma;
 				} else {
 					printf ("invalid dma %d\n", dma);
 					exit (-1);
@@ -304,7 +304,7 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 			if (optarg) {
 				height = atoi(optarg);
 				if (height > 0) {
-					ws2811->channel[0].count = height * width;
+					ws2805->channel[0].count = height * width;
 				} else {
 					printf ("invalid height %d\n", height);
 					exit (-1);
@@ -316,7 +316,7 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 			if (optarg) {
 				width = atoi(optarg);
 				if (width > 0) {
-					ws2811->channel[0].count = height * width;
+					ws2805->channel[0].count = height * width;
 				} else {
 					printf ("invalid width %d\n", width);
 					exit (-1);
@@ -327,28 +327,28 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 		case 's':
 			if (optarg) {
 				if (!strncasecmp("rgb", optarg, 4)) {
-					ws2811->channel[0].strip_type = WS2811_STRIP_RGB;
+					ws2805->channel[0].strip_type = ws2805_STRIP_RGB;
 				}
 				else if (!strncasecmp("rbg", optarg, 4)) {
-					ws2811->channel[0].strip_type = WS2811_STRIP_RBG;
+					ws2805->channel[0].strip_type = ws2805_STRIP_RBG;
 				}
 				else if (!strncasecmp("grb", optarg, 4)) {
-					ws2811->channel[0].strip_type = WS2811_STRIP_GRB;
+					ws2805->channel[0].strip_type = ws2805_STRIP_GRB;
 				}
 				else if (!strncasecmp("gbr", optarg, 4)) {
-					ws2811->channel[0].strip_type = WS2811_STRIP_GBR;
+					ws2805->channel[0].strip_type = ws2805_STRIP_GBR;
 				}
 				else if (!strncasecmp("brg", optarg, 4)) {
-					ws2811->channel[0].strip_type = WS2811_STRIP_BRG;
+					ws2805->channel[0].strip_type = ws2805_STRIP_BRG;
 				}
 				else if (!strncasecmp("bgr", optarg, 4)) {
-					ws2811->channel[0].strip_type = WS2811_STRIP_BGR;
+					ws2805->channel[0].strip_type = ws2805_STRIP_BGR;
 				}
 				else if (!strncasecmp("rgbw", optarg, 4)) {
-					ws2811->channel[0].strip_type = SK6812_STRIP_RGBW;
+					ws2805->channel[0].strip_type = SK6812_STRIP_RGBW;
 				}
 				else if (!strncasecmp("grbw", optarg, 4)) {
-					ws2811->channel[0].strip_type = SK6812_STRIP_GRBW;
+					ws2805->channel[0].strip_type = SK6812_STRIP_GRBW;
 				}
 				else {
 					printf ("invalid strip %s\n", optarg);
@@ -374,19 +374,19 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 
 int main(int argc, char *argv[])
 {
-    ws2811_return_t ret;
+    ws2805_return_t ret;
 
     sprintf(VERSION, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO);
 
     parseargs(argc, argv, &ledstring);
 
-    matrix = malloc(sizeof(ws2811_led_t) * width * height);
+    matrix = malloc(sizeof(ws2805_led_t) * width * height);
 
     setup_handlers();
 
-    if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS)
+    if ((ret = ws2805_init(&ledstring)) != ws2805_SUCCESS)
     {
-        fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(ret));
+        fprintf(stderr, "ws2805_init failed: %s\n", ws2805_get_return_t_str(ret));
         return ret;
     }
 
@@ -396,9 +396,9 @@ int main(int argc, char *argv[])
         matrix_bottom();
         matrix_render();
 
-        if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS)
+        if ((ret = ws2805_render(&ledstring)) != ws2805_SUCCESS)
         {
-            fprintf(stderr, "ws2811_render failed: %s\n", ws2811_get_return_t_str(ret));
+            fprintf(stderr, "ws2805_render failed: %s\n", ws2805_get_return_t_str(ret));
             break;
         }
 
@@ -409,10 +409,10 @@ int main(int argc, char *argv[])
     if (clear_on_exit) {
 	matrix_clear();
 	matrix_render();
-	ws2811_render(&ledstring);
+	ws2805_render(&ledstring);
     }
 
-    ws2811_fini(&ledstring);
+    ws2805_fini(&ledstring);
 
     printf ("\n");
     return ret;

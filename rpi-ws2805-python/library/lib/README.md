@@ -223,14 +223,14 @@ When controlling a LED string of 240 LEDs the CPU load on the original Pi 2 (BCM
 
 ### Usage:
 
-The API is very simple.  Make sure to create and initialize the `ws2811_t`
+The API is very simple.  Make sure to create and initialize the `ws2805_t`
 structure as seen in [`main.c`](main.c).  From there it can be initialized
-by calling `ws2811_init()`.  LEDs are changed by modifying the color in
-the `.led[index]` array and calling `ws2811_render()`.
+by calling `ws2805_init()`.  LEDs are changed by modifying the color in
+the `.led[index]` array and calling `ws2805_render()`.
 The rest is handled by the library, which either creates the DMA memory and
 starts the DMA for PWM and PCM or prepares the SPI transfer buffer and sends
 it out on the MISO pin.
 
 Make sure to hook a signal handler for SIGKILL to do cleanup.  From the
-handler make sure to call `ws2811_fini()`.  It'll make sure that the DMA
+handler make sure to call `ws2805_fini()`.  It'll make sure that the DMA
 is finished before program execution stops and cleans up after itself.

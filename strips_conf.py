@@ -22,6 +22,7 @@ class Point:
     def __truediv__(self, other: Union[float, int]) -> "Point":
         return Point(x=self.x / other, y=self.y / other)
 
+    @property
     def length(self) -> float:
         return (self.x**2 + self.y**2) ** 0.5
 
@@ -59,3 +60,5 @@ LEDS = [
     for strip in STRIPS
     for i in range(strip.len)
 ]
+
+MAX_INDEX = max(strip.index + strip.len for strip in STRIPS)

@@ -20,12 +20,7 @@ def run_led_cycle(device: WS2805Controller) -> None:
 
 def run_led_cycle_strobo(device: WS2805Controller) -> None:
     colors = [
-        RGBCCT(r=255, g=255, b=255, ww=255, cw=255),
-        RGBCCT(),
         RGBCCT(r=255),
-        RGBCCT(),
-        RGBCCT(b=255),
-        RGBCCT(),
     ]
 
     while True:

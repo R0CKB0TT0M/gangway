@@ -140,7 +140,7 @@
 # define SWIG_NULLPTR nullptr
 #else
 # define SWIG_NULLPTR NULL
-#endif 
+#endif
 
 /* -----------------------------------------------------------------------------
  * swigcompat.swg
@@ -832,7 +832,7 @@ SWIG_UnpackDataName(const char *c, void *ptr, size_t sz, const char *name) {
 #define PyString_FromString(x) PyUnicode_FromString(x)
 #define PyString_Format(fmt, args)  PyUnicode_Format(fmt, args)
 #define PyString_AsString(str) PyBytes_AsString(str)
-#define PyString_Size(str) PyBytes_Size(str)	
+#define PyString_Size(str) PyBytes_Size(str)
 #define PyString_InternFromString(key) PyUnicode_InternFromString(key)
 #define Py_TPFLAGS_HAVE_CLASS Py_TPFLAGS_BASETYPE
 #define _PyLong_FromSsize_t(x) PyLong_FromSsize_t(x)
@@ -876,7 +876,7 @@ SWIGINTERN PyObject*
 SWIG_Python_str_FromChar(const char *c)
 {
 #if PY_VERSION_HEX >= 0x03000000
-  return PyUnicode_FromString(c); 
+  return PyUnicode_FromString(c);
 #else
   return PyString_FromString(c);
 #endif
@@ -1169,7 +1169,7 @@ typedef struct swig_const_info {
 
 #define SWIG_InternalNewPointerObj(ptr, type, flags)	SWIG_Python_NewPointerObj(NULL, ptr, type, flags)
 
-#define SWIG_CheckImplicit(ty)                          SWIG_Python_CheckImplicit(ty) 
+#define SWIG_CheckImplicit(ty)                          SWIG_Python_CheckImplicit(ty)
 #define SWIG_AcquirePtr(ptr, src)                       SWIG_Python_AcquirePtr(ptr, src)
 #define swig_owntype                                    int
 
@@ -1196,26 +1196,26 @@ typedef struct swig_const_info {
 #define SWIG_SetModule(clientdata, pointer)             SWIG_Python_SetModule(pointer)
 #define SWIG_NewClientData(obj)                         SwigPyClientData_New(obj)
 
-#define SWIG_SetErrorObj                                SWIG_Python_SetErrorObj                            
-#define SWIG_SetErrorMsg                        	SWIG_Python_SetErrorMsg				   
-#define SWIG_ErrorType(code)                    	SWIG_Python_ErrorType(code)                        
-#define SWIG_Error(code, msg)            		SWIG_Python_SetErrorMsg(SWIG_ErrorType(code), msg) 
-#define SWIG_fail                        		goto fail					   
+#define SWIG_SetErrorObj                                SWIG_Python_SetErrorObj
+#define SWIG_SetErrorMsg                        	SWIG_Python_SetErrorMsg
+#define SWIG_ErrorType(code)                    	SWIG_Python_ErrorType(code)
+#define SWIG_Error(code, msg)            		SWIG_Python_SetErrorMsg(SWIG_ErrorType(code), msg)
+#define SWIG_fail                        		goto fail
 
 
 /* Runtime API implementation */
 
 /* Error manipulation */
 
-SWIGINTERN void 
+SWIGINTERN void
 SWIG_Python_SetErrorObj(PyObject *errtype, PyObject *obj) {
-  SWIG_PYTHON_THREAD_BEGIN_BLOCK; 
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
   PyErr_SetObject(errtype, obj);
   SWIG_Py_DECREF(obj);
   SWIG_PYTHON_THREAD_END_BLOCK;
 }
 
-SWIGINTERN void 
+SWIGINTERN void
 SWIG_Python_SetErrorMsg(PyObject *errtype, const char *msg) {
   SWIG_PYTHON_THREAD_BEGIN_BLOCK;
   PyErr_SetString(errtype, msg);
@@ -1236,7 +1236,7 @@ SwigPyBuiltin_AddPublicSymbol(PyObject *seq, const char *key) {
 }
 
 SWIGINTERN void
-SWIG_Python_SetConstant(PyObject *d, PyObject *public_interface, const char *name, PyObject *obj) {   
+SWIG_Python_SetConstant(PyObject *d, PyObject *public_interface, const char *name, PyObject *obj) {
   PyDict_SetItemString(d, name, obj);
   SWIG_Py_DECREF(obj);
   if (public_interface)
@@ -1246,7 +1246,7 @@ SWIG_Python_SetConstant(PyObject *d, PyObject *public_interface, const char *nam
 #else
 
 SWIGINTERN void
-SWIG_Python_SetConstant(PyObject *d, const char *name, PyObject *obj) {   
+SWIG_Python_SetConstant(PyObject *d, const char *name, PyObject *obj) {
   PyDict_SetItemString(d, name, obj);
   SWIG_Py_DECREF(obj);
 }
@@ -1288,11 +1288,11 @@ SWIG_Python_UnpackTuple(PyObject *args, const char *name, Py_ssize_t min, Py_ssi
     if (!min && !max) {
       return 1;
     } else {
-      PyErr_Format(PyExc_TypeError, "%s expected %s%d arguments, got none", 
+      PyErr_Format(PyExc_TypeError, "%s expected %s%d arguments, got none",
 		   name, (min == max ? "" : "at least "), (int)min);
       return 0;
     }
-  }  
+  }
   if (!PyTuple_Check(args)) {
     if (min <= 1 && max >= 1) {
       Py_ssize_t i;
@@ -1307,11 +1307,11 @@ SWIG_Python_UnpackTuple(PyObject *args, const char *name, Py_ssize_t min, Py_ssi
   } else {
     Py_ssize_t l = PyTuple_GET_SIZE(args);
     if (l < min) {
-      PyErr_Format(PyExc_TypeError, "%s expected %s%d arguments, got %d", 
+      PyErr_Format(PyExc_TypeError, "%s expected %s%d arguments, got %d",
 		   name, (min == max ? "" : "at least "), (int)min, (int)l);
       return 0;
     } else if (l > max) {
-      PyErr_Format(PyExc_TypeError, "%s expected %s%d arguments, got %d", 
+      PyErr_Format(PyExc_TypeError, "%s expected %s%d arguments, got %d",
 		   name, (min == max ? "" : "at most "), (int)max, (int)l);
       return 0;
     } else {
@@ -1323,7 +1323,7 @@ SWIG_Python_UnpackTuple(PyObject *args, const char *name, Py_ssize_t min, Py_ssi
 	objs[l] = 0;
       }
       return i + 1;
-    }    
+    }
   }
 }
 
@@ -1361,12 +1361,12 @@ extern "C" {
 #define SWIG_newvarlink()                             SWIG_Python_newvarlink()
 #define SWIG_addvarlink(p, name, get_attr, set_attr)  SWIG_Python_addvarlink(p, name, get_attr, set_attr)
 #define SWIG_InstallConstants(d, constants)           SWIG_Python_InstallConstants(d, constants)
- 
+
 /* -----------------------------------------------------------------------------
  * global variable support code.
  * ----------------------------------------------------------------------------- */
- 
-typedef struct swig_globalvar {   
+
+typedef struct swig_globalvar {
   char       *name;                  /* Name of global variable */
   PyObject *(*get_attr)(void);       /* Return the current value */
   int       (*set_attr)(PyObject *); /* Set the value */
@@ -1579,7 +1579,7 @@ SWIG_Python_newvarlink(void) {
   return ((PyObject*) result);
 }
 
-SWIGINTERN void 
+SWIGINTERN void
 SWIG_Python_addvarlink(PyObject *p, const char *name, PyObject *(*get_attr)(void), int (*set_attr)(PyObject *p)) {
   swig_varlinkobject *v = (swig_varlinkobject *) p;
   swig_globalvar *gv = (swig_globalvar *) malloc(sizeof(swig_globalvar));
@@ -1598,7 +1598,7 @@ SWIG_Python_addvarlink(PyObject *p, const char *name, PyObject *(*get_attr)(void
 
 
 static PyObject *Swig_Globals_global = NULL;
-  
+
 SWIGINTERN PyObject *
 SWIG_globals(void) {
   if (Swig_Globals_global == NULL) {
@@ -1630,7 +1630,7 @@ extern "C" {
 
 /* The python void return value */
 
-SWIGRUNTIMEINLINE PyObject * 
+SWIGRUNTIMEINLINE PyObject *
 SWIG_Py_Void(void)
 {
   PyObject *none = Py_None;
@@ -1650,7 +1650,7 @@ typedef struct {
   PyTypeObject *pytype;
 } SwigPyClientData;
 
-SWIGRUNTIMEINLINE int 
+SWIGRUNTIMEINLINE int
 SWIG_Python_CheckImplicit(swig_type_info *ty)
 {
   SwigPyClientData *data = (SwigPyClientData *)ty->clientdata;
@@ -1668,7 +1668,7 @@ SWIG_Python_ExceptionType(swig_type_info *desc) {
 }
 
 
-SWIGRUNTIME SwigPyClientData * 
+SWIGRUNTIME SwigPyClientData *
 SwigPyClientData_New(PyObject* obj)
 {
   if (!obj) {
@@ -1718,7 +1718,7 @@ SwigPyClientData_New(PyObject* obj)
   }
 }
 
-SWIGRUNTIME void 
+SWIGRUNTIME void
 SwigPyClientData_Del(SwigPyClientData *data)
 {
   SWIG_Py_XDECREF(data->klass);
@@ -1853,7 +1853,7 @@ SwigPyObject_richcompare(SwigPyObject *v, SwigPyObject *w, int op)
     }
     res = PyBool_FromLong( (SwigPyObject_compare(v, w)==0) == (op == Py_EQ) ? 1 : 0);
   }
-  return res;  
+  return res;
 }
 
 
@@ -1930,7 +1930,7 @@ SwigPyObject_dealloc(PyObject *v)
          StopIteration will be active right now, and this needs to
          remain true upon return from SwigPyObject_dealloc.  So save
          and restore. */
-      
+
       PyObject *type = NULL, *value = NULL, *traceback = NULL;
       PyErr_Fetch(&type, &value, &traceback);
 
@@ -1954,7 +1954,7 @@ SwigPyObject_dealloc(PyObject *v)
       PyErr_Restore(type, value, traceback);
 
       SWIG_Py_XDECREF(res);
-    } 
+    }
 #if !defined(SWIG_PYTHON_SILENT_MEMLEAK)
     else {
       const char *name = SWIG_TypePrettyName(ty);
@@ -1970,7 +1970,7 @@ SwigPyObject_dealloc(PyObject *v)
   PyObject_Free(v);
 }
 
-SWIGRUNTIME PyObject* 
+SWIGRUNTIME PyObject*
 SwigPyObject_append(PyObject* v, PyObject* next)
 {
   SwigPyObject *sobj = (SwigPyObject *) v;
@@ -1984,11 +1984,11 @@ SwigPyObject_append(PyObject* v, PyObject* next)
   return SWIG_Py_Void();
 }
 
-SWIGRUNTIME PyObject* 
+SWIGRUNTIME PyObject*
 SwigPyObject_next(PyObject* v, PyObject *SWIGUNUSEDPARM(args))
 {
   SwigPyObject *sobj = (SwigPyObject *) v;
-  if (sobj->next) {    
+  if (sobj->next) {
     SWIG_Py_INCREF(sobj->next);
     return sobj->next;
   } else {
@@ -2027,7 +2027,7 @@ SwigPyObject_own(PyObject *v, PyObject *args)
       } else {
         SWIG_Py_DECREF(SwigPyObject_disown(v,args));
       }
-    } 
+    }
     return obj;
   }
 }
@@ -2040,7 +2040,7 @@ swigobject_methods[] = {
   {"append",  SwigPyObject_append,  METH_O,       "appends another 'this' object"},
   {"next",    SwigPyObject_next,    METH_NOARGS,  "returns the next 'this' object"},
   {"__repr__",SwigPyObject_repr2,   METH_NOARGS,  "returns object representation"},
-  {0, 0, 0, 0}  
+  {0, 0, 0, 0}
 };
 
 SWIGRUNTIME PyTypeObject*
@@ -2247,7 +2247,7 @@ SwigPyPacked_repr(SwigPyPacked *v)
     return SWIG_Python_str_FromFormat("<Swig Packed at %s%s>", result, v->ty->name);
   } else {
     return SWIG_Python_str_FromFormat("<Swig Packed %s>", v->ty->name);
-  }  
+  }
 }
 
 SWIGRUNTIME PyObject *
@@ -2258,7 +2258,7 @@ SwigPyPacked_str(SwigPyPacked *v)
     return SWIG_Python_str_FromFormat("%s%s", result, v->ty->name);
   } else {
     return SWIG_Python_str_FromChar(v->ty->name);
-  }  
+  }
 }
 
 SWIGRUNTIME int
@@ -2476,11 +2476,11 @@ SWIG_This(void)
 
 /* TODO: I don't know how to implement the fast getset in Python 3 right now */
 #if PY_VERSION_HEX>=0x03000000
-#define SWIG_PYTHON_SLOW_GETSET_THIS 
+#define SWIG_PYTHON_SLOW_GETSET_THIS
 #endif
 
 SWIGRUNTIME SwigPyObject *
-SWIG_Python_GetSwigThis(PyObject *pyobj) 
+SWIG_Python_GetSwigThis(PyObject *pyobj)
 {
   PyObject *obj;
 
@@ -2508,7 +2508,7 @@ SWIG_Python_GetSwigThis(PyObject *pyobj)
 
 #if !defined(SWIG_PYTHON_SLOW_GETSET_THIS)
   if (PyInstance_Check(pyobj)) {
-    obj = _PyInstance_Lookup(pyobj, SWIG_This());      
+    obj = _PyInstance_Lookup(pyobj, SWIG_This());
   } else {
     PyObject **dictptr = _PyObject_GetDictPtr(pyobj);
     if (dictptr != NULL) {
@@ -2541,7 +2541,7 @@ SWIG_Python_GetSwigThis(PyObject *pyobj)
 #endif
   if (obj && !SwigPyObject_Check(obj)) {
     /* a PyObject is called 'this', try to get the 'real this'
-       SwigPyObject from it */ 
+       SwigPyObject from it */
     return SWIG_Python_GetSwigThis(obj);
   }
   return (SwigPyObject *)obj;
@@ -2655,7 +2655,7 @@ SWIG_Python_ConvertPtrAndOwn(PyObject *obj, void **ptr, swig_type_info *ty, int 
                   res = SWIG_AddCast(res);
                   res = SWIG_AddNewMask(res);
                 } else {
-                  res = SWIG_AddCast(res);		    
+                  res = SWIG_AddCast(res);
                 }
               }
             }
@@ -2728,7 +2728,7 @@ SWIG_Python_ConvertPacked(PyObject *obj, void *ptr, size_t sz, swig_type_info *t
     }
   }
   return SWIG_OK;
-}  
+}
 
 /* -----------------------------------------------------------------------------
  * Create a new pointer object
@@ -2739,7 +2739,7 @@ SWIG_Python_ConvertPacked(PyObject *obj, void *ptr, size_t sz, swig_type_info *t
   'this' attribute.
 */
 
-SWIGRUNTIME PyObject* 
+SWIGRUNTIME PyObject*
 SWIG_Python_NewShadowInstance(SwigPyClientData *data, PyObject *swig_this)
 {
   PyObject *inst = 0;
@@ -2824,7 +2824,7 @@ SWIG_Python_SetSwigThis(PyObject *inst, PyObject *swig_this)
   }
 #endif
   return PyObject_SetAttr(inst, SWIG_This(), swig_this);
-} 
+}
 
 
 SWIGINTERN PyObject *
@@ -2913,7 +2913,7 @@ SWIG_Python_NewPackedObj(void *ptr, size_t sz, swig_type_info *type) {
 }
 
 /* -----------------------------------------------------------------------------*
- *  Get type list 
+ *  Get type list
  * -----------------------------------------------------------------------------*/
 
 #ifdef SWIG_LINK_RUNTIME
@@ -3003,7 +3003,7 @@ SWIGRUNTIME swig_type_info *
 SWIG_Python_TypeQuery(const char *type)
 {
   PyObject *cache = SWIG_Python_TypeCache();
-  PyObject *key = SWIG_Python_str_FromChar(type); 
+  PyObject *key = SWIG_Python_str_FromChar(type);
   PyObject *obj = PyDict_GetItem(cache, key);
   swig_type_info *descriptor;
   if (obj) {
@@ -3023,7 +3023,7 @@ SWIG_Python_TypeQuery(const char *type)
   return descriptor;
 }
 
-/* 
+/*
    For backward compatibility only
 */
 #define SWIG_POINTER_EXCEPTION  0
@@ -3032,7 +3032,7 @@ SWIG_Python_TypeQuery(const char *type)
 
 SWIGRUNTIME int
 SWIG_Python_AddErrMesg(const char* mesg, int infront)
-{  
+{
   if (PyErr_Occurred()) {
     PyObject *type = 0;
     PyObject *value = 0;
@@ -3058,7 +3058,7 @@ SWIG_Python_AddErrMesg(const char* mesg, int infront)
     return 0;
   }
 }
-  
+
 SWIGRUNTIME int
 SWIG_Python_ArgFail(int argnum)
 {
@@ -3093,12 +3093,12 @@ SWIG_Python_TypeError(const char *type, PyObject *obj)
 		     type, otype);
 	return;
       }
-    } else 
-#endif      
+    } else
+#endif
     {
 #ifndef Py_LIMITED_API
       /* tp_name is not accessible */
-      const char *otype = (obj ? obj->ob_type->tp_name : 0); 
+      const char *otype = (obj ? obj->ob_type->tp_name : 0);
       if (otype) {
 	PyObject *str = PyObject_Str(obj);
 	PyObject *bytes = NULL;
@@ -3115,7 +3115,7 @@ SWIG_Python_TypeError(const char *type, PyObject *obj)
 	return;
       }
 #endif
-    }   
+    }
     PyErr_Format(PyExc_TypeError, "a '%s' is expected", type);
   } else {
     PyErr_Format(PyExc_TypeError, "unexpected type is received");
@@ -3181,7 +3181,7 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
   } else {
     res = f(descr, obj, value);
   }
-  
+
   done:
   SWIG_Py_DECREF(name);
   return res;
@@ -3195,9 +3195,9 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 
 
-#define SWIG_exception_fail(code, msg) do { SWIG_Error(code, msg); SWIG_fail; } while(0) 
+#define SWIG_exception_fail(code, msg) do { SWIG_Error(code, msg); SWIG_fail; } while(0)
 
-#define SWIG_contract_assert(expr, msg) do { if (!(expr)) { SWIG_Error(SWIG_RuntimeError, msg); SWIG_fail; } } while (0) 
+#define SWIG_contract_assert(expr, msg) do { if (!(expr)) { SWIG_Error(SWIG_RuntimeError, msg); SWIG_fail; } } while (0)
 
 
 
@@ -3213,10 +3213,10 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_unsigned_int swig_types[7]
 #define SWIGTYPE_p_unsigned_long_long swig_types[8]
 #define SWIGTYPE_p_unsigned_short swig_types[9]
-#define SWIGTYPE_p_ws2811_channel_t swig_types[10]
-#define SWIGTYPE_p_ws2811_device swig_types[11]
-#define SWIGTYPE_p_ws2811_return_t swig_types[12]
-#define SWIGTYPE_p_ws2811_t swig_types[13]
+#define SWIGTYPE_p_ws2805_channel_t swig_types[10]
+#define SWIGTYPE_p_ws2805_device swig_types[11]
+#define SWIGTYPE_p_ws2805_return_t swig_types[12]
+#define SWIGTYPE_p_ws2805_t swig_types[13]
 static swig_type_info *swig_types[15];
 static swig_module_info swig_module = {swig_types, 14, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
@@ -3240,8 +3240,8 @@ static swig_module_info swig_module = {swig_types, 14, 0, 0, 0, 0};
 
 #endif
 
-#define SWIG_as_voidptr(a) (void *)((const void *)(a)) 
-#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
+#define SWIG_as_voidptr(a) (void *)((const void *)(a))
+#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a))
 
 
 #include <stdint.h>		// Use the C99 official header
@@ -3271,7 +3271,7 @@ static int convert_iarray(PyObject *input, uint8_t *ptr, int size) {
 }
 
 
-#include "lib/ws2811.h"
+#include "lib/ws2805.h"
 
 
 SWIGINTERNINLINE PyObject*
@@ -3434,13 +3434,13 @@ SWIG_AsVal_int (PyObject * obj, int *val)
     } else {
       if (val) *val = (int)(v);
     }
-  }  
+  }
   return res;
 }
 
 
 SWIGINTERN int
-SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val) 
+SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val)
 {
 #if PY_VERSION_HEX < 0x03000000
   if (PyInt_Check(obj)) {
@@ -3502,15 +3502,15 @@ SWIG_AsVal_unsigned_SS_char (PyObject * obj, unsigned char *val)
     } else {
       if (val) *val = (unsigned char)(v);
     }
-  }  
+  }
   return res;
 }
 
 
-  #define SWIG_From_long   PyInt_FromLong 
+  #define SWIG_From_long   PyInt_FromLong
 
 
-SWIGINTERNINLINE PyObject* 
+SWIGINTERNINLINE PyObject*
 SWIG_From_unsigned_SS_long  (unsigned long value)
 {
   return (value > LONG_MAX) ?
@@ -3520,7 +3520,7 @@ SWIG_From_unsigned_SS_long  (unsigned long value)
 
 SWIGINTERNINLINE PyObject *
 SWIG_From_unsigned_SS_char  (unsigned char value)
-{    
+{
   return SWIG_From_unsigned_SS_long  (value);
 }
 
@@ -3572,7 +3572,7 @@ SWIG_AsVal_unsigned_SS_long_SS_long (PyObject *obj, unsigned long long *val)
 
 
 #ifdef SWIG_LONG_LONG_AVAILABLE
-SWIGINTERNINLINE PyObject* 
+SWIGINTERNINLINE PyObject*
 SWIG_From_unsigned_SS_long_SS_long  (unsigned long long value)
 {
   return (value > LONG_MAX) ?
@@ -3592,7 +3592,7 @@ SWIG_AsVal_unsigned_SS_int (PyObject * obj, unsigned int *val)
     } else {
       if (val) *val = (unsigned int)(v);
     }
-  }  
+  }
   return res;
 }
 
@@ -3621,7 +3621,7 @@ SWIG_FromCharPtrAndSize(const char* carray, size_t size)
   if (carray) {
     if (size > INT_MAX) {
       swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
+      return pchar_descriptor ?
 	SWIG_InternalNewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
     } else {
 #if PY_VERSION_HEX >= 0x03000000
@@ -3640,15 +3640,15 @@ SWIG_FromCharPtrAndSize(const char* carray, size_t size)
 }
 
 
-SWIGINTERNINLINE PyObject * 
+SWIGINTERNINLINE PyObject *
 SWIG_FromCharPtr(const char *cptr)
-{ 
+{
   return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
 
-    // Return type changed to uint64_t to match patched ws2811.h
-    uint64_t ws2811_led_get(ws2811_channel_t *channel, int lednum)
+    // Return type changed to uint64_t to match patched ws2805.h
+    uint64_t ws2805_led_get(ws2805_channel_t *channel, int lednum)
     {
         if (lednum >= channel->count)
         {
@@ -3659,7 +3659,7 @@ SWIG_FromCharPtr(const char *cptr)
     }
 
     // color parameter changed to uint64_t to accept 40-bit WS2805 data
-    int ws2811_led_set(ws2811_channel_t *channel, int lednum, uint64_t color)
+    int ws2805_led_set(ws2805_channel_t *channel, int lednum, uint64_t color)
     {
         if (lednum >= channel->count)
         {
@@ -3671,7 +3671,7 @@ SWIG_FromCharPtr(const char *cptr)
         return 0;
     }
 
-    ws2811_channel_t *ws2811_channel_get(ws2811_t *ws, int channelnum)
+    ws2805_channel_t *ws2805_channel_get(ws2805_t *ws, int channelnum)
     {
         return &ws->channel[channelnum];
     }
@@ -3679,27 +3679,27 @@ SWIG_FromCharPtr(const char *cptr)
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_gpionum_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_gpionum_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_gpionum_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_gpionum_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_gpionum_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_gpionum_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_gpionum_set" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_gpionum_set" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
   if (arg1) (arg1)->gpionum = arg2;
   resultobj = SWIG_Py_Void();
@@ -3709,22 +3709,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_gpionum_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_gpionum_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   int result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_gpionum_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_gpionum_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (int) ((arg1)->gpionum);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -3733,27 +3733,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_invert_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_invert_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_invert_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_invert_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_invert_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_invert_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_invert_set" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_invert_set" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
   if (arg1) (arg1)->invert = arg2;
   resultobj = SWIG_Py_Void();
@@ -3763,22 +3763,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_invert_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_invert_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   int result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_invert_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_invert_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (int) ((arg1)->invert);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -3787,27 +3787,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_count_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_count_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_count_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_count_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_count_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_count_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_count_set" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_count_set" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
   if (arg1) (arg1)->count = arg2;
   resultobj = SWIG_Py_Void();
@@ -3817,22 +3817,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_count_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_count_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   int result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_count_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_count_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (int) ((arg1)->count);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -3841,27 +3841,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_strip_type_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_strip_type_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_strip_type_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_strip_type_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_strip_type_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_strip_type_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_strip_type_set" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_strip_type_set" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
   if (arg1) (arg1)->strip_type = arg2;
   resultobj = SWIG_Py_Void();
@@ -3871,22 +3871,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_strip_type_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_strip_type_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   int result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_strip_type_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_strip_type_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (int) ((arg1)->strip_type);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -3895,28 +3895,28 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_leds_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_leds_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
-  ws2811_led_t *arg2 = (ws2811_led_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
+  ws2805_led_t *arg2 = (ws2805_led_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_leds_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_leds_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_leds_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_leds_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_unsigned_long_long, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2811_channel_t_leds_set" "', argument " "2"" of type '" "ws2811_led_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2805_channel_t_leds_set" "', argument " "2"" of type '" "ws2805_led_t *""'");
   }
-  arg2 = (ws2811_led_t *)(argp2);
+  arg2 = (ws2805_led_t *)(argp2);
   if (arg1) (arg1)->leds = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3925,23 +3925,23 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_leds_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_leds_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  ws2811_led_t *result = 0 ;
-  
+  ws2805_led_t *result = 0 ;
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_leds_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_leds_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
-  result = (ws2811_led_t *) ((arg1)->leds);
+  arg1 = (struct ws2805_channel_t *)(argp1);
+  result = (ws2805_led_t *) ((arg1)->leds);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_unsigned_long_long, 0 |  0 );
   return resultobj;
 fail:
@@ -3949,27 +3949,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_brightness_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_brightness_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   uint8_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned char val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_brightness_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_brightness_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_brightness_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_brightness_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_char(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_brightness_set" "', argument " "2"" of type '" "uint8_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_brightness_set" "', argument " "2"" of type '" "uint8_t""'");
+  }
   arg2 = (uint8_t)(val2);
   if (arg1) (arg1)->brightness = arg2;
   resultobj = SWIG_Py_Void();
@@ -3979,22 +3979,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_brightness_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_brightness_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint8_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_brightness_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_brightness_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (uint8_t) ((arg1)->brightness);
   resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
   return resultobj;
@@ -4003,27 +4003,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_wshift_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_wshift_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   uint8_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned char val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_wshift_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_wshift_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_wshift_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_wshift_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_char(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_wshift_set" "', argument " "2"" of type '" "uint8_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_wshift_set" "', argument " "2"" of type '" "uint8_t""'");
+  }
   arg2 = (uint8_t)(val2);
   if (arg1) (arg1)->wshift = arg2;
   resultobj = SWIG_Py_Void();
@@ -4033,22 +4033,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_wshift_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_wshift_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint8_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_wshift_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_wshift_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (uint8_t) ((arg1)->wshift);
   resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
   return resultobj;
@@ -4057,27 +4057,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_rshift_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_rshift_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   uint8_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned char val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_rshift_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_rshift_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_rshift_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_rshift_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_char(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_rshift_set" "', argument " "2"" of type '" "uint8_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_rshift_set" "', argument " "2"" of type '" "uint8_t""'");
+  }
   arg2 = (uint8_t)(val2);
   if (arg1) (arg1)->rshift = arg2;
   resultobj = SWIG_Py_Void();
@@ -4087,22 +4087,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_rshift_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_rshift_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint8_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_rshift_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_rshift_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (uint8_t) ((arg1)->rshift);
   resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
   return resultobj;
@@ -4111,27 +4111,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_gshift_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_gshift_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   uint8_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned char val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_gshift_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_gshift_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_gshift_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_gshift_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_char(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_gshift_set" "', argument " "2"" of type '" "uint8_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_gshift_set" "', argument " "2"" of type '" "uint8_t""'");
+  }
   arg2 = (uint8_t)(val2);
   if (arg1) (arg1)->gshift = arg2;
   resultobj = SWIG_Py_Void();
@@ -4141,22 +4141,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_gshift_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_gshift_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint8_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_gshift_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_gshift_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (uint8_t) ((arg1)->gshift);
   resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
   return resultobj;
@@ -4165,27 +4165,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_bshift_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_bshift_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   uint8_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned char val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_bshift_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_bshift_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_bshift_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_bshift_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_char(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_t_bshift_set" "', argument " "2"" of type '" "uint8_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_t_bshift_set" "', argument " "2"" of type '" "uint8_t""'");
+  }
   arg2 = (uint8_t)(val2);
   if (arg1) (arg1)->bshift = arg2;
   resultobj = SWIG_Py_Void();
@@ -4195,22 +4195,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_bshift_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_bshift_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint8_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_bshift_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_bshift_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (uint8_t) ((arg1)->bshift);
   resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
   return resultobj;
@@ -4219,21 +4219,21 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_gamma_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_gamma_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_t_gamma_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_t_gamma_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_gamma_set" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_gamma_set" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   {
     /* As a consequence of this malloc, I believe there's a potential memory leak
        /  which would occur if gamma is set more than once.
@@ -4254,22 +4254,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_t_gamma_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_t_gamma_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint8_t *result = 0 ;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_t_gamma_get" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_t_gamma_get" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   result = (uint8_t *) ((arg1)->gamma);
   {
     resultobj = PyList_New(256);
@@ -4284,35 +4284,35 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_ws2811_channel_t(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_ws2805_channel_t(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *result = 0 ;
-  
+  struct ws2805_channel_t *result = 0 ;
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "new_ws2811_channel_t", 0, 0, 0)) SWIG_fail;
-  result = (struct ws2811_channel_t *)calloc(1, sizeof(struct ws2811_channel_t));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2811_channel_t, SWIG_POINTER_NEW |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "new_ws2805_channel_t", 0, 0, 0)) SWIG_fail;
+  result = (struct ws2805_channel_t *)calloc(1, sizeof(struct ws2805_channel_t));
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2805_channel_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_ws2811_channel_t(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_ws2805_channel_t(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_channel_t *arg1 = (struct ws2811_channel_t *) 0 ;
+  struct ws2805_channel_t *arg1 = (struct ws2805_channel_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ws2811_channel_t" "', argument " "1"" of type '" "struct ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ws2805_channel_t" "', argument " "1"" of type '" "struct ws2805_channel_t *""'");
   }
-  arg1 = (struct ws2811_channel_t *)(argp1);
+  arg1 = (struct ws2805_channel_t *)(argp1);
   free((char *) arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -4321,38 +4321,38 @@ fail:
 }
 
 
-SWIGINTERN PyObject *ws2811_channel_t_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *ws2805_channel_t_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj = NULL;
   if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_ws2811_channel_t, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_ws2805_channel_t, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *ws2811_channel_t_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *ws2805_channel_t_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   return SWIG_Python_InitShadowInstance(args);
 }
 
-SWIGINTERN PyObject *_wrap_ws2811_t_render_wait_time_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_render_wait_time_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   uint64_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned long long val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_t_render_wait_time_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_t_render_wait_time_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_render_wait_time_set" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_render_wait_time_set" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_t_render_wait_time_set" "', argument " "2"" of type '" "uint64_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_t_render_wait_time_set" "', argument " "2"" of type '" "uint64_t""'");
+  }
   arg2 = (uint64_t)(val2);
   if (arg1) (arg1)->render_wait_time = arg2;
   resultobj = SWIG_Py_Void();
@@ -4362,22 +4362,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_render_wait_time_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_render_wait_time_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint64_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_render_wait_time_get" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_render_wait_time_get" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   result = (uint64_t) ((arg1)->render_wait_time);
   resultobj = SWIG_From_unsigned_SS_long_SS_long((unsigned long long)(result));
   return resultobj;
@@ -4386,28 +4386,28 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_device_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_device_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
-  struct ws2811_device *arg2 = (struct ws2811_device *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
+  struct ws2805_device *arg2 = (struct ws2805_device *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_t_device_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_t_device_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_device_set" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_device_set" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
-  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_ws2811_device, SWIG_POINTER_DISOWN |  0 );
+  arg1 = (struct ws2805_t *)(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_ws2805_device, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2811_t_device_set" "', argument " "2"" of type '" "struct ws2811_device *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2805_t_device_set" "', argument " "2"" of type '" "struct ws2805_device *""'");
   }
-  arg2 = (struct ws2811_device *)(argp2);
+  arg2 = (struct ws2805_device *)(argp2);
   if (arg1) (arg1)->device = arg2;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -4416,50 +4416,50 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_device_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_device_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  struct ws2811_device *result = 0 ;
-  
+  struct ws2805_device *result = 0 ;
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_device_get" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_device_get" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
-  result = (struct ws2811_device *) ((arg1)->device);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2811_device, 0 |  0 );
+  arg1 = (struct ws2805_t *)(argp1);
+  result = (struct ws2805_device *) ((arg1)->device);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2805_device, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_rpi_hw_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_rpi_hw_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   rpi_hw_t *arg2 = (rpi_hw_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_t_rpi_hw_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_t_rpi_hw_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_rpi_hw_set" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_rpi_hw_set" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_rpi_hw_t, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2811_t_rpi_hw_set" "', argument " "2"" of type '" "rpi_hw_t const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2805_t_rpi_hw_set" "', argument " "2"" of type '" "rpi_hw_t const *""'");
   }
   arg2 = (rpi_hw_t *)(argp2);
   if (arg1) (arg1)->rpi_hw = (rpi_hw_t const *)arg2;
@@ -4470,22 +4470,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_rpi_hw_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_rpi_hw_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   rpi_hw_t *result = 0 ;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_rpi_hw_get" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_rpi_hw_get" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   result = (rpi_hw_t *) ((arg1)->rpi_hw);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_rpi_hw_t, 0 |  0 );
   return resultobj;
@@ -4494,27 +4494,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_freq_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_freq_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   uint32_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   unsigned int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_t_freq_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_t_freq_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_freq_set" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_freq_set" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_t_freq_set" "', argument " "2"" of type '" "uint32_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_t_freq_set" "', argument " "2"" of type '" "uint32_t""'");
+  }
   arg2 = (uint32_t)(val2);
   if (arg1) (arg1)->freq = arg2;
   resultobj = SWIG_Py_Void();
@@ -4524,22 +4524,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_freq_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_freq_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   uint32_t result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_freq_get" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_freq_get" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   result = (uint32_t) ((arg1)->freq);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
   return resultobj;
@@ -4548,27 +4548,27 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_dmanum_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_dmanum_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_t_dmanum_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_t_dmanum_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_dmanum_set" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_dmanum_set" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_t_dmanum_set" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_t_dmanum_set" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
   if (arg1) (arg1)->dmanum = arg2;
   resultobj = SWIG_Py_Void();
@@ -4578,22 +4578,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_dmanum_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_dmanum_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
   int result;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_dmanum_get" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_dmanum_get" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   result = (int) ((arg1)->dmanum);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -4602,34 +4602,34 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_channel_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_channel_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
-  ws2811_channel_t *arg2 = (ws2811_channel_t *) (ws2811_channel_t *)0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
+  ws2805_channel_t *arg2 = (ws2805_channel_t *) (ws2805_channel_t *)0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_t_channel_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_t_channel_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_channel_set" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_channel_set" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
-  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  arg1 = (struct ws2805_t *)(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2811_t_channel_set" "', argument " "2"" of type '" "ws2811_channel_t [RPI_PWM_CHANNELS]""'"); 
-  } 
-  arg2 = (ws2811_channel_t *)(argp2);
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ws2805_t_channel_set" "', argument " "2"" of type '" "ws2805_channel_t [RPI_PWM_CHANNELS]""'");
+  }
+  arg2 = (ws2805_channel_t *)(argp2);
   {
     if (arg2) {
       size_t ii = 0;
-      for (; ii < (size_t)RPI_PWM_CHANNELS; ++ii) *(ws2811_channel_t *)&arg1->channel[ii] = *((ws2811_channel_t *)arg2 + ii);
+      for (; ii < (size_t)RPI_PWM_CHANNELS; ++ii) *(ws2805_channel_t *)&arg1->channel[ii] = *((ws2805_channel_t *)arg2 + ii);
     } else {
-      SWIG_exception_fail(SWIG_NullReferenceError, "invalid null reference " "in variable '""channel""' of type '""ws2811_channel_t [RPI_PWM_CHANNELS]""'");
+      SWIG_exception_fail(SWIG_NullReferenceError, "invalid null reference " "in variable '""channel""' of type '""ws2805_channel_t [RPI_PWM_CHANNELS]""'");
     }
   }
   resultobj = SWIG_Py_Void();
@@ -4639,59 +4639,59 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_t_channel_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_t_channel_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  ws2811_channel_t *result = 0 ;
-  
+  ws2805_channel_t *result = 0 ;
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_t_channel_get" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_t_channel_get" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
-  result = (ws2811_channel_t *)(ws2811_channel_t *) ((arg1)->channel);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  arg1 = (struct ws2805_t *)(argp1);
+  result = (ws2805_channel_t *)(ws2805_channel_t *) ((arg1)->channel);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_ws2811_t(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_ws2805_t(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *result = 0 ;
-  
+  struct ws2805_t *result = 0 ;
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "new_ws2811_t", 0, 0, 0)) SWIG_fail;
-  result = (struct ws2811_t *)calloc(1, sizeof(struct ws2811_t));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2811_t, SWIG_POINTER_NEW |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "new_ws2805_t", 0, 0, 0)) SWIG_fail;
+  result = (struct ws2805_t *)calloc(1, sizeof(struct ws2805_t));
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2805_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_ws2811_t(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_ws2805_t(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct ws2811_t *arg1 = (struct ws2811_t *) 0 ;
+  struct ws2805_t *arg1 = (struct ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ws2811_t" "', argument " "1"" of type '" "struct ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ws2805_t" "', argument " "1"" of type '" "struct ws2805_t *""'");
   }
-  arg1 = (struct ws2811_t *)(argp1);
+  arg1 = (struct ws2805_t *)(argp1);
   free((char *) arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -4700,34 +4700,34 @@ fail:
 }
 
 
-SWIGINTERN PyObject *ws2811_t_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *ws2805_t_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj = NULL;
   if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_ws2811_t, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_ws2805_t, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *ws2811_t_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *ws2805_t_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   return SWIG_Python_InitShadowInstance(args);
 }
 
-SWIGINTERN PyObject *_wrap_ws2811_init(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_init(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_t *arg1 = (ws2811_t *) 0 ;
+  ws2805_t *arg1 = (ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  ws2811_return_t result;
-  
+  ws2805_return_t result;
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_init" "', argument " "1"" of type '" "ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_init" "', argument " "1"" of type '" "ws2805_t *""'");
   }
-  arg1 = (ws2811_t *)(argp1);
-  result = (ws2811_return_t)ws2811_init(arg1);
+  arg1 = (ws2805_t *)(argp1);
+  result = (ws2805_return_t)ws2805_init(arg1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -4735,22 +4735,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_fini(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_fini(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_t *arg1 = (ws2811_t *) 0 ;
+  ws2805_t *arg1 = (ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_fini" "', argument " "1"" of type '" "ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_fini" "', argument " "1"" of type '" "ws2805_t *""'");
   }
-  arg1 = (ws2811_t *)(argp1);
-  ws2811_fini(arg1);
+  arg1 = (ws2805_t *)(argp1);
+  ws2805_fini(arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4758,23 +4758,23 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_render(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_render(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_t *arg1 = (ws2811_t *) 0 ;
+  ws2805_t *arg1 = (ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  ws2811_return_t result;
-  
+  ws2805_return_t result;
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_render" "', argument " "1"" of type '" "ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_render" "', argument " "1"" of type '" "ws2805_t *""'");
   }
-  arg1 = (ws2811_t *)(argp1);
-  result = (ws2811_return_t)ws2811_render(arg1);
+  arg1 = (ws2805_t *)(argp1);
+  result = (ws2805_return_t)ws2805_render(arg1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -4782,23 +4782,23 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_wait(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_wait(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_t *arg1 = (ws2811_t *) 0 ;
+  ws2805_t *arg1 = (ws2805_t *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  ws2811_return_t result;
-  
+  ws2805_return_t result;
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_wait" "', argument " "1"" of type '" "ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_wait" "', argument " "1"" of type '" "ws2805_t *""'");
   }
-  arg1 = (ws2811_t *)(argp1);
-  result = (ws2811_return_t)ws2811_wait(arg1);
+  arg1 = (ws2805_t *)(argp1);
+  result = (ws2805_return_t)ws2805_wait(arg1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -4806,23 +4806,23 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_get_return_t_str(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_get_return_t_str(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_return_t arg1 ;
+  ws2805_return_t arg1 ;
   int val1 ;
   int ecode1 = 0 ;
   PyObject *swig_obj[1] ;
   char *result = 0 ;
-  
+
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
   ecode1 = SWIG_AsVal_int(swig_obj[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "ws2811_get_return_t_str" "', argument " "1"" of type '" "ws2811_return_t""'");
-  } 
-  arg1 = (ws2811_return_t)(val1);
-  result = (char *)ws2811_get_return_t_str(arg1);
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "ws2805_get_return_t_str" "', argument " "1"" of type '" "ws2805_return_t""'");
+  }
+  arg1 = (ws2805_return_t)(val1);
+  result = (char *)ws2805_get_return_t_str(arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -4830,29 +4830,29 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_set_custom_gamma_factor(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_set_custom_gamma_factor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_t *arg1 = (ws2811_t *) 0 ;
+  ws2805_t *arg1 = (ws2805_t *) 0 ;
   double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   double val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_set_custom_gamma_factor", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_set_custom_gamma_factor", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_set_custom_gamma_factor" "', argument " "1"" of type '" "ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_set_custom_gamma_factor" "', argument " "1"" of type '" "ws2805_t *""'");
   }
-  arg1 = (ws2811_t *)(argp1);
+  arg1 = (ws2805_t *)(argp1);
   ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_set_custom_gamma_factor" "', argument " "2"" of type '" "double""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_set_custom_gamma_factor" "', argument " "2"" of type '" "double""'");
+  }
   arg2 = (double)(val2);
-  ws2811_set_custom_gamma_factor(arg1,arg2);
+  ws2805_set_custom_gamma_factor(arg1,arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4860,9 +4860,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_led_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_led_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_channel_t *arg1 = (ws2811_channel_t *) 0 ;
+  ws2805_channel_t *arg1 = (ws2805_channel_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -4870,20 +4870,20 @@ SWIGINTERN PyObject *_wrap_ws2811_led_get(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
   uint64_t result;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_led_get", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_led_get", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_led_get" "', argument " "1"" of type '" "ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_led_get" "', argument " "1"" of type '" "ws2805_channel_t *""'");
   }
-  arg1 = (ws2811_channel_t *)(argp1);
+  arg1 = (ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_led_get" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_led_get" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
-  result = (uint64_t)ws2811_led_get(arg1,arg2);
+  result = (uint64_t)ws2805_led_get(arg1,arg2);
   resultobj = SWIG_From_unsigned_SS_long_SS_long((unsigned long long)(result));
   return resultobj;
 fail:
@@ -4891,9 +4891,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_led_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_led_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_channel_t *arg1 = (ws2811_channel_t *) 0 ;
+  ws2805_channel_t *arg1 = (ws2805_channel_t *) 0 ;
   int arg2 ;
   uint64_t arg3 ;
   void *argp1 = 0 ;
@@ -4904,25 +4904,25 @@ SWIGINTERN PyObject *_wrap_ws2811_led_set(PyObject *self, PyObject *args) {
   int ecode3 = 0 ;
   PyObject *swig_obj[3] ;
   int result;
-  
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_led_set", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_led_set", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_led_set" "', argument " "1"" of type '" "ws2811_channel_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_led_set" "', argument " "1"" of type '" "ws2805_channel_t *""'");
   }
-  arg1 = (ws2811_channel_t *)(argp1);
+  arg1 = (ws2805_channel_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_led_set" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_led_set" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
   ecode3 = SWIG_AsVal_unsigned_SS_long_SS_long(swig_obj[2], &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ws2811_led_set" "', argument " "3"" of type '" "uint64_t""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ws2805_led_set" "', argument " "3"" of type '" "uint64_t""'");
+  }
   arg3 = (uint64_t)(val3);
-  result = (int)ws2811_led_set(arg1,arg2,arg3);
+  result = (int)ws2805_led_set(arg1,arg2,arg3);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -4930,31 +4930,31 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ws2811_channel_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_ws2805_channel_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  ws2811_t *arg1 = (ws2811_t *) 0 ;
+  ws2805_t *arg1 = (ws2805_t *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject *swig_obj[2] ;
-  ws2811_channel_t *result = 0 ;
-  
+  ws2805_channel_t *result = 0 ;
+
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "ws2811_channel_get", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2811_t, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "ws2805_channel_get", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_ws2805_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_channel_get" "', argument " "1"" of type '" "ws2811_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2805_channel_get" "', argument " "1"" of type '" "ws2805_t *""'");
   }
-  arg1 = (ws2811_t *)(argp1);
+  arg1 = (ws2805_t *)(argp1);
   ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2811_channel_get" "', argument " "2"" of type '" "int""'");
-  } 
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ws2805_channel_get" "', argument " "2"" of type '" "int""'");
+  }
   arg2 = (int)(val2);
-  result = (ws2811_channel_t *)ws2811_channel_get(arg1,arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  result = (ws2805_channel_t *)ws2805_channel_get(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ws2805_channel_t, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4962,57 +4962,57 @@ fail:
 
 
 static PyMethodDef SwigMethods[] = {
-	 { "ws2811_channel_t_gpionum_set", _wrap_ws2811_channel_t_gpionum_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gpionum_get", _wrap_ws2811_channel_t_gpionum_get, METH_O, NULL},
-	 { "ws2811_channel_t_invert_set", _wrap_ws2811_channel_t_invert_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_invert_get", _wrap_ws2811_channel_t_invert_get, METH_O, NULL},
-	 { "ws2811_channel_t_count_set", _wrap_ws2811_channel_t_count_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_count_get", _wrap_ws2811_channel_t_count_get, METH_O, NULL},
-	 { "ws2811_channel_t_strip_type_set", _wrap_ws2811_channel_t_strip_type_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_strip_type_get", _wrap_ws2811_channel_t_strip_type_get, METH_O, NULL},
-	 { "ws2811_channel_t_leds_set", _wrap_ws2811_channel_t_leds_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_leds_get", _wrap_ws2811_channel_t_leds_get, METH_O, NULL},
-	 { "ws2811_channel_t_brightness_set", _wrap_ws2811_channel_t_brightness_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_brightness_get", _wrap_ws2811_channel_t_brightness_get, METH_O, NULL},
-	 { "ws2811_channel_t_wshift_set", _wrap_ws2811_channel_t_wshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_wshift_get", _wrap_ws2811_channel_t_wshift_get, METH_O, NULL},
-	 { "ws2811_channel_t_rshift_set", _wrap_ws2811_channel_t_rshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_rshift_get", _wrap_ws2811_channel_t_rshift_get, METH_O, NULL},
-	 { "ws2811_channel_t_gshift_set", _wrap_ws2811_channel_t_gshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gshift_get", _wrap_ws2811_channel_t_gshift_get, METH_O, NULL},
-	 { "ws2811_channel_t_bshift_set", _wrap_ws2811_channel_t_bshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_bshift_get", _wrap_ws2811_channel_t_bshift_get, METH_O, NULL},
-	 { "ws2811_channel_t_gamma_set", _wrap_ws2811_channel_t_gamma_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gamma_get", _wrap_ws2811_channel_t_gamma_get, METH_O, NULL},
-	 { "new_ws2811_channel_t", _wrap_new_ws2811_channel_t, METH_NOARGS, NULL},
-	 { "delete_ws2811_channel_t", _wrap_delete_ws2811_channel_t, METH_O, NULL},
-	 { "ws2811_channel_t_swigregister", ws2811_channel_t_swigregister, METH_O, NULL},
-	 { "ws2811_channel_t_swiginit", ws2811_channel_t_swiginit, METH_VARARGS, NULL},
-	 { "ws2811_t_render_wait_time_set", _wrap_ws2811_t_render_wait_time_set, METH_VARARGS, NULL},
-	 { "ws2811_t_render_wait_time_get", _wrap_ws2811_t_render_wait_time_get, METH_O, NULL},
-	 { "ws2811_t_device_set", _wrap_ws2811_t_device_set, METH_VARARGS, NULL},
-	 { "ws2811_t_device_get", _wrap_ws2811_t_device_get, METH_O, NULL},
-	 { "ws2811_t_rpi_hw_set", _wrap_ws2811_t_rpi_hw_set, METH_VARARGS, NULL},
-	 { "ws2811_t_rpi_hw_get", _wrap_ws2811_t_rpi_hw_get, METH_O, NULL},
-	 { "ws2811_t_freq_set", _wrap_ws2811_t_freq_set, METH_VARARGS, NULL},
-	 { "ws2811_t_freq_get", _wrap_ws2811_t_freq_get, METH_O, NULL},
-	 { "ws2811_t_dmanum_set", _wrap_ws2811_t_dmanum_set, METH_VARARGS, NULL},
-	 { "ws2811_t_dmanum_get", _wrap_ws2811_t_dmanum_get, METH_O, NULL},
-	 { "ws2811_t_channel_set", _wrap_ws2811_t_channel_set, METH_VARARGS, NULL},
-	 { "ws2811_t_channel_get", _wrap_ws2811_t_channel_get, METH_O, NULL},
-	 { "new_ws2811_t", _wrap_new_ws2811_t, METH_NOARGS, NULL},
-	 { "delete_ws2811_t", _wrap_delete_ws2811_t, METH_O, NULL},
-	 { "ws2811_t_swigregister", ws2811_t_swigregister, METH_O, NULL},
-	 { "ws2811_t_swiginit", ws2811_t_swiginit, METH_VARARGS, NULL},
-	 { "ws2811_init", _wrap_ws2811_init, METH_O, NULL},
-	 { "ws2811_fini", _wrap_ws2811_fini, METH_O, NULL},
-	 { "ws2811_render", _wrap_ws2811_render, METH_O, NULL},
-	 { "ws2811_wait", _wrap_ws2811_wait, METH_O, NULL},
-	 { "ws2811_get_return_t_str", _wrap_ws2811_get_return_t_str, METH_O, NULL},
-	 { "ws2811_set_custom_gamma_factor", _wrap_ws2811_set_custom_gamma_factor, METH_VARARGS, NULL},
-	 { "ws2811_led_get", _wrap_ws2811_led_get, METH_VARARGS, NULL},
-	 { "ws2811_led_set", _wrap_ws2811_led_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_get", _wrap_ws2811_channel_get, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_gpionum_set", _wrap_ws2805_channel_t_gpionum_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_gpionum_get", _wrap_ws2805_channel_t_gpionum_get, METH_O, NULL},
+	 { "ws2805_channel_t_invert_set", _wrap_ws2805_channel_t_invert_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_invert_get", _wrap_ws2805_channel_t_invert_get, METH_O, NULL},
+	 { "ws2805_channel_t_count_set", _wrap_ws2805_channel_t_count_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_count_get", _wrap_ws2805_channel_t_count_get, METH_O, NULL},
+	 { "ws2805_channel_t_strip_type_set", _wrap_ws2805_channel_t_strip_type_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_strip_type_get", _wrap_ws2805_channel_t_strip_type_get, METH_O, NULL},
+	 { "ws2805_channel_t_leds_set", _wrap_ws2805_channel_t_leds_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_leds_get", _wrap_ws2805_channel_t_leds_get, METH_O, NULL},
+	 { "ws2805_channel_t_brightness_set", _wrap_ws2805_channel_t_brightness_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_brightness_get", _wrap_ws2805_channel_t_brightness_get, METH_O, NULL},
+	 { "ws2805_channel_t_wshift_set", _wrap_ws2805_channel_t_wshift_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_wshift_get", _wrap_ws2805_channel_t_wshift_get, METH_O, NULL},
+	 { "ws2805_channel_t_rshift_set", _wrap_ws2805_channel_t_rshift_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_rshift_get", _wrap_ws2805_channel_t_rshift_get, METH_O, NULL},
+	 { "ws2805_channel_t_gshift_set", _wrap_ws2805_channel_t_gshift_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_gshift_get", _wrap_ws2805_channel_t_gshift_get, METH_O, NULL},
+	 { "ws2805_channel_t_bshift_set", _wrap_ws2805_channel_t_bshift_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_bshift_get", _wrap_ws2805_channel_t_bshift_get, METH_O, NULL},
+	 { "ws2805_channel_t_gamma_set", _wrap_ws2805_channel_t_gamma_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_t_gamma_get", _wrap_ws2805_channel_t_gamma_get, METH_O, NULL},
+	 { "new_ws2805_channel_t", _wrap_new_ws2805_channel_t, METH_NOARGS, NULL},
+	 { "delete_ws2805_channel_t", _wrap_delete_ws2805_channel_t, METH_O, NULL},
+	 { "ws2805_channel_t_swigregister", ws2805_channel_t_swigregister, METH_O, NULL},
+	 { "ws2805_channel_t_swiginit", ws2805_channel_t_swiginit, METH_VARARGS, NULL},
+	 { "ws2805_t_render_wait_time_set", _wrap_ws2805_t_render_wait_time_set, METH_VARARGS, NULL},
+	 { "ws2805_t_render_wait_time_get", _wrap_ws2805_t_render_wait_time_get, METH_O, NULL},
+	 { "ws2805_t_device_set", _wrap_ws2805_t_device_set, METH_VARARGS, NULL},
+	 { "ws2805_t_device_get", _wrap_ws2805_t_device_get, METH_O, NULL},
+	 { "ws2805_t_rpi_hw_set", _wrap_ws2805_t_rpi_hw_set, METH_VARARGS, NULL},
+	 { "ws2805_t_rpi_hw_get", _wrap_ws2805_t_rpi_hw_get, METH_O, NULL},
+	 { "ws2805_t_freq_set", _wrap_ws2805_t_freq_set, METH_VARARGS, NULL},
+	 { "ws2805_t_freq_get", _wrap_ws2805_t_freq_get, METH_O, NULL},
+	 { "ws2805_t_dmanum_set", _wrap_ws2805_t_dmanum_set, METH_VARARGS, NULL},
+	 { "ws2805_t_dmanum_get", _wrap_ws2805_t_dmanum_get, METH_O, NULL},
+	 { "ws2805_t_channel_set", _wrap_ws2805_t_channel_set, METH_VARARGS, NULL},
+	 { "ws2805_t_channel_get", _wrap_ws2805_t_channel_get, METH_O, NULL},
+	 { "new_ws2805_t", _wrap_new_ws2805_t, METH_NOARGS, NULL},
+	 { "delete_ws2805_t", _wrap_delete_ws2805_t, METH_O, NULL},
+	 { "ws2805_t_swigregister", ws2805_t_swigregister, METH_O, NULL},
+	 { "ws2805_t_swiginit", ws2805_t_swiginit, METH_VARARGS, NULL},
+	 { "ws2805_init", _wrap_ws2805_init, METH_O, NULL},
+	 { "ws2805_fini", _wrap_ws2805_fini, METH_O, NULL},
+	 { "ws2805_render", _wrap_ws2805_render, METH_O, NULL},
+	 { "ws2805_wait", _wrap_ws2805_wait, METH_O, NULL},
+	 { "ws2805_get_return_t_str", _wrap_ws2805_get_return_t_str, METH_O, NULL},
+	 { "ws2805_set_custom_gamma_factor", _wrap_ws2805_set_custom_gamma_factor, METH_VARARGS, NULL},
+	 { "ws2805_led_get", _wrap_ws2805_led_get, METH_VARARGS, NULL},
+	 { "ws2805_led_set", _wrap_ws2805_led_set, METH_VARARGS, NULL},
+	 { "ws2805_channel_get", _wrap_ws2805_channel_get, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -5027,12 +5027,12 @@ static swig_type_info _swigt__p_short = {"_p_short", "int16_t *|int_least16_t *|
 static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "int8_t *|int_fast8_t *|int_least8_t *|signed char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "uint8_t *|uint_fast8_t *|uint_least8_t *|unsigned char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "uint32_t *|uint_fast16_t *|uint_fast32_t *|uint_least32_t *|uintptr_t *|unsigned int *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "uint64_t *|uint_fast64_t *|uint_least64_t *|uintmax_t *|ws2811_led_t *|unsigned long long *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "uint64_t *|uint_fast64_t *|uint_least64_t *|uintmax_t *|ws2805_led_t *|unsigned long long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "uint16_t *|uint_least16_t *|unsigned short *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_ws2811_channel_t = {"_p_ws2811_channel_t", "ws2811_channel_t *|struct ws2811_channel_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_ws2811_device = {"_p_ws2811_device", "struct ws2811_device *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_ws2811_return_t = {"_p_ws2811_return_t", "ws2811_return_t *|enum ws2811_return_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_ws2811_t = {"_p_ws2811_t", "ws2811_t *|struct ws2811_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_ws2805_channel_t = {"_p_ws2805_channel_t", "ws2805_channel_t *|struct ws2805_channel_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_ws2805_device = {"_p_ws2805_device", "struct ws2805_device *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_ws2805_return_t = {"_p_ws2805_return_t", "ws2805_return_t *|enum ws2805_return_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_ws2805_t = {"_p_ws2805_t", "ws2805_t *|struct ws2805_t *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
@@ -5045,10 +5045,10 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long_long,
   &_swigt__p_unsigned_short,
-  &_swigt__p_ws2811_channel_t,
-  &_swigt__p_ws2811_device,
-  &_swigt__p_ws2811_return_t,
-  &_swigt__p_ws2811_t,
+  &_swigt__p_ws2805_channel_t,
+  &_swigt__p_ws2805_device,
+  &_swigt__p_ws2805_return_t,
+  &_swigt__p_ws2805_t,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -5061,10 +5061,10 @@ static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_long_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_ws2811_channel_t[] = {  {&_swigt__p_ws2811_channel_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_ws2811_device[] = {  {&_swigt__p_ws2811_device, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_ws2811_return_t[] = {  {&_swigt__p_ws2811_return_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_ws2811_t[] = {  {&_swigt__p_ws2811_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_ws2805_channel_t[] = {  {&_swigt__p_ws2805_channel_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_ws2805_device[] = {  {&_swigt__p_ws2805_device, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_ws2805_return_t[] = {  {&_swigt__p_ws2805_return_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_ws2805_t[] = {  {&_swigt__p_ws2805_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
@@ -5077,10 +5077,10 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long_long,
   _swigc__p_unsigned_short,
-  _swigc__p_ws2811_channel_t,
-  _swigc__p_ws2811_device,
-  _swigc__p_ws2811_return_t,
-  _swigc__p_ws2811_t,
+  _swigc__p_ws2805_channel_t,
+  _swigc__p_ws2805_device,
+  _swigc__p_ws2805_return_t,
+  _swigc__p_ws2805_t,
 };
 
 
@@ -5153,7 +5153,7 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
   size_t i;
   swig_module_info *module_head, *iter;
   int init;
-  
+
   /* check to see if the circular list has been setup, if not, set it up */
   if (swig_module.next==0) {
     /* Initialize the swig_module */
@@ -5164,7 +5164,7 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
   } else {
     init = 0;
   }
-  
+
   /* Try and load any already created modules */
   module_head = SWIG_GetModule(clientdata);
   if (!module_head) {
@@ -5181,18 +5181,18 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
       }
       iter=iter->next;
     } while (iter!= module_head);
-    
+
     /* otherwise we must add our module into the list */
     swig_module.next = module_head->next;
     module_head->next = &swig_module;
   }
-  
+
   /* When multiple interpreters are used, a module could have already been initialized in
        a different interpreter, but not yet have a pointer in this interpreter.
        In this case, we do not want to continue adding types... everything should be
        set up already */
   if (init == 0) return;
-  
+
   /* Now work on filling in swig_module.types */
 #ifdef SWIGRUNTIME_DEBUG
   printf("SWIG_InitializeModule: size %lu\n", (unsigned long)swig_module.size);
@@ -5201,11 +5201,11 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
     swig_type_info *type = 0;
     swig_type_info *ret;
     swig_cast_info *cast;
-    
+
 #ifdef SWIGRUNTIME_DEBUG
     printf("SWIG_InitializeModule: type %lu %s\n", (unsigned long)i, swig_module.type_initial[i]->name);
 #endif
-    
+
     /* if there is another module already loaded */
     if (swig_module.next != &swig_module) {
       type = SWIG_MangledTypeQueryModule(swig_module.next, &swig_module, swig_module.type_initial[i]->name);
@@ -5224,7 +5224,7 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
     } else {
       type = swig_module.type_initial[i];
     }
-    
+
     /* Insert casting types */
     cast = swig_module.cast_initial[i];
     while (cast->type) {
@@ -5255,7 +5255,7 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
           if (!ocast) ret = 0;
         }
       }
-      
+
       if (!ret) {
 #ifdef SWIGRUNTIME_DEBUG
         printf("SWIG_InitializeModule: adding cast %s\n", cast->type->name);
@@ -5272,7 +5272,7 @@ SWIG_InitializeModule(SWIG_INIT_CLIENT_DATA_TYPE clientdata) {
     swig_module.types[i] = type;
   }
   swig_module.types[i] = 0;
-  
+
 #ifdef SWIGRUNTIME_DEBUG
   printf("**** SWIG_InitializeModule: Cast List ******\n");
   for (i = 0; i < swig_module.size; ++i) {
@@ -5300,10 +5300,10 @@ SWIG_PropagateClientData(void) {
   size_t i;
   swig_cast_info *equiv;
   static int init_run = 0;
-  
+
   if (init_run) return;
   init_run = 1;
-  
+
   for (i = 0; i < swig_module.size; i++) {
     if (swig_module.types[i]->clientdata) {
       equiv = swig_module.types[i]->cast;
@@ -5331,11 +5331,11 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
+
   /* -----------------------------------------------------------------------------
    * constants/methods manipulation
    * ----------------------------------------------------------------------------- */
-  
+
   /* Install Constants */
   SWIGINTERN void
   SWIG_Python_InstallConstants(PyObject *d, swig_const_info constants[]) {
@@ -5359,11 +5359,11 @@ extern "C" {
       }
     }
   }
-  
+
   /* -----------------------------------------------------------------------------
    * Patch %callback methods' docstrings to hold the callback ptrs
    * -----------------------------------------------------------------------------*/
-  
+
   SWIGINTERN void
   SWIG_Python_FixMethods(PyMethodDef *methods, const swig_const_info *const_table, swig_type_info **types, swig_type_info **types_initial) {
     size_t i;
@@ -5376,7 +5376,7 @@ extern "C" {
         const swig_const_info *ci = 0;
         const char *name = c + 10;
         for (j = 0; const_table[j].type; ++j) {
-          if (strncmp(const_table[j].name, name, 
+          if (strncmp(const_table[j].name, name,
               strlen(const_table[j].name)) == 0) {
             ci = &(const_table[j]);
             break;
@@ -5403,8 +5403,8 @@ extern "C" {
         }
       }
     }
-  } 
-  
+  }
+
 #ifdef __cplusplus
 }
 #endif
@@ -5420,7 +5420,7 @@ extern "C" {
 extern "C"
 #endif
 
-SWIGEXPORT 
+SWIGEXPORT
 #if PY_VERSION_HEX >= 0x03000000
 PyObject*
 #else
@@ -5428,7 +5428,7 @@ void
 #endif
 SWIG_init(void) {
   PyObject *m, *d, *md, *globals;
-  
+
 #if PY_VERSION_HEX >= 0x03000000
   static struct PyModuleDef SWIG_module = {
     PyModuleDef_HEAD_INIT,
@@ -5442,7 +5442,7 @@ SWIG_init(void) {
     NULL
   };
 #endif
-  
+
 #if defined(SWIGPYTHON_BUILTIN)
   static SwigPyClientData SwigPyObject_clientdata = {
     0, 0, 0, 0, 0, 0, 0
@@ -5470,21 +5470,21 @@ SWIG_init(void) {
   PyObject *thisown_descr;
   PyObject *self = 0;
   int i;
-  
+
   (void)builtin_pytype;
   (void)builtin_base_count;
   (void)builtin_basetype;
   (void)tuple;
   (void)static_getset;
   (void)self;
-  
+
   /* Metaclass is used to implement static member variables */
   metatype = SwigPyObjectType();
   assert(metatype);
 #endif
-  
+
   (void)globals;
-  
+
   /* Create singletons now to avoid potential deadlocks with multi-threaded usage after module initialization */
   SWIG_This();
   SWIG_Python_TypeCache();
@@ -5492,24 +5492,24 @@ SWIG_init(void) {
 #ifndef SWIGPYTHON_BUILTIN
   SwigPyObject_type();
 #endif
-  
+
   /* Fix SwigMethods to carry the callback ptrs when needed */
   SWIG_Python_FixMethods(SwigMethods, swig_const_table, swig_types, swig_type_initial);
-  
+
 #if PY_VERSION_HEX >= 0x03000000
   m = PyModule_Create(&SWIG_module);
 #else
   m = Py_InitModule(SWIG_name, SwigMethods);
 #endif
-  
+
   md = d = PyModule_GetDict(m);
   (void)md;
-  
+
   SWIG_InitializeModule(0);
-  
+
 #ifdef SWIGPYTHON_BUILTIN
   swigpyobject = SwigPyObject_TypeOnce();
-  
+
   SwigPyObject_stype = SWIG_MangledTypeQuery("_p_SwigPyObject");
   assert(SwigPyObject_stype);
   cd = (SwigPyClientData*) SwigPyObject_stype->clientdata;
@@ -5524,19 +5524,19 @@ SWIG_init(void) {
     return;
 # endif
   }
-  
+
   /* All objects have a 'this' attribute */
   this_descr = PyDescr_NewGetSet(SwigPyObject_type(), &this_getset_def);
   (void)this_descr;
-  
+
   /* All objects have a 'thisown' attribute */
   thisown_descr = PyDescr_NewGetSet(SwigPyObject_type(), &thisown_getset_def);
   (void)thisown_descr;
-  
+
   public_interface = PyList_New(0);
   public_symbol = 0;
   (void)public_symbol;
-  
+
   PyDict_SetItemString(md, "__all__", public_interface);
   SWIG_Py_DECREF(public_interface);
   for (i = 0; SwigMethods[i].ml_name != NULL; ++i)
@@ -5544,10 +5544,10 @@ SWIG_init(void) {
   for (i = 0; swig_const_table[i].name != 0; ++i)
   SwigPyBuiltin_AddPublicSymbol(public_interface, swig_const_table[i].name);
 #endif
-  
+
   SWIG_InstallConstants(d,swig_const_table);
-  
-  SWIG_Python_SetConstant(d, "WS2811_TARGET_FREQ",SWIG_From_int((int)(800000)));
+
+  SWIG_Python_SetConstant(d, "ws2805_TARGET_FREQ",SWIG_From_int((int)(800000)));
   SWIG_Python_SetConstant(d, "SK6812_STRIP_RGBW",SWIG_From_int((int)(0x18100800)));
   SWIG_Python_SetConstant(d, "SK6812_STRIP_RBGW",SWIG_From_int((int)(0x18100008)));
   SWIG_Python_SetConstant(d, "SK6812_STRIP_GRBW",SWIG_From_int((int)(0x18081000)));
@@ -5555,35 +5555,34 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "SK6812_STRIP_BRGW",SWIG_From_int((int)(0x18001008)));
   SWIG_Python_SetConstant(d, "SK6812_STRIP_BGRW",SWIG_From_int((int)(0x18000810)));
   SWIG_Python_SetConstant(d, "SK6812_SHIFT_WMASK",SWIG_From_int((int)(0xf0000000)));
-  SWIG_Python_SetConstant(d, "WS2811_STRIP_RGB",SWIG_From_int((int)(0x00100800)));
-  SWIG_Python_SetConstant(d, "WS2811_STRIP_RBG",SWIG_From_int((int)(0x00100008)));
-  SWIG_Python_SetConstant(d, "WS2811_STRIP_GRB",SWIG_From_int((int)(0x00081000)));
-  SWIG_Python_SetConstant(d, "WS2811_STRIP_GBR",SWIG_From_int((int)(0x00080010)));
-  SWIG_Python_SetConstant(d, "WS2811_STRIP_BRG",SWIG_From_int((int)(0x00001008)));
-  SWIG_Python_SetConstant(d, "WS2811_STRIP_BGR",SWIG_From_int((int)(0x00000810)));
+  SWIG_Python_SetConstant(d, "ws2805_STRIP_RGB",SWIG_From_int((int)(0x00100800)));
+  SWIG_Python_SetConstant(d, "ws2805_STRIP_RBG",SWIG_From_int((int)(0x00100008)));
+  SWIG_Python_SetConstant(d, "ws2805_STRIP_GRB",SWIG_From_int((int)(0x00081000)));
+  SWIG_Python_SetConstant(d, "ws2805_STRIP_GBR",SWIG_From_int((int)(0x00080010)));
+  SWIG_Python_SetConstant(d, "ws2805_STRIP_BRG",SWIG_From_int((int)(0x00001008)));
+  SWIG_Python_SetConstant(d, "ws2805_STRIP_BGR",SWIG_From_int((int)(0x00000810)));
   SWIG_Python_SetConstant(d, "WS2812_STRIP",SWIG_From_int((int)(0x00081000)));
   SWIG_Python_SetConstant(d, "SK6812_STRIP",SWIG_From_int((int)(0x00081000)));
   SWIG_Python_SetConstant(d, "SK6812W_STRIP",SWIG_From_int((int)(0x18081000)));
-  SWIG_Python_SetConstant(d, "WS2811_SUCCESS",SWIG_From_int((int)(WS2811_SUCCESS)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_GENERIC",SWIG_From_int((int)(WS2811_ERROR_GENERIC)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_OUT_OF_MEMORY",SWIG_From_int((int)(WS2811_ERROR_OUT_OF_MEMORY)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_HW_NOT_SUPPORTED",SWIG_From_int((int)(WS2811_ERROR_HW_NOT_SUPPORTED)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_MEM_LOCK",SWIG_From_int((int)(WS2811_ERROR_MEM_LOCK)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_MMAP",SWIG_From_int((int)(WS2811_ERROR_MMAP)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_MAP_REGISTERS",SWIG_From_int((int)(WS2811_ERROR_MAP_REGISTERS)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_GPIO_INIT",SWIG_From_int((int)(WS2811_ERROR_GPIO_INIT)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_PWM_SETUP",SWIG_From_int((int)(WS2811_ERROR_PWM_SETUP)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_MAILBOX_DEVICE",SWIG_From_int((int)(WS2811_ERROR_MAILBOX_DEVICE)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_DMA",SWIG_From_int((int)(WS2811_ERROR_DMA)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_ILLEGAL_GPIO",SWIG_From_int((int)(WS2811_ERROR_ILLEGAL_GPIO)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_PCM_SETUP",SWIG_From_int((int)(WS2811_ERROR_PCM_SETUP)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_SPI_SETUP",SWIG_From_int((int)(WS2811_ERROR_SPI_SETUP)));
-  SWIG_Python_SetConstant(d, "WS2811_ERROR_SPI_TRANSFER",SWIG_From_int((int)(WS2811_ERROR_SPI_TRANSFER)));
-  SWIG_Python_SetConstant(d, "WS2811_RETURN_STATE_COUNT",SWIG_From_int((int)(WS2811_RETURN_STATE_COUNT)));
+  SWIG_Python_SetConstant(d, "ws2805_SUCCESS",SWIG_From_int((int)(ws2805_SUCCESS)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_GENERIC",SWIG_From_int((int)(ws2805_ERROR_GENERIC)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_OUT_OF_MEMORY",SWIG_From_int((int)(ws2805_ERROR_OUT_OF_MEMORY)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_HW_NOT_SUPPORTED",SWIG_From_int((int)(ws2805_ERROR_HW_NOT_SUPPORTED)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_MEM_LOCK",SWIG_From_int((int)(ws2805_ERROR_MEM_LOCK)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_MMAP",SWIG_From_int((int)(ws2805_ERROR_MMAP)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_MAP_REGISTERS",SWIG_From_int((int)(ws2805_ERROR_MAP_REGISTERS)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_GPIO_INIT",SWIG_From_int((int)(ws2805_ERROR_GPIO_INIT)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_PWM_SETUP",SWIG_From_int((int)(ws2805_ERROR_PWM_SETUP)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_MAILBOX_DEVICE",SWIG_From_int((int)(ws2805_ERROR_MAILBOX_DEVICE)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_DMA",SWIG_From_int((int)(ws2805_ERROR_DMA)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_ILLEGAL_GPIO",SWIG_From_int((int)(ws2805_ERROR_ILLEGAL_GPIO)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_PCM_SETUP",SWIG_From_int((int)(ws2805_ERROR_PCM_SETUP)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_SPI_SETUP",SWIG_From_int((int)(ws2805_ERROR_SPI_SETUP)));
+  SWIG_Python_SetConstant(d, "ws2805_ERROR_SPI_TRANSFER",SWIG_From_int((int)(ws2805_ERROR_SPI_TRANSFER)));
+  SWIG_Python_SetConstant(d, "ws2805_RETURN_STATE_COUNT",SWIG_From_int((int)(ws2805_RETURN_STATE_COUNT)));
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else
   return;
 #endif
 }
-

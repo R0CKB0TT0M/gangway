@@ -4,8 +4,8 @@ Function to project points
 
 import numpy as np
 
-SRC_POINTS = np.array([(255, 334), (363, 335), (350, 86), (313, 86)])
-DST_POINTS = np.array([(0, 500), (100, 500), (100, 0), (0, 0)])
+SRC_POINTS = np.array([(252, 357), (366, 358), (351, 101), (312, 102)])
+DST_POINTS = np.array([(0, 490), (100, 490), (115, 0), (0, 0)])
 
 
 def get_homography(src=SRC_POINTS, dst=DST_POINTS):

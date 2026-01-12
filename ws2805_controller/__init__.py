@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass
 
-from rpi_ws2805 import RGBW, PixelStrip
+from rpi_ws2805 import RGBCCT, PixelStrip
 
 # Configuration
 LED_COUNT = 30  # Number of WS2805 ICs
@@ -15,31 +15,6 @@ LED_CHANNEL = 0
 # Strip type mask must match your C-patch (0x1F000000)
 # This triggers the 'array_size = 5' logic in your patched ws2811.c
 WS2805_STRIP = 0x1F000000
-
-
-class RGBCCT(int):
-    def __new__(cls, r=0, g=0, b=0, cw=0, ww=0) -> "RGBCCT":
-        return int.__new__(cls, (cw << 32) | (ww << 24) | (b << 16) | (g << 8) | r)
-
-    @property
-    def r(self) -> int:
-        return self & 0xFF
-
-    @property
-    def g(self) -> int:
-        return (self >> 8) & 0xFF
-
-    @property
-    def b(self) -> int:
-        return (self >> 16) & 0xFF
-
-    @property
-    def ww(self) -> int:
-        return (self >> 24) & 0xFF
-
-    @property
-    def cw(self) -> int:
-        return (self >> 32) & 0xFF
 
 
 class WS2805Controller:
@@ -69,7 +44,7 @@ class WS2805Controller:
         color_64 = (cw << 32) | (ww << 24) | (b << 16) | (g << 8) | r
         self.strip.setPixelColor(index, color_64)
 
-    def set_color(self, index, color: RGBW | RGBCCT) -> None:
+    def set_color(self, index, color: RGBCCT) -> None:
         self.strip.setPixelColor(index, color)
 
     def fill(self, color) -> None:

@@ -56,17 +56,17 @@ static int convert_iarray(PyObject *input, uint8_t *ptr, int size) {
    }
 }
 
-// Declare functions which will be exported as anything in the ws2811.h header.
+// Declare functions which will be exported as anything in the ws2805.h header.
 %{
-#include "lib/ws2811.h"
+#include "lib/ws2805.h"
 %}
 
-// Process ws2811.h header and export all included functions.
-%include "lib/ws2811.h"
+// Process ws2805.h header and export all included functions.
+%include "lib/ws2805.h"
 
 %inline %{
-    // Return type changed to uint64_t to match patched ws2811.h
-    uint64_t ws2811_led_get(ws2811_channel_t *channel, int lednum)
+    // Return type changed to uint64_t to match patched ws2805.h
+    uint64_t ws2805_led_get(ws2805_channel_t *channel, int lednum)
     {
         if (lednum >= channel->count)
         {
@@ -77,7 +77,7 @@ static int convert_iarray(PyObject *input, uint8_t *ptr, int size) {
     }
 
     // color parameter changed to uint64_t to accept 40-bit WS2805 data
-    int ws2811_led_set(ws2811_channel_t *channel, int lednum, uint64_t color)
+    int ws2805_led_set(ws2805_channel_t *channel, int lednum, uint64_t color)
     {
         if (lednum >= channel->count)
         {
@@ -89,7 +89,7 @@ static int convert_iarray(PyObject *input, uint8_t *ptr, int size) {
         return 0;
     }
 
-    ws2811_channel_t *ws2811_channel_get(ws2811_t *ws, int channelnum)
+    ws2805_channel_t *ws2805_channel_get(ws2805_t *ws, int channelnum)
     {
         return &ws->channel[channelnum];
     }

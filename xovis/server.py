@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from typing import Callable, Iterable, List, Optional, Tuple
 
+from .homographic_projection import apply_transform
 from .model import Event, EventObject, create_events_from_json
 
 
@@ -44,16 +45,23 @@ class XOVISServer:
         events = create_events_from_json(data)
 
         object_ids = [event.object.id for event in events]
-        latest_objects: Iterable[EventObject] = (
+        latest_objects: Iterable[EventObject] = [
             sorted(
                 (event for event in events if event.object.id == object_id),
                 key=lambda event: event.timestamp,
             )[-1].object
             for object_id in object_ids
+        ]
+
+        points = [(object.x, object.y) for object in latest_objects]
+        mapped_points = apply_transform(points)
+        mapped_objects = (
+            EventObject(id=object.id, x=p[0], y=p[1], height=object.height)
+            for object, p in zip(latest_objects, mapped_points)
         )
 
         for callback in self._subscribers_position:
-            callback(latest_objects)
+            callback(mapped_objects)
 
     def start_server(self) -> HTTPServer:
         server = self
