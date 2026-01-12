@@ -3,10 +3,12 @@ import time
 from threading import Thread
 from typing import Iterable, List
 
-from strips_conf import LED, LEDS, MAX_INDEX, Point
-from ws2805_controller import RGBCCT, WS2805Controller
-from xovis.model import EventObject
-from xovis.server import XOVISServer
+from numpy import float64
+from numpy.typing import NDArray
+
+from modules.strips_conf import LED, LEDS, Point
+from modules.ws2805_controller import RGBCCT, WS2805Controller
+from modules.xovis.server import XOVISServer
 
 LED_COUNT: int = 30
 
@@ -25,12 +27,8 @@ def run_led_cycle(device: WS2805Controller) -> None:
             time.sleep(0.01)
 
 
-def handle_event(objects: Iterable[EventObject]) -> None:
-    print(list(objects))
-
-
 class LEDController(Thread):
-    objects: Iterable[EventObject]
+    objects: Iterable[Point]
     leds: List[LED]
     running: bool = True
     device: WS2805Controller
@@ -46,21 +44,13 @@ class LEDController(Thread):
     def stop(self) -> None:
         self.running = False
 
-    def notify(self, objects: Iterable[EventObject]) -> None:
+    def notify(self, objects: NDArray[float64]) -> None:
         self.objects = objects
 
-    @staticmethod
-    def __object_to_point(object: EventObject) -> Point:
-        return Point(object.x, object.y)
-
-    def update_direct(self, objects: Iterable[EventObject]):
-        print(f"updating... – {len(self.leds)} leds – objects")
-
+    def update_direct(self, objects: Iterable[Point]):
         for object in objects:
-            print(f"updating {object}")
             for led in self.leds:
-                p_object = self.__object_to_point(object)
-                if (led.p - p_object).length < 50:
+                if (led.p - object).length < 50:
                     self.device.set_color(led.index, RGBCCT(r=255))
                 else:
                     self.device.set_color(led.index, RGBCCT(cw=255))
@@ -69,8 +59,7 @@ class LEDController(Thread):
     def update_leds(self):
         for led in self.leds:
             for object in self.objects:
-                p_object = self.__object_to_point(object)
-                if (led.p - p_object).length < 30:
+                if (led.p - object).length < 30:
                     self.device.set_color(led.index, RGBCCT(cw=255))
                 else:
                     self.device.set_color(led.index, RGBCCT())
@@ -101,4 +90,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Shutting down.")
         http_server.shutdown()
-        device.clear()
