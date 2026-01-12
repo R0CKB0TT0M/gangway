@@ -11,25 +11,48 @@ class RGBCCT(int):
             return int.__new__(cls, value)
         return int.__new__(cls, (cw << 32) | (ww << 24) | (b << 16) | (g << 8) | r)
 
+    def __set(self, value: int, shift: int = 0) -> None:
+        self = self & ~(0xFF << shift) & (value << shift)
+
     @property
     def r(self) -> int:
         return self & 0xFF
+
+    @r.setter
+    def r(self, value) -> None:
+        self.__set(value, 0)
 
     @property
     def g(self) -> int:
         return (self >> 8) & 0xFF
 
+    @g.setter
+    def g(self, value) -> None:
+        self.__set(value, 8)
+
     @property
     def b(self) -> int:
         return (self >> 16) & 0xFF
+
+    @b.setter
+    def b(self, value) -> None:
+        self.__set(value, 16)
 
     @property
     def ww(self) -> int:
         return (self >> 24) & 0xFF
 
+    @ww.setter
+    def ww(self, value) -> None:
+        self.__set(value, 24)
+
     @property
     def cw(self) -> int:
         return (self >> 32) & 0xFF
+
+    @cw.setter
+    def cw(self, value) -> None:
+        self.__set(value, 32)
 
 
 def Color(red, green, blue, cold_white=0, warm_white=0):

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import math
+import random
 import time
 from threading import Thread
 from typing import Callable, Dict, Iterable, List, Tuple
@@ -67,6 +69,11 @@ class LEDController(Thread):
         self.idle_color = idle_color
         self.init_time = time.time()
 
+        if isinstance(self.idle_color, dict):
+            self.target_colors = self.idle_color
+        else:
+            self.target_colors = {led.index: RGBCCT(cw=255) for led in self.leds}
+
     @property
     def time(self):
         return time.time() - self.init_time
@@ -90,7 +97,7 @@ class LEDController(Thread):
             if isinstance(self.idle_color, dict):
                 self.target_colors = self.idle_color
             elif isinstance(self.idle_color, RGBCCT):
-                self.target_colors = {led.index: RGBCCT(cw=255) for led in self.leds}
+                self.target_colors = {led.index: self.idle_color for led in self.leds}
 
     def run(self):
         self.init_time = time.time()
@@ -100,7 +107,7 @@ class LEDController(Thread):
             if self.idle and isinstance(self.idle_color, Callable):
                 self.current_colors = {
                     i: self.idle_color(
-                        self.time, (0, 0, 115, 490), self.leds[i].p.tuple
+                        self.time, (0, 0, 115, 490), self.leds[i - 1].p.tuple
                     )
                     for (i, cc) in self.current_colors.items()
                 }
@@ -119,11 +126,54 @@ class LEDController(Thread):
             time.sleep(0.01)
 
 
-def wave(time: float, floor: Tuple[float, float, float, float], led_pos: Tuple[float, float]) -> RGBCCT:
+def wave(
+    colors: List[RGBCCT],
+    speed: float = 100.0,
+    width: float = 50.0,
+    ripple_interval: float = 2.0,
+):
+    ripples = []
+    last_ripple_time = -ripple_interval
+
+    def animation(
+        time: float,
+        floor: Tuple[float, float, float, float],
+        led_pos: Tuple[float, float],
+    ) -> RGBCCT:
+        nonlocal last_ripple_time, ripples
+
+        if time - last_ripple_time >= ripple_interval:
+            last_ripple_time = time
+            center_x = random.uniform(floor[0], floor[2])
+            center_y = random.uniform(floor[1], floor[3])
+            color = random.choice(colors)
+            ripples.append(((center_x, center_y), time, color))
+            if len(ripples) > 10:
+                ripples.pop(0)
+
+        final_color = RGBCCT()
+
+        for center, t0, color in ripples:
+            dist = math.sqrt(
+                (led_pos[0] - center[0]) ** 2 + (led_pos[1] - center[1]) ** 2
+            )
+            wave_radius = (time - t0) * speed
+            delta = dist - wave_radius
+            intensity = math.exp(-((delta / width) ** 2))
+            final_color.r = min(255, final_color.r + int(color.r * intensity))
+            final_color.g = min(255, final_color.g + int(color.g * intensity))
+            final_color.b = min(255, final_color.b + int(color.b * intensity))
+            final_color.cw = min(255, final_color.cw + int(color.cw * intensity))
+            final_color.ww = min(255, final_color.ww + int(color.ww * intensity))
+
+        return final_color
+
+    return animation
 
 
 if __name__ == "__main__":
-    led_controller = LEDController()
+    wavy_colors = [RGBCCT(r=255), RGBCCT(g=255), RGBCCT(b=255)]
+    led_controller = LEDController(idle_color=wave(wavy_colors))
 
     led_controller.device.fill(RGBCCT(cw=255))
     led_controller.device.show()
