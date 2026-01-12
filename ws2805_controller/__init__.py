@@ -18,32 +18,32 @@ WS2805_STRIP = 0x1F000000
 
 
 class RGBCCT(int):
-    def __new__(cls, r=0, g=0, b=0, cw=0, ww=0):
+    def __new__(cls, r=0, g=0, b=0, cw=0, ww=0) -> "RGBCCT":
         return int.__new__(cls, (cw << 32) | (ww << 24) | (b << 16) | (g << 8) | r)
 
     @property
-    def r(self):
+    def r(self) -> int:
         return self & 0xFF
 
     @property
-    def g(self):
+    def g(self) -> int:
         return (self >> 8) & 0xFF
 
     @property
-    def b(self):
+    def b(self) -> int:
         return (self >> 16) & 0xFF
 
     @property
-    def ww(self):
+    def ww(self) -> int:
         return (self >> 24) & 0xFF
 
     @property
-    def cw(self):
+    def cw(self) -> int:
         return (self >> 32) & 0xFF
 
 
 class WS2805Controller:
-    def __init__(self, count: int = LED_COUNT, gpio_pin: int = LED_PIN):
+    def __init__(self, count: int = LED_COUNT, gpio_pin: int = LED_PIN) -> None:
         self.strip = PixelStrip(
             count,
             gpio_pin,
@@ -56,7 +56,7 @@ class WS2805Controller:
         )
         self.strip.begin()
 
-    def set_rgbcct(self, index, r, g, b, cw, ww):
+    def set_rgbcct(self, index, r, g, b, cw, ww) -> None:
         """
         Packs 5 channels into the 64-bit ws2811_led_t.
         Mapping matches your C-patch:
@@ -69,17 +69,17 @@ class WS2805Controller:
         color_64 = (cw << 32) | (ww << 24) | (b << 16) | (g << 8) | r
         self.strip.setPixelColor(index, color_64)
 
-    def set_color(self, index, color: RGBW | RGBCCT):
+    def set_color(self, index, color: RGBW | RGBCCT) -> None:
         self.strip.setPixelColor(index, color)
 
-    def fill(self, color):
+    def fill(self, color) -> None:
         for i in range(self.strip.size):
             self.strip.setPixelColor(i, color)
 
-    def show(self):
+    def show(self) -> None:
         self.strip.show()
 
-    def clear(self):
+    def clear(self) -> None:
         for i in range(LED_COUNT):
             self.strip.setPixelColor(i, 0)
         self.strip.show()

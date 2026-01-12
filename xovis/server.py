@@ -2,48 +2,60 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-from typing import Callable, List, Optional
+from typing import Callable, Iterable, List, Optional, Tuple
 
-from .model import Event, create_events_from_json
+from .model import Event, EventObject, create_events_from_json
 
 
 class XOVISServer:
-    def __init__(self, host: str = "0.0.0.0", port: int = 8081):
+    _subscribers: List[Tuple[Callable[[Event], None], Optional[List[Event]]]]
+    _subscribers_position: List[Callable[[Iterable[EventObject]], None]]
+    _host: str
+    _port: int
+
+    def __init__(self, host: str = "0.0.0.0", port: int = 8081) -> None:
         self._host = host
         self._port = port
         self._subscribers = []
         self._subscribers_position = []
 
-    def subscribe(self, callback: Callable, filter: Optional[List[Event]] = None):
+    def subscribe(
+        self, callback: Callable[[Event], None], filter: Optional[List[Event]] = None
+    ) -> None:
         self._subscribers.append((callback, filter))
 
-    def subscribe_position(self, callback: Callable):
+    def subscribe_position(
+        self, callback: Callable[[Iterable[EventObject]], None]
+    ) -> None:
         self._subscribers_position.append(callback)
 
-    def _notify(self, data):
+    def _notify(self, data) -> None:
         self._notify_event(data)
         self._notify_position(data)
 
-    def _notify_event(self, data):
+    def _notify_event(self, data) -> None:
         events = create_events_from_json(data)
         for event in events:
             for callback, event_filter in self._subscribers:
                 if event_filter is None or type(event) in event_filter:
                     callback(event)
 
-    def _notify_position(self, data):
+    def _notify_position(self, data) -> None:
         events = create_events_from_json(data)
-        events.sort(key=lambda event: event.timestamp)
 
-        latest_event = events[0] if len(events) > 0 else None
-
-        if latest_event is None:
-            return
+        object_ids = [event.object.id for event in events]
+        latest_objects: Iterable[EventObject] = (
+            sorted(
+                (event for event in events if event.object.id == object_id),
+                key=lambda event: event.timestamp,
+            )[-1].object
+            for object_id in object_ids
+        )
 
         for callback in self._subscribers_position:
-            callback((latest_event.object.x, latest_event.object.y))
+            callback(latest_objects)
 
-    def start_server(self):
+    def start_server(self) -> HTTPServer:
         server = self
 
         class RequestHandler(BaseHTTPRequestHandler):

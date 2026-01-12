@@ -24,6 +24,10 @@ class EventCountItem:
 class Event:
     timestamp: int
     object: EventObject
+
+
+@dataclass(kw_only=True)
+class CountEvent(Event):
     count_item: EventCountItem
 
 
@@ -38,17 +42,17 @@ class DeleteTrack(Event):
 
 
 @dataclass(kw_only=True)
-class ZoneExit(Event):
+class ZoneExit(CountEvent):
     type: str = "ZoneExit"
 
 
 @dataclass(kw_only=True)
-class ZoneEntry(Event):
+class ZoneEntry(CountEvent):
     type: str = "ZoneEntry"
 
 
 @dataclass(kw_only=True)
-class ZoneDwellTime(Event):
+class ZoneDwellTime(CountEvent):
     dwell_time: int
     last_exit_time: int
     created_inside: bool
@@ -57,26 +61,15 @@ class ZoneDwellTime(Event):
 
 
 @dataclass(kw_only=True)
-class LineCrossing(Event):
+class LineCrossing(CountEvent):
     direction: str
     type: str = "LineCrossing"
 
 
 @dataclass(kw_only=True)
-class LineCount(Event):
+class LineCount(CountEvent):
     direction: str
     type: str = "LineCount"
-
-
-EventType = Union[
-    CreateTrack,
-    DeleteTrack,
-    ZoneEntry,
-    ZoneExit,
-    ZoneDwellTime,
-    LineCrossing,
-    LineCount,
-]
 
 
 def create_events_from_json(json_data: List[dict]) -> List[Event]:

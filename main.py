@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 import time
 from threading import Thread
-from typing import Tuple
+from typing import Iterable
 
 from ws2805_controller import RGBCCT, WS2805Controller
-from xovis.model import ZoneEntry, ZoneExit
+from xovis.model import EventObject
 from xovis.server import XOVISServer
 
 LED_COUNT: int = 30
 
 
-def run_led_cycle(device: WS2805Controller):
+def run_led_cycle(device: WS2805Controller) -> None:
     colors = [
         RGBCCT(r=255),
         RGBCCT(g=255),
@@ -27,8 +27,8 @@ def run_led_cycle(device: WS2805Controller):
             time.sleep(1)
 
 
-def handle_event(position: Tuple[int, int]):
-    print(position)
+def handle_event(objects: Iterable[EventObject]) -> None:
+    print(list(objects))
 
 
 if __name__ == "__main__":
