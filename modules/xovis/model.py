@@ -4,7 +4,7 @@ Models for HTTP-Received Event-Types
 """
 
 from dataclasses import dataclass
-from typing import List, Union
+from typing import List
 
 
 @dataclass(kw_only=True)

@@ -7,29 +7,15 @@ from typing import Callable, Iterable, Tuple
 
 from rpi_ws2805 import RGBCCT
 
-from ..strips_conf import Point
-from . import interpolate_rgbcct
-from .idle_animations import IdleAnimation
-
-ObjectAnimation = Callable[
-    [
-        float,
-        Tuple[float, float, float, float],
-        Tuple[float, float],
-        int,
-        Iterable[Point],
-        Callable[[], None],  # Set smooth update
-        Callable[[], None],  # Set instant update
-    ],
-    RGBCCT,
-]
+from ..helpers import interpolate_rgbcct
+from ..types import IdleAnimation, ObjectAnimation, Point
 
 
 def exponential(
     primary: RGBCCT | IdleAnimation = RGBCCT(r=255),
     secondary: RGBCCT | IdleAnimation = RGBCCT(g=255),
     radius: float = 150,
-):
+) -> ObjectAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],
@@ -67,7 +53,7 @@ def dot(
     primary: RGBCCT | IdleAnimation = RGBCCT(r=255),
     secondary: RGBCCT | IdleAnimation = RGBCCT(g=255),
     radius: float = 150,
-):
+) -> ObjectAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],

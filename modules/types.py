@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-"""
-Definitions for LED positions
-"""
-
 from dataclasses import dataclass
-from typing import Tuple, Union
+from typing import Callable, Dict, Iterable, Tuple, Union
+
+from rpi_ws2805 import RGBCCT
 
 
 @dataclass
@@ -51,32 +48,29 @@ class LED:
     p: Point
 
 
-OFFSET_Y = 10
-OFFSET_X = 0
-
-
-STRIPS = [
-    Strip(index=1, len=24, start=Point(10, 0), end=Point(63, 197)),
-    Strip(index=25, len=24, start=Point(105, 243), end=Point(105, 43)),
-    Strip(index=49, len=24, start=Point(98, 14), end=Point(25, 197)),
-    Strip(index=73, len=24, start=Point(66, 25), end=Point(66, 225)),
-    Strip(index=97, len=24, start=Point(88, 210), end=Point(14, 400)),
-    Strip(index=121, len=24, start=Point(45, 490), end=Point(45, 290)),
+ObjectAnimation = Callable[
+    [
+        float,
+        Tuple[float, float, float, float],
+        Tuple[float, float],
+        int,
+        Iterable[Point],
+        Callable[[], None],  # Set smooth update
+        Callable[[], None],  # Set instant update
+    ],
+    RGBCCT,
 ]
 
-
-def interpolate(p1: Point, p2: Point, num, index):
-    return (p1 - p2) / num * (index + 0.5) + p1
-
-
-LEDS = [
-    LED(
-        i + strip.index,
-        interpolate(strip.start, strip.end, strip.len, i)
-        + Point(x=OFFSET_X, y=OFFSET_Y),
-    )
-    for strip in STRIPS
-    for i in range(strip.len)
+IdleAnimation = Callable[
+    [
+        float,  # Time
+        Tuple[float, float, float, float],  # Floor
+        Tuple[float, float],  # LED Position
+        int,  # Index
+        Callable[[], None],  # Set smooth
+        Callable[[], None],  # Set instant
+    ],
+    RGBCCT,
 ]
 
-MAX_INDEX = max(strip.index + strip.len for strip in STRIPS)
+IdleColor = Dict[int, RGBCCT] | RGBCCT | IdleAnimation

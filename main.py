@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import time
 
-from modules.animations.idle_animations import (
+from modules.animations.idle import (
     alternate,
     fire,
     rainbow,
@@ -10,7 +10,7 @@ from modules.animations.idle_animations import (
     theater_chase,
     wave,
 )
-from modules.animations.object_animations import dot, exponential
+from modules.animations.object import dot, exponential
 from modules.led_controller import LEDController
 from modules.ws2805_controller import RGBCCT
 from modules.xovis.server import XOVISServer

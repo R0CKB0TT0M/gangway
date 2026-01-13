@@ -5,11 +5,10 @@ Project points from image space to floor space
 
 import numpy as np
 
-SRC_POINTS = np.array([(252, 357), (366, 358), (351, 101), (312, 102)])
-DST_POINTS = np.array([(0, 490), (115, 490), (115, 0), (0, 0)])
+from ..config import DST_POINTS, SRC_POINTS
 
 
-def get_homography(src=SRC_POINTS, dst=DST_POINTS):
+def get_homography(src=np.array(SRC_POINTS), dst=np.array(DST_POINTS)):
     """
     Berechnet die 3x3 Homographie-Matrix.
     src, dst: Jeweils 4 Punkte als (4, 2) array.

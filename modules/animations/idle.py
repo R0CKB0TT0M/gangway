@@ -9,19 +9,8 @@ from typing import Callable, List, Literal, Tuple
 
 from rpi_ws2805 import RGBCCT
 
-from . import interpolate_rgbcct
-
-IdleAnimation = Callable[
-    [
-        float,  # Time
-        Tuple[float, float, float, float],  # Floor
-        Tuple[float, float],  # LED Position
-        int,  # Index
-        Callable[[], None],  # Set smooth
-        Callable[[], None],  # Set instant
-    ],
-    RGBCCT,
-]
+from ..helpers import interpolate_rgbcct
+from ..types import IdleAnimation
 
 
 def wave(

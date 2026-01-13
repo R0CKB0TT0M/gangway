@@ -6,13 +6,11 @@ Web Server to receive XOVIS-Events and forward them to listening threads
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-from typing import Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
-from ..strips_conf import Point
+from ..config import Point
 from .homographic_projection import apply_transform
 from .model import DeleteTrack, Event, EventObject, create_events_from_json
-
-GLOBAL_ZONE_ID = 16
 
 
 class XOVISServer:

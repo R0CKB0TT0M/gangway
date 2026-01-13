@@ -7,19 +7,39 @@ import time
 from threading import Thread
 from typing import Callable, Dict, List, Tuple
 
-from .animations import interpolate_rgbcct
-from .animations.idle_animations import IdleAnimation
-from .animations.object_animations import ObjectAnimation, exponential
-from .strips_conf import LED, LEDS, Point
+from .animations.object import ObjectAnimation, exponential
+from .config import FLOOR, LED, LEDS, TARGET_WEIGHT, Point
+from .helpers import interpolate_rgbcct
+from .types import IdleColor
 from .ws2805_controller import RGBCCT, WS2805Controller
-
-TARGET_WEIGHT: float = 10 / 255
-
-
-IdleColor = Dict[int, RGBCCT] | RGBCCT | IdleAnimation
 
 
 class LEDController(Thread):
+    """
+    Controller Thread for LED-Strips. Can be updated with object positions to use in animations.
+
+    Attributes:
+        leds (List[LED]):
+            List of LEDs with their respective indices and positions to handle
+            Uses .strips_conf.LEDS by default.
+
+        idle_color (IdleColor):
+            Animation to play while no objects are within the handled zone.
+            May either be a solid RGBCCT, a List of RGBCCTs or a function of signature IdleAnimation.
+            Solid white by default.
+
+        object_animation (ObjectAnimation):
+            Animation to play while at least one object is within the handled zone.
+            Must be a function of signature ObjectAnimation.
+            exponential() by default.
+
+        floor (Tuple[float, float, float, float]):
+            Size of the handled area in cm.
+            Uses .strips_conf.FLOOR by default.
+
+        object_instant_update()
+    """
+
     leds: List[LED]
     running: bool = True
     device: WS2805Controller
@@ -47,9 +67,7 @@ class LEDController(Thread):
         leds: List[LED] = LEDS,
         idle_color: IdleColor = RGBCCT(cw=255),
         object_animation: ObjectAnimation = exponential(),
-        floor: Tuple[float, float, float, float] = (0, 0, 115, 490),
-        object_instant_update: bool = False,
-        idle_instant_update: bool = False,
+        floor: Tuple[float, float, float, float] = FLOOR,
     ) -> None:
         super().__init__()
         self.leds = leds
@@ -57,11 +75,9 @@ class LEDController(Thread):
         self.device = WS2805Controller(count=len(self.leds))
 
         self.idle_color = idle_color
-        self.idle_instant_update = idle_instant_update
 
         self.floor = floor
         self.object_animation = object_animation
-        self.object_instant_update = object_instant_update
 
         self.init_time = time.time()
 
@@ -94,7 +110,8 @@ class LEDController(Thread):
 
     def update_objects(self, objects: List[Point] = []):
         """
-        Inform the Thread of new objects to render. Will switch the thread to idle animation if called without parameters or empty list
+        Inform the Thread of new objects to render.
+        Will switch the thread to idle animation if called without parameters or empty list.
         """
 
         if len(objects) == 0:
@@ -126,12 +143,24 @@ class LEDController(Thread):
             self.current_colors = self.target_colors.copy()
 
     def color_of(self, led: LED) -> RGBCCT:
+        """
+        Get the current color of an LED
+        """
+
         return self.current_colors[led.index]
 
     def target_of(self, led: LED) -> RGBCCT:
+        """
+        Get the target color of an LED (to be morphed to by interpolation in loop)
+        """
+
         return self.target_colors[led.index]
 
     def run(self):
+        """
+        Main animation loop
+        """
+
         self.init_time = time.time()
         self.current_colors = self.target_colors
 
