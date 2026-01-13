@@ -3,7 +3,7 @@
 Object Animation Definitions
 """
 
-from typing import Callable, Iterable, List, Tuple
+from typing import Callable, Iterable, Tuple
 
 from rpi_ws2805 import RGBCCT
 
@@ -18,6 +18,8 @@ ObjectAnimation = Callable[
         Tuple[float, float],
         int,
         Iterable[Point],
+        Callable[[], None],  # Set smooth update
+        Callable[[], None],  # Set instant update
     ],
     RGBCCT,
 ]
@@ -34,6 +36,8 @@ def exponential(
         led_pos: Tuple[float, float],
         index: int,
         objects: Iterable[Point],
+        smooth: Callable[[], None],
+        instant: Callable[[], None],
     ) -> RGBCCT:
         intensity = max(
             2 ** (-(Point.from_tuple(led_pos) - object).length / radius)
@@ -45,12 +49,12 @@ def exponential(
         if isinstance(primary, RGBCCT):
             primary_rgbcct = primary
         else:
-            primary_rgbcct = primary(time, floor, led_pos, index)
+            primary_rgbcct = primary(time, floor, led_pos, index, smooth, instant)
 
         if isinstance(secondary, RGBCCT):
             secondary_rgbcct = secondary
         else:
-            secondary_rgbcct = secondary(time, floor, led_pos, index)
+            secondary_rgbcct = secondary(time, floor, led_pos, index, smooth, instant)
 
         return interpolate_rgbcct(primary_rgbcct, secondary_rgbcct, intensity)
 
