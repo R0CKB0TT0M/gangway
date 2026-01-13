@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import time
 
+from rpi_ws2805 import RGBCCT
+
 from modules.animations.idle import (
     alternate,
     fire,
@@ -12,7 +14,6 @@ from modules.animations.idle import (
 )
 from modules.animations.object import dot, exponential
 from modules.led_controller import LEDController
-from modules.ws2805_controller import RGBCCT
 from modules.xovis.server import XOVISServer
 
 if __name__ == "__main__":
@@ -39,9 +40,6 @@ if __name__ == "__main__":
             radius=50,
         ),
     )
-
-    led_controller.device.fill(RGBCCT(cw=255))
-    led_controller.device.show()
     led_controller.start()
 
     xovis_server = XOVISServer()

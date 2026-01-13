@@ -7,11 +7,21 @@ import time
 from threading import Thread
 from typing import Callable, Dict, List, Tuple
 
+from rpi_ws2805 import RGBCCT, PixelStrip
+
 from .animations.object import ObjectAnimation, exponential
 from .config import FLOOR, LED, LEDS, TARGET_WEIGHT, Point
+from .defaults import (
+    LED_BRIGHTNESS,
+    LED_CHANNEL,
+    LED_DMA,
+    LED_FREQ_HZ,
+    LED_INVERT,
+    LED_PIN,
+    WS2805_STRIP,
+)
 from .helpers import interpolate_rgbcct
 from .types import IdleColor
-from .ws2805_controller import RGBCCT, WS2805Controller
 
 
 class LEDController(Thread):
@@ -40,7 +50,7 @@ class LEDController(Thread):
 
     leds: List[LED]
     running: bool = True
-    device: WS2805Controller
+    strip: PixelStrip
 
     floor: Tuple[float, float, float, float]
 
@@ -66,11 +76,22 @@ class LEDController(Thread):
         idle_color: IdleColor = RGBCCT(cw=255),
         object_animation: ObjectAnimation = exponential(),
         floor: Tuple[float, float, float, float] = FLOOR,
+        gpio_pin: int = LED_PIN,
     ) -> None:
         super().__init__()
         self.leds = leds
 
-        self.device = WS2805Controller(count=len(self.leds))
+        self.strip = PixelStrip(
+            len(LEDS),
+            gpio_pin,
+            LED_FREQ_HZ,
+            LED_DMA,
+            LED_INVERT,
+            LED_BRIGHTNESS,
+            LED_CHANNEL,
+            strip_type=WS2805_STRIP,
+        )
+        self.strip.begin()
 
         self.idle_color = idle_color
 
@@ -207,9 +228,9 @@ class LEDController(Thread):
             }
 
             _ = [
-                self.device.set_color(led.index, self.color_of(led))
+                self.strip.setPixelColor(led.index, self.color_of(led))
                 for led in self.leds
             ]
 
-            self.device.show()
+            self.strip.show()
             loop_time = time.time()
