@@ -4,6 +4,8 @@ Web Server to receive XOVIS-Events and forward them to listening threads
 """
 
 import json
+import struct
+from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from typing import Callable, Dict, List, Optional, Tuple

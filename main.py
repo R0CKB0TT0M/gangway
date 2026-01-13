@@ -24,20 +24,28 @@ if __name__ == "__main__":
         RGBCCT(cw=255),
     ]
 
+    anim = alternate(
+        swing(),
+        strobo(),
+        swing(RGBCCT(r=255), speed=20, direction="x", wavelength=10),
+        strobo(),
+        strobo(),
+        swing(RGBCCT(b=255), speed=20),
+        strobo(),
+        strobo(),
+        swing(RGBCCT(b=255), direction="x", wavelength=10),
+        strobo(),
+        strobo(),
+        length=3,
+    )
+
     led_controller = LEDController(
-        idle_color=alternate(
-            swing(),
-            wave(colors_a),
-            fire(),
-            rainbow(),
-            theater_chase(),
-            strobo(),
-            length=5,
-        ),
+        idle_color=anim,
         object_animation=dot(
-            primary=RGBCCT(cw=255, r=255, g=255, b=255, ww=255),
-            secondary=RGBCCT(r=255),  # swing(RGBCCT(cw=255, r=255, g=255, b=255)),
+            primary=strobo(),
+            secondary=anim,  # swing(RGBCCT(cw=255, r=255, g=255, b=255)),
             radius=50,
+            force_instant=True,
         ),
     )
     led_controller.start()

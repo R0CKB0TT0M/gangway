@@ -31,6 +31,7 @@ STRIPS = [
     Strip(index=73, len=24, start=Point(66, 25), end=Point(66, 225)),
     Strip(index=97, len=24, start=Point(88, 210), end=Point(14, 400)),
     Strip(index=121, len=24, start=Point(45, 490), end=Point(45, 290)),
+    # Strip(index=0, len=24, start=Point(83, 290), end=Point(83, 490)),
 ]
 
 OFFSET_Y = 10
