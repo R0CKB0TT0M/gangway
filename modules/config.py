@@ -3,46 +3,75 @@
 Definitions for LED positions
 """
 
+from pathlib import Path
+from typing import List, Tuple
+
+import toml
+
+from .animations.library import animations
 from .helpers import interpolate_points
 from .types import LED, Point, Strip
 
-SRC_POINTS = [
-    (252, 357),
-    (366, 358),
-    (351, 101),
-    (312, 102),
-]
+SRC_POINTS: List[Tuple[int, int]]
+DST_POINTS: List[Tuple[int, int]]
+FLOOR: Tuple[int, int, int, int]
+TARGET_WEIGHT: float
+STRIPS: List[Strip]
+OFFSET_X: int
+OFFSET_Y: int
+LEDS: List[LED]
 
-DST_POINTS = [
-    (0, 490),
-    (115, 490),
-    (115, 0),
-    (0, 0),
-]
 
-FLOOR = (0, 0, 115, 490)
+def load_config(config_path: str):
+    global \
+        SRC_POINTS, \
+        DST_POINTS, \
+        FLOOR, \
+        TARGET_WEIGHT, \
+        STRIPS, \
+        LEDS, \
+        IDLE_ANIMATION, \
+        OBJECT_ANIMATION, \
+        OFFSET_X, \
+        OFFSET_Y
 
-TARGET_WEIGHT: float = 10 / 255
+    config = toml.load(config_path)
 
-STRIPS = [
-    Strip(index=1, len=24, start=Point(10, 0), end=Point(63, 197)),
-    Strip(index=25, len=24, start=Point(105, 243), end=Point(105, 43)),
-    Strip(index=49, len=24, start=Point(98, 14), end=Point(25, 197)),
-    Strip(index=73, len=24, start=Point(66, 25), end=Point(66, 225)),
-    Strip(index=97, len=24, start=Point(88, 210), end=Point(14, 400)),
-    Strip(index=121, len=24, start=Point(45, 490), end=Point(45, 290)),
-    # Strip(index=0, len=24, start=Point(83, 290), end=Point(83, 490)),
-]
+    projection = config.get("projection", {})
+    SRC_POINTS = [tuple(p) for p in projection.get("src_points", [])]
+    DST_POINTS = [tuple(p) for p in projection.get("dst_points", [])]
+    FLOOR = tuple(projection.get("floor", (0, 0, 0, 0)))
 
-OFFSET_Y = 10
-OFFSET_X = 0
+    leds_config = config.get("leds", {})
+    TARGET_WEIGHT = leds_config.get("target_weight", 0.1)
+    OFFSET_X = leds_config.get("offset_x", 0)
+    OFFSET_Y = leds_config.get("offset_y", 0)
 
-LEDS = [
-    LED(
-        i + strip.index,
-        interpolate_points(strip.start, strip.end, strip.len, i)
-        + Point(x=OFFSET_X, y=OFFSET_Y),
-    )
-    for strip in STRIPS
-    for i in range(strip.len)
-]
+    STRIPS = [
+        Strip(
+            index=s.get("index"),
+            len=s.get("len"),
+            start=Point(*s.get("start")),
+            end=Point(*s.get("end")),
+        )
+        for s in config.get("strips", [])
+    ]
+
+    LEDS = [
+        LED(
+            i + strip.index,
+            interpolate_points(strip.start, strip.end, strip.len, i)
+            + Point(x=OFFSET_X, y=OFFSET_Y),
+        )
+        for strip in STRIPS
+        for i in range(strip.len)
+    ]
+
+    anim_config = config.get("animations", {})
+    IDLE_ANIMATION = animations.get(anim_config.get("idle"))
+    OBJECT_ANIMATION = animations.get(anim_config.get("object"))
+
+
+# Default config path
+default_config_path = Path(__file__).parent.parent / "config.toml"
+load_config(str(default_config_path))

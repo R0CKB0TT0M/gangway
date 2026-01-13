@@ -1,53 +1,28 @@
 #!/usr/bin/env python3
+import argparse
 import time
+from pathlib import Path
 
-from rpi_ws2805 import RGBCCT
-
-from modules.animations.idle import (
-    alternate,
-    fire,
-    rainbow,
-    strobo,
-    swing,
-    theater_chase,
-    wave,
-)
-from modules.animations.object import dot, exponential
+from modules import config
 from modules.led_controller import LEDController
 from modules.visualization_server import VisualizationServer
 from modules.xovis.server import XOVISServer
 
 if __name__ == "__main__":
-    colors_a = [
-        RGBCCT(r=255),
-        RGBCCT(g=255),
-        RGBCCT(b=255),
-        RGBCCT(cw=255),
-    ]
-
-    anim = alternate(
-        swing(),
-        strobo(),
-        swing(RGBCCT(r=255), speed=20, direction="x", wavelength=10),
-        strobo(),
-        strobo(),
-        swing(RGBCCT(b=255), speed=20),
-        strobo(),
-        strobo(),
-        swing(RGBCCT(b=255), direction="x", wavelength=10),
-        strobo(),
-        strobo(),
-        length=3,
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path(__file__).parent / "config.toml",
+        help="Path to the config.toml file",
     )
+    args = parser.parse_args()
+
+    config.load_config(args.config)
 
     led_controller = LEDController(
-        idle_color=anim,
-        object_animation=dot(
-            primary=strobo(),
-            secondary=anim,  # swing(RGBCCT(cw=255, r=255, g=255, b=255)),
-            radius=50,
-            force_instant=True,
-        ),
+        idle_color=config.IDLE_ANIMATION,
+        object_animation=config.OBJECT_ANIMATION,
     )
     led_controller.start()
 
