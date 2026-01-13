@@ -5,16 +5,18 @@ Idle Animation Definitions
 
 import math
 import random
-from typing import Callable, List, Tuple
+from typing import Callable, List, Literal, Tuple
 
 from rpi_ws2805 import RGBCCT
 
+from . import interpolate_rgbcct
+
 IdleAnimation = Callable[
     [
-        float,
-        Tuple[float, float, float, float],
-        Tuple[float, float],
-        int,
+        float,  # Time
+        Tuple[float, float, float, float],  # Floor
+        Tuple[float, float],  # LED Position
+        int,  # Index
         Callable[[], None],  # Set smooth
         Callable[[], None],  # Set instant
     ],
@@ -27,7 +29,7 @@ def wave(
     n_waves: int = 3,
     speed: float = 50.0,
     wavelength: float = 200.0,
-):
+) -> IdleAnimation:
     waves = []
     for i in range(n_waves):
         angle = random.uniform(0, 2 * math.pi)
@@ -104,7 +106,7 @@ def _hsv_to_rgb(h, s, v):
     return int(r * 255), int(g * 255), int(b * 255)
 
 
-def rainbow(speed: float = 0.1, spread: float = 3.0):
+def rainbow(speed: float = 0.1, spread: float = 3.0) -> IdleAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],
@@ -127,16 +129,16 @@ def fire(
     base_color: RGBCCT = RGBCCT(r=255, g=140, b=0),
     flicker_speed: float = 0.1,
     flicker_intensity: float = 0.5,
-):
+) -> IdleAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],
         led_pos: Tuple[float, float],
         index: int,
+        smooth: Callable[[], None],
         _: Callable[[], None],
-        instant: Callable[[], None],
     ) -> RGBCCT:
-        instant()
+        smooth()
 
         time_bucket = int(time / flicker_speed)
         seed = hash((led_pos, time_bucket))
@@ -158,7 +160,7 @@ def theater_chase(
     color: RGBCCT = RGBCCT(r=255, g=255, b=255),
     speed: float = 1.0,
     spacing: int = 4,
-):
+) -> IdleAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],
@@ -186,7 +188,7 @@ def strobo(
         RGBCCT(b=255),
     ],
     frequency: int = 100,
-):
+) -> IdleAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],
@@ -205,7 +207,7 @@ def strobo(
 def alternate(
     *animations: IdleAnimation,
     length: float = 10,
-):
+) -> IdleAnimation:
     def animation(
         time: float,
         floor: Tuple[float, float, float, float],
@@ -217,5 +219,37 @@ def alternate(
         return animations[int(time / length) % len(animations)](
             time, floor, led_pos, index, smooth, instant
         )
+
+    return animation
+
+
+def swing(
+    color: RGBCCT = RGBCCT(r=255, g=255, b=255, cw=255),
+    direction: Literal["x"] | Literal["y"] = "y",
+    wavelength: int = 50,
+    speed: float = 10,
+) -> IdleAnimation:
+    def animation(
+        time: float,
+        floor: Tuple[float, float, float, float],
+        led_pos: Tuple[float, float],
+        index: int,
+        _: Callable[[], None],
+        instant: Callable[[], None],
+    ) -> RGBCCT:
+        instant()
+        coordinate: float = led_pos[0] if direction == "x" else led_pos[1]
+        floor_len: float = floor[2] if direction == "x" else floor[3]
+
+        target_coordinate: float = (
+            math.sin(time * speed) * floor_len / 2 + floor_len / 2
+        )
+
+        intensity = 2 ** (-abs(coordinate - target_coordinate) / wavelength)
+
+        if intensity < 0.2:
+            intensity = 0
+
+        return interpolate_rgbcct(color, RGBCCT(), intensity, use_sign=False)
 
     return animation

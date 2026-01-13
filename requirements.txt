@@ -1,3 +1,3 @@
-matplotlib
 numpy
-opencv-python
+setuptools
+./rpi-ws2805-python/library

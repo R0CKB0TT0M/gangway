@@ -1,42 +1,15 @@
-#!/usr/bin/env python
-# Python wrapper for the rpi_ws2805 library.
-# Authors:
-#    Phil Howard (phil@pimoroni.com)
-#    Tony DiCola (tony@tonydicola.com)
-
-from setuptools import Extension, find_packages, setup
+from setuptools import Extension, setup
 from setuptools.command.build_py import build_py
 
 
 class CustomInstallCommand(build_py):
     def run(self):
         print("Compiling ws2805 library...")
-        build_py.run(self)
+        super().run()
 
-
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Operating System :: POSIX :: Linux",
-    "License :: OSI Approved :: MIT License",
-    "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3",
-    "Topic :: Software Development",
-    "Topic :: System :: Hardware",
-]
 
 setup(
-    name="rpi_ws2805",
-    version="5.0.0",
-    author="Jeremy Garff <jer@jers.net>, Phil Howard <phil@pimoroni.com>",
-    author_email="jer@jers.net, phil@pimoroni.com",
-    description="Userspace Raspberry Pi PWM/PCM/SPI library for SK6812 and WS281X LEDs.",
-    long_description=open("README.rst").read() + "\n\n" + open("CHANGELOG.txt").read(),
-    license="MIT",
-    url="https://github.com/rpi-ws2805/rpi-ws2805-python/",
-    classifiers=classifiers,
-    python_requires=">=3.6",
     cmdclass={"build_py": CustomInstallCommand},
-    packages=["rpi_ws2805"],
     ext_modules=[
         Extension(
             "_rpi_ws2805",

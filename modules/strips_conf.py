@@ -51,9 +51,13 @@ class LED:
     p: Point
 
 
+OFFSET_Y = 10
+OFFSET_X = 0
+
+
 STRIPS = [
     Strip(index=1, len=24, start=Point(10, 0), end=Point(63, 197)),
-    Strip(index=25, len=24, start=Point(105, 215), end=Point(105, 43)),
+    Strip(index=25, len=24, start=Point(105, 243), end=Point(105, 43)),
     Strip(index=49, len=24, start=Point(98, 14), end=Point(25, 197)),
     Strip(index=73, len=24, start=Point(66, 25), end=Point(66, 225)),
     Strip(index=97, len=24, start=Point(88, 210), end=Point(14, 400)),
@@ -66,7 +70,11 @@ def interpolate(p1: Point, p2: Point, num, index):
 
 
 LEDS = [
-    LED(i + strip.index, interpolate(strip.start, strip.end, strip.len, i))
+    LED(
+        i + strip.index,
+        interpolate(strip.start, strip.end, strip.len, i)
+        + Point(x=OFFSET_X, y=OFFSET_Y),
+    )
     for strip in STRIPS
     for i in range(strip.len)
 ]

@@ -6,9 +6,11 @@ from modules.animations.idle_animations import (
     fire,
     rainbow,
     strobo,
+    swing,
+    theater_chase,
     wave,
 )
-from modules.animations.object_animations import exponential
+from modules.animations.object_animations import dot, exponential
 from modules.led_controller import LEDController
 from modules.ws2805_controller import RGBCCT
 from modules.xovis.server import XOVISServer
@@ -22,11 +24,19 @@ if __name__ == "__main__":
     ]
 
     led_controller = LEDController(
-        idle_color=alternate(wave(colors_a), fire(), rainbow(), strobo(), length=5),
-        object_animation=exponential(
-            primary=RGBCCT(r=255, g=255, b=255, cw=255),
-            secondary=RGBCCT(r=255),
-            radius=30,
+        idle_color=alternate(
+            swing(),
+            wave(colors_a),
+            fire(),
+            rainbow(),
+            theater_chase(),
+            strobo(),
+            length=5,
+        ),
+        object_animation=dot(
+            primary=strobo(),
+            secondary=RGBCCT(r=255),  # swing(RGBCCT(cw=255, r=255, g=255, b=255)),
+            radius=50,
         ),
     )
 

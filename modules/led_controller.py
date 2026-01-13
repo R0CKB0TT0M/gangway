@@ -29,17 +29,18 @@ class LEDController(Thread):
     target_colors: Dict[int, RGBCCT]
     current_colors: Dict[int, RGBCCT]
 
+    # Time counters
     init_time: float
-    update_time: float
 
+    # An object is equivalent to a detected person
+    last_objects: List[Point]
+    object_animation: ObjectAnimation
+    object_instant_update: bool
+
+    # When no objects are detected the sensor switches to idle
     idle: bool = True
     idle_instant_update: bool
     idle_color: IdleColor
-
-    last_objects: List[Point]
-    object_timeout: float
-    object_animation: ObjectAnimation
-    object_instant_update: bool
 
     def __init__(
         self,
@@ -47,7 +48,6 @@ class LEDController(Thread):
         idle_color: IdleColor = RGBCCT(cw=255),
         object_animation: ObjectAnimation = exponential(),
         floor: Tuple[float, float, float, float] = (0, 0, 115, 490),
-        object_timeout: float = 5,
         object_instant_update: bool = False,
         idle_instant_update: bool = False,
     ) -> None:
@@ -61,11 +61,9 @@ class LEDController(Thread):
 
         self.floor = floor
         self.object_animation = object_animation
-        self.object_timeout = object_timeout
         self.object_instant_update = object_instant_update
 
         self.init_time = time.time()
-        self.update_time = time.time()
 
         if isinstance(self.idle_color, dict):
             self.target_colors = self.idle_color
@@ -94,8 +92,10 @@ class LEDController(Thread):
         self.running = False
         self.join()
 
-    def update_objects(self, objects: List[Point]):
-        self.update_time = time.time()
+    def update_objects(self, objects: List[Point] = []):
+        """
+        Inform the Thread of new objects to render. Will switch the thread to idle animation if called without parameters or empty list
+        """
 
         if len(objects) == 0:
             self.idle = True
@@ -138,9 +138,6 @@ class LEDController(Thread):
         loop_time = time.time()
 
         while self.running:
-            if time.time() - self.update_time > self.object_timeout:
-                self.update_objects([])
-
             if self.idle and isinstance(self.idle_color, Callable):
                 self.target_colors = {
                     led.index: self.idle_color(

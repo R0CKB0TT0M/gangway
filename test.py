@@ -1,6 +1,6 @@
 import time
 
-from ws2805_controller import RGBCCT, WS2805Controller
+from modules.ws2805_controller import RGBCCT, WS2805Controller
 
 
 def run_led_cycle(device: WS2805Controller) -> None:

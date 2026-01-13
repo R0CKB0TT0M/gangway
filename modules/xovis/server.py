@@ -6,7 +6,7 @@ Web Server to receive XOVIS-Events and forward them to listening threads
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-from typing import Callable, Iterable, List, Optional, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
 from ..strips_conf import Point
 from .homographic_projection import apply_transform
@@ -21,11 +21,16 @@ class XOVISServer:
     _host: str
     _port: int
 
+    _objects: Dict[int, EventObject]
+    _timestamps: Dict[int, int]
+
     def __init__(self, host: str = "0.0.0.0", port: int = 8081) -> None:
         self._host = host
         self._port = port
         self._subscribers = list()
         self._subscribers_position = list()
+        self._objects = dict()
+        self._timestamps = dict()
 
     def subscribe(
         self, callback: Callable[[Event], None], filter: Optional[List[Event]]
@@ -48,26 +53,22 @@ class XOVISServer:
                     callback(event)
 
     def _notify_position(self, events) -> None:
-        object_ids = set([event.object.id for event in events])
-
         for event in events:
-            if isinstance(event, DeleteTrack) and event.object.id in object_ids:
-                object_ids.remove(event.object.id)
+            if isinstance(event, DeleteTrack) and event.object.id in self._objects:
+                self._objects.pop(event.object.id)
+            elif (
+                event.object.id not in self._objects
+                or event.timestamp > self._timestamps[event.object.id]
+            ):
+                self._objects[event.object.id] = event.object
+                self._timestamps[event.object.id] = event.timestamp
 
-        if len(object_ids) == 0:
-            # for callback in self._subscribers_position:
-            #    callback([])
+        if len(self._objects) == 0:
+            for callback in self._subscribers_position:
+                callback([])
             return
 
-        latest_objects: Iterable[EventObject] = (
-            sorted(
-                (event for event in events if event.object.id == object_id),
-                key=lambda event: event.timestamp,
-            )[-1].object
-            for object_id in object_ids
-        )
-
-        points = [(object.x, object.y) for object in latest_objects]
+        points = [(object.x, object.y) for object in self._objects.values()]
         mapped_points = [Point(r[0], r[1]) for r in apply_transform(points)]
 
         for callback in self._subscribers_position:
