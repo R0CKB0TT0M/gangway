@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from typing import Union
+from typing import Tuple, Union
 
 from .ws2805_controller import RGBCCT, WS2805_STRIP, WS2805Controller
 
@@ -23,12 +23,16 @@ class Point:
         return Point(x=self.x / other, y=self.y / other)
 
     @property
-    def tuple(self) -> tuple:
+    def tuple(self) -> Tuple:
         return (self.x, self.y)
 
     @property
     def length(self) -> float:
         return (self.x**2 + self.y**2) ** 0.5
+
+    @classmethod
+    def from_tuple(cls, tuple: Tuple[float, float]) -> "Point":
+        return Point(tuple[0], tuple[1])
 
 
 @dataclass

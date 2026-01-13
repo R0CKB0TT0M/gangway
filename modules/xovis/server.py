@@ -16,22 +16,22 @@ GLOBAL_ZONE_ID = 16
 
 class XOVISServer:
     _subscribers: List[Tuple[Callable[[Event], None], Optional[List[Event]]]]
-    _subscribers_position: List[Callable[[Iterable[Point]], None]]
+    _subscribers_position: List[Callable[[List[Point]], None]]
     _host: str
     _port: int
 
     def __init__(self, host: str = "0.0.0.0", port: int = 8081) -> None:
         self._host = host
         self._port = port
-        self._subscribers = []
-        self._subscribers_position = []
+        self._subscribers = list()
+        self._subscribers_position = list()
 
     def subscribe(
-        self, callback: Callable[[Event], None], filter: Optional[List[Event]] = None
+        self, callback: Callable[[Event], None], filter: Optional[List[Event]]
     ) -> None:
         self._subscribers.append((callback, filter))
 
-    def subscribe_position(self, callback: Callable[[Iterable[Point]], None]) -> None:
+    def subscribe_position(self, callback: Callable[[List[Point]], None]) -> None:
         self._subscribers_position.append(callback)
 
     def _notify(self, data) -> None:
@@ -54,8 +54,8 @@ class XOVISServer:
                 object_ids.remove(event.object.id)
 
         if len(object_ids) == 0:
-            for callback in self._subscribers_position:
-                callback([])
+            # for callback in self._subscribers_position:
+            #    callback([])
             return
 
         latest_objects: Iterable[EventObject] = (
@@ -67,7 +67,7 @@ class XOVISServer:
         )
 
         points = [(object.x, object.y) for object in latest_objects]
-        mapped_points = (Point(r[0], r[1]) for r in apply_transform(points))
+        mapped_points = [Point(r[0], r[1]) for r in apply_transform(points)]
 
         for callback in self._subscribers_position:
             callback(mapped_points)
