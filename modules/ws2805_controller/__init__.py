@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-from dataclasses import dataclass
+"""
+Wrapper for LED-Strip
+"""
 
 from rpi_ws2805 import RGBCCT, PixelStrip
 
@@ -11,9 +13,6 @@ LED_DMA = 10
 LED_BRIGHTNESS = 255
 LED_INVERT = False
 LED_CHANNEL = 0
-
-# Strip type mask must match your C-patch (0x1F000000)
-# This triggers the 'array_size = 5' logic in your patched ws2811.c
 WS2805_STRIP = 0x1F000000
 
 

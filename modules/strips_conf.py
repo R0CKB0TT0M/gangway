@@ -1,8 +1,10 @@
-import time
+#!/usr/bin/env python3
+"""
+Definitions for LED positions
+"""
+
 from dataclasses import dataclass
 from typing import Tuple, Union
-
-from .ws2805_controller import RGBCCT, WS2805_STRIP, WS2805Controller
 
 
 @dataclass

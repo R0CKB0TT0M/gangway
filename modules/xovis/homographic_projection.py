@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
 """
-Function to project points
+Project points from image space to floor space
 """
 
 import numpy as np

@@ -22,7 +22,7 @@ if __name__ == "__main__":
     ]
 
     led_controller = LEDController(
-        idle_color=alternate(wave(colors_a), fire(), rainbow(), length=5),
+        idle_color=alternate(wave(colors_a), fire(), rainbow(), strobo(), length=5),
         object_animation=exponential(
             primary=RGBCCT(r=255, g=255, b=255, cw=255),
             secondary=RGBCCT(r=255),
