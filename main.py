@@ -14,6 +14,7 @@ from modules.animations.idle import (
 )
 from modules.animations.object import dot, exponential
 from modules.led_controller import LEDController
+from modules.visualization_server import VisualizationServer
 from modules.xovis.server import XOVISServer
 
 if __name__ == "__main__":
@@ -52,7 +53,11 @@ if __name__ == "__main__":
 
     xovis_server = XOVISServer()
     xovis_server.subscribe_position(led_controller.update_objects)
-    http_server = xovis_server.start_server()
+    xovis_http_server = xovis_server.start_server()
+
+    visualization_server = VisualizationServer(led_controller)
+    xovis_server.subscribe_position(visualization_server.update_objects)
+    visualization_http_server = visualization_server.start_server()
 
     try:
         # Keep the main thread alive
@@ -60,5 +65,6 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         print("Shutting down.")
-        http_server.shutdown()
+        xovis_http_server.shutdown()
+        visualization_http_server.shutdown()
         led_controller.stop()

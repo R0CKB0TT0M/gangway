@@ -8,7 +8,6 @@ from rpi_ws2805 import RGBCCT
 from .types import Point
 
 
-
 def sign(x: float, use_sign: bool) -> int:
     if not use_sign:
         return 0
@@ -35,3 +34,7 @@ def interpolate_rgbcct(
 
 def interpolate_points(p1: Point, p2: Point, num, index):
     return (p1 - p2) / num * (index + 0.5) + p1
+
+
+def to_hex(color: RGBCCT) -> str:
+    return f"#{color.r:02x}{color.g:02x}{color.b:02x}"

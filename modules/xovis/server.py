@@ -4,8 +4,6 @@ Web Server to receive XOVIS-Events and forward them to listening threads
 """
 
 import json
-import struct
-from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from typing import Callable, Dict, List, Optional, Tuple
@@ -13,6 +11,28 @@ from typing import Callable, Dict, List, Optional, Tuple
 from ..config import Point
 from .homographic_projection import apply_transform
 from .model import DeleteTrack, Event, EventObject, create_events_from_json
+
+
+def create_xovis_request_handler(server: "XOVISServer"):
+    class RequestHandler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            content_length = int(self.headers["Content-Length"])
+            post_data = self.rfile.read(content_length)
+
+            try:
+                data = json.loads(post_data)
+                server._notify(data)
+                self.send_response(200)
+                self.end_headers()
+            except json.JSONDecodeError:
+                self.send_response(400)
+                self.end_headers()
+
+        def log_message(self, format, *args):
+            # Suppress logging
+            return
+
+    return RequestHandler
 
 
 class XOVISServer:
@@ -75,27 +95,8 @@ class XOVISServer:
             callback(mapped_points)
 
     def start_server(self) -> HTTPServer:
-        server = self
-
-        class RequestHandler(BaseHTTPRequestHandler):
-            def do_POST(self):
-                content_length = int(self.headers["Content-Length"])
-                post_data = self.rfile.read(content_length)
-
-                try:
-                    data = json.loads(post_data)
-                    server._notify(data)
-                    self.send_response(200)
-                    self.end_headers()
-                except json.JSONDecodeError:
-                    self.send_response(400)
-                    self.end_headers()
-
-            def log_message(self, format, *args):
-                # Suppress logging
-                return
-
-        http_server = HTTPServer((self._host, self._port), RequestHandler)
+        handler = create_xovis_request_handler(self)
+        http_server = HTTPServer((self._host, self._port), handler)
         thread = Thread(target=http_server.serve_forever)
         thread.daemon = True
         thread.start()
