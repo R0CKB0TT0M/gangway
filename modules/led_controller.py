@@ -36,8 +36,6 @@ class LEDController(Thread):
         floor (Tuple[float, float, float, float]):
             Size of the handled area in cm.
             Uses .strips_conf.FLOOR by default.
-
-        object_instant_update()
     """
 
     leds: List[LED]
