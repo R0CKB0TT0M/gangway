@@ -5,12 +5,13 @@ import time
 from threading import Thread
 from typing import Callable, Dict, Iterable, List, Tuple
 
+from modules.animations import Animation, wave
 from modules.strips_conf import LED, LEDS, Point
 from modules.ws2805_controller import RGBCCT, WS2805Controller
 from modules.xovis.server import XOVISServer
 
 LED_COUNT: int = 30
-TARGET_WEIGHT: float = 0.05
+TARGET_WEIGHT: float = 10 / 255
 
 
 def interpolate_rgbcct(
@@ -39,11 +40,7 @@ def run_led_cycle(device: WS2805Controller) -> None:
             time.sleep(0.01)
 
 
-IdleColor = (
-    Dict[int, RGBCCT]
-    | RGBCCT
-    | Callable[[float, Tuple[float, float, float, float], Tuple[float, float]], RGBCCT]
-)
+IdleColor = Dict[int, RGBCCT] | RGBCCT | Animation
 
 
 class LEDController(Thread):
@@ -107,17 +104,17 @@ class LEDController(Thread):
 
         while self.running:
             if self.idle and isinstance(self.idle_color, Callable):
-                self.current_colors = {
+                self.target_colors = {
                     i: self.idle_color(
                         self.time, (0, 0, 115, 490), self.leds[i - 1].p.tuple
                     )
-                    for (i, _) in self.current_colors.items()
+                    for (i, _) in self.target_colors.items()
                 }
-            else:
-                self.current_colors = {
-                    i: interpolate_rgbcct(self.target_colors[i], cc)
-                    for (i, cc) in self.current_colors.items()
-                }
+
+            self.current_colors = {
+                i: interpolate_rgbcct(self.target_colors[i], cc)
+                for (i, cc) in self.current_colors.items()
+            }
 
             _ = [
                 self.device.set_color(i, color)
@@ -125,54 +122,7 @@ class LEDController(Thread):
             ]
 
             self.device.show()
-            time.sleep(0.01)
-
-
-def wave(
-    colors: List[RGBCCT],
-    n_waves: int = 3,
-    speed: float = 50.0,
-    wavelength: float = 200.0,
-):
-    waves = []
-    for i in range(n_waves):
-        angle = random.uniform(0, 2 * math.pi)
-        direction = (math.cos(angle), math.sin(angle))
-        color = random.choice(colors)
-        waves.append(
-            {
-                "direction": direction,
-                "color": color,
-                "phase": (i / n_waves) * 2 * math.pi,
-            }
-        )
-
-    k = 2 * math.pi / wavelength
-
-    def animation(
-        time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
-    ) -> RGBCCT:
-        final_color = RGBCCT()
-
-        for wave_params in waves:
-            direction = wave_params["direction"]
-            color = wave_params["color"]
-            phase = wave_params["phase"]
-
-            proj = led_pos[0] * direction[0] + led_pos[1] * direction[1]
-            intensity = (1 + math.sin(k * proj - (k * speed * time) + phase)) / 2
-
-            final_color.r = min(255, final_color.r + int(color.r * intensity))
-            final_color.g = min(255, final_color.g + int(color.g * intensity))
-            final_color.b = min(255, final_color.b + int(color.b * intensity))
-            final_color.cw = min(255, final_color.cw + int(color.cw * intensity))
-            final_color.ww = min(255, final_color.ww + int(color.ww * intensity))
-
-        return final_color
-
-    return animation
+            time.sleep(0.03)
 
 
 if __name__ == "__main__":
