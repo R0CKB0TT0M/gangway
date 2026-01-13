@@ -63,11 +63,11 @@ class LEDController(Thread):
     # An object is equivalent to a detected person
     last_objects: List[Point]
     object_animation: ObjectAnimation
-    object_instant_update: bool
+    object_instant_update: bool = False
 
     # When no objects are detected the sensor switches to idle
     idle: bool = True
-    idle_instant_update: bool
+    idle_instant_update: bool = False
     idle_color: IdleColor
 
     def __init__(
@@ -166,7 +166,9 @@ class LEDController(Thread):
         Get the current color of an LED
         """
 
-        return self.current_colors[led.index]
+        return RGBCCT(
+            value=self.current_colors[led.index] & 0xFFFFFFFFFF,
+        )
 
     def target_of(self, led: LED) -> RGBCCT:
         """
@@ -174,6 +176,12 @@ class LEDController(Thread):
         """
 
         return self.target_colors[led.index]
+
+    def apply_color(self) -> List[RGBCCT]:
+        return [
+            self.strip.setPixelColor(led.index, (c := self.color_of(led))) or c
+            for led in self.leds
+        ]
 
     def run(self):
         """
@@ -227,10 +235,7 @@ class LEDController(Thread):
                 for led in self.leds
             }
 
-            _ = [
-                self.strip.setPixelColor(led.index, self.color_of(led))
-                for led in self.leds
-            ]
+            self.apply_color()
 
             self.strip.show()
             loop_time = time.time()

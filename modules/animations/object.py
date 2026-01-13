@@ -15,6 +15,7 @@ def exponential(
     primary: RGBCCT | IdleAnimation = RGBCCT(r=255),
     secondary: RGBCCT | IdleAnimation = RGBCCT(g=255),
     radius: float = 150,
+    force_instant: bool = False,
 ) -> ObjectAnimation:
     def animation(
         time: float,
@@ -25,6 +26,9 @@ def exponential(
         smooth: Callable[[], None],
         instant: Callable[[], None],
     ) -> RGBCCT:
+        if force_instant:
+            instant()
+
         intensity = max(
             2 ** (-(Point.from_tuple(led_pos) - object).length / radius)
             for object in objects
@@ -35,12 +39,26 @@ def exponential(
         if isinstance(primary, RGBCCT):
             primary_rgbcct = primary
         else:
-            primary_rgbcct = primary(time, floor, led_pos, index, smooth, instant)
+            primary_rgbcct = primary(
+                time,
+                floor,
+                led_pos,
+                index,
+                (lambda: None) if force_instant else smooth,
+                instant,
+            )
 
         if isinstance(secondary, RGBCCT):
             secondary_rgbcct = secondary
         else:
-            secondary_rgbcct = secondary(time, floor, led_pos, index, smooth, instant)
+            secondary_rgbcct = secondary(
+                time,
+                floor,
+                led_pos,
+                index,
+                (lambda: None) if force_instant else smooth,
+                instant,
+            )
 
         return interpolate_rgbcct(
             primary_rgbcct, secondary_rgbcct, intensity, use_sign=False
@@ -53,6 +71,7 @@ def dot(
     primary: RGBCCT | IdleAnimation = RGBCCT(r=255),
     secondary: RGBCCT | IdleAnimation = RGBCCT(g=255),
     radius: float = 150,
+    force_instant: bool = False,
 ) -> ObjectAnimation:
     def animation(
         time: float,
@@ -63,19 +82,34 @@ def dot(
         smooth: Callable[[], None],
         instant: Callable[[], None],
     ) -> RGBCCT:
-        instant()
+        if force_instant:
+            instant()
 
         primary_rgbcct: RGBCCT
 
         if isinstance(primary, RGBCCT):
             primary_rgbcct = primary
         else:
-            primary_rgbcct = primary(time, floor, led_pos, index, smooth, instant)
+            primary_rgbcct = primary(
+                time,
+                floor,
+                led_pos,
+                index,
+                (lambda: None) if force_instant else smooth,
+                instant,
+            )
 
         if isinstance(secondary, RGBCCT):
             secondary_rgbcct = secondary
         else:
-            secondary_rgbcct = secondary(time, floor, led_pos, index, smooth, instant)
+            secondary_rgbcct = secondary(
+                time,
+                floor,
+                led_pos,
+                index,
+                (lambda: None) if force_instant else smooth,
+                instant,
+            )
 
         return (
             primary_rgbcct

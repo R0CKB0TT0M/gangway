@@ -6,9 +6,6 @@ Definitions for LED positions
 from .helpers import interpolate_points
 from .types import LED, Point, Strip
 
-OFFSET_Y = 10
-OFFSET_X = 0
-
 SRC_POINTS = [
     (252, 357),
     (366, 358),
@@ -36,6 +33,9 @@ STRIPS = [
     Strip(index=121, len=24, start=Point(45, 490), end=Point(45, 290)),
 ]
 
+OFFSET_Y = 10
+OFFSET_X = 0
+
 LEDS = [
     LED(
         i + strip.index,
@@ -45,5 +45,3 @@ LEDS = [
     for strip in STRIPS
     for i in range(strip.len)
 ]
-
-MAX_INDEX = max(strip.index + strip.len for strip in STRIPS)

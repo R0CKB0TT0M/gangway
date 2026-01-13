@@ -35,7 +35,7 @@ if __name__ == "__main__":
             length=5,
         ),
         object_animation=dot(
-            primary=strobo(),
+            primary=RGBCCT(cw=255, r=255, g=255, b=255, ww=255),
             secondary=RGBCCT(r=255),  # swing(RGBCCT(cw=255, r=255, g=255, b=255)),
             radius=50,
         ),
