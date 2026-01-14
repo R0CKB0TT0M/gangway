@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-cat output.log
+tail -n 50 output.log

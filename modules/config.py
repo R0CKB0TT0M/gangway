@@ -15,17 +15,22 @@ from .animations import idle, object
 from .helpers import interpolate_points
 from .types import LED, IdleAnimation, ObjectAnimation, Point, Strip
 
-ANIMATION_FUNCTIONS = {
-    "alternate": idle.alternate,
-    "fire": idle.fire,
-    "rainbow": idle.rainbow,
-    "strobo": idle.strobo,
-    "swing": idle.swing,
-    "theater_chase": idle.theater_chase,
-    "wave": idle.wave,
-    "dot": object.dot,
-    "exponential": object.exponential,
-}
+
+def _get_animation_functions():
+    """Dynamically collects all animation functions from imported modules."""
+    functions = {}
+    # Inspect idle and object animation modules
+    for module in [idle, object]:
+        for name, func in inspect.getmembers(module, inspect.isfunction):
+            # Add function to registry if it's not a private helper
+            if not name.startswith("_") and name != "interpolate_rgbcct":
+                functions[name] = func
+    # Add the color class for type checking
+    functions["RGBCCT"] = RGBCCT
+    return functions
+
+
+ANIMATION_FUNCTIONS = _get_animation_functions()
 
 
 class GANGWAYConfig:
@@ -50,6 +55,7 @@ class GANGWAYConfig:
             with open(self.path, "r") as f:
                 config = yaml.safe_load(f)
 
+            self.data = config
             projection = config.get("projection", {})
             self.SRC_POINTS = [tuple(p) for p in projection.get("src_points", [])]
             self.DST_POINTS = [tuple(p) for p in projection.get("dst_points", [])]
@@ -116,6 +122,9 @@ class GANGWAYConfig:
         if not isinstance(anim_config, dict):
             return anim_config
 
+        if "r" in anim_config and "g" in anim_config and "b" in anim_config:
+            return RGBCCT(**anim_config)
+
         if "ref" in anim_config:
             return all_animations[anim_config["ref"]]
 
@@ -127,6 +136,15 @@ class GANGWAYConfig:
             raise ValueError(f"Unknown animation function: {anim_name}")
 
         sig = inspect.signature(anim_func)
+
+        # Check for unexpected arguments
+        valid_param_names = {p.name for p in sig.parameters.values()}
+        for arg_name in anim_args.keys():
+            if arg_name not in valid_param_names:
+                raise ValueError(
+                    f"Unknown parameter '{arg_name}' for animation '{anim_name}'"
+                )
+
         parsed_args = {}
         var_args = []
 
@@ -138,19 +156,17 @@ class GANGWAYConfig:
                 continue
 
             if param.name in anim_args:
-                if param.annotation == RGBCCT:
-                    parsed_args[param.name] = RGBCCT(**anim_args[param.name])
-                elif isinstance(anim_args[param.name], dict):
+                arg_value = anim_args[param.name]
+                if isinstance(arg_value, dict):
                     parsed_args[param.name] = self._parse_animation(
-                        anim_args[param.name], all_animations
+                        arg_value, all_animations
                     )
-                elif isinstance(anim_args[param.name], list):
+                elif isinstance(arg_value, list):
                     parsed_args[param.name] = [
-                        self._parse_animation(v, all_animations)
-                        for v in anim_args[param.name]
+                        self._parse_animation(v, all_animations) for v in arg_value
                     ]
                 else:
-                    parsed_args[param.name] = anim_args[param.name]
+                    parsed_args[param.name] = arg_value
             elif param.default is not inspect.Parameter.empty:
                 parsed_args[param.name] = param.default
 

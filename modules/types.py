@@ -61,16 +61,19 @@ ObjectAnimation = Callable[
     RGBCCT,
 ]
 
-IdleAnimation = Callable[
-    [
-        float,  # Time
-        Tuple[float, float, float, float],  # Floor
-        Tuple[float, float],  # LED Position
-        int,  # Index
-        Callable[[], None],  # Set smooth
-        Callable[[], None],  # Set instant
-    ],
-    RGBCCT,
-]
+IdleAnimation = (
+    Callable[
+        [
+            float,  # Time
+            Tuple[float, float, float, float],  # Floor
+            Tuple[float, float],  # LED Position
+            int,  # Index
+            Callable[[], None],  # Set smooth
+            Callable[[], None],  # Set instant
+        ],
+        RGBCCT,
+    ]
+    | RGBCCT
+)
 
-IdleColor = Dict[int, RGBCCT] | RGBCCT | IdleAnimation
+IdleColor = Dict[int, RGBCCT] | IdleAnimation

@@ -1,0 +1,59 @@
+projection:
+    src_points:
+        - [252, 357]
+        - [366, 358]
+        - [351, 101]
+        - [312, 102]
+    dst_points:
+        - [0, 490]
+        - [115, 490]
+        - [115, 0]
+        - [0, 0]
+    floor: [0, 0, 115, 490]
+
+leds:
+    target_weight: 0.05
+    offset_x: 0
+    offset_y: 10
+
+strips:
+    - { index: 1, len: 24, start: [10, 0], end: [63, 197] }
+    - { index: 25, len: 24, start: [105, 243], end: [105, 43] }
+    - { index: 49, len: 24, start: [98, 14], end: [25, 197] }
+    - { index: 73, len: 24, start: [66, 25], end: [66, 225] }
+    - { index: 97, len: 24, start: [88, 210], end: [14, 400] }
+    - { index: 121, len: 24, start: [45, 490], end: [45, 290] }
+
+animations:
+    idle:
+        alternate:
+            animations:
+                - swing: {}
+                - strobo: {}
+                - swing:
+                      color: { r: 255 }
+                      speed: 20
+                      direction: "x"
+                      wavelength: 10
+                - strobo: {}
+                - strobo: {}
+                - swing:
+                      color: { b: 255 }
+                      speed: 20
+                - strobo: {}
+                - strobo: {}
+                - swing:
+                      color: { b: 255 }
+                      direction: "x"
+                      wavelength: 10
+                - strobo: {}
+                - strobo: {}
+            length: 3
+    object:
+        dot:
+            primary:
+                strobo: {}
+            secondary:
+                ref: idle
+            radius: 50
+            force_instant: true

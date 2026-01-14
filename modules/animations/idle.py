@@ -242,3 +242,22 @@ def swing(
         return interpolate_rgbcct(color, RGBCCT(), intensity, use_sign=False)
 
     return animation
+
+
+def static(color: RGBCCT = RGBCCT(r=255, g=255, b=255)) -> IdleAnimation:
+    """
+    A simple animation that returns a static color.
+    """
+
+    def animation(
+        time: float,
+        floor: Tuple[float, float, float, float],
+        led_pos: Tuple[float, float],
+        index: int,
+        _: Callable[[], None],
+        instant: Callable[[], None],
+    ) -> RGBCCT:
+        instant()
+        return color
+
+    return animation

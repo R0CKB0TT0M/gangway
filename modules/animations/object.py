@@ -9,6 +9,7 @@ from rpi_ws2805 import RGBCCT
 
 from ..helpers import interpolate_rgbcct
 from ..types import IdleAnimation, ObjectAnimation, Point
+from .idle import wave
 
 
 def exponential(
@@ -68,8 +69,8 @@ def exponential(
 
 
 def dot(
-    primary: RGBCCT | IdleAnimation = RGBCCT(r=255),
-    secondary: RGBCCT | IdleAnimation = RGBCCT(g=255),
+    primary: RGBCCT | IdleAnimation = wave([RGBCCT(r=255)]),
+    secondary: RGBCCT | IdleAnimation = wave([RGBCCT(g=255)]),
     radius: float = 150,
     force_instant: bool = False,
 ) -> ObjectAnimation:
@@ -119,5 +120,25 @@ def dot(
             )
             else secondary_rgbcct
         )
+
+    return animation
+
+
+def off() -> ObjectAnimation:
+    """
+    A simple animation that turns LEDs off.
+    """
+
+    def animation(
+        time: float,
+        floor: Tuple[float, float, float, float],
+        led_pos: Tuple[float, float],
+        index: int,
+        objects: Iterable[Point],
+        smooth: Callable[[], None],
+        instant: Callable[[], None],
+    ) -> RGBCCT:
+        instant()
+        return RGBCCT()
 
     return animation
