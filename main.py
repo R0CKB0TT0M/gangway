@@ -13,8 +13,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path(__file__).parent / "config.toml",
-        help="Path to the config.toml file",
+        default=Path(__file__).parent / "config.yaml",
+        help="Path to the config.yaml file",
     )
     args = parser.parse_args()
 

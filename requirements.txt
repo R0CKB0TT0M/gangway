@@ -1,4 +1,4 @@
 numpy
 setuptools
-toml
+PyYAML
 ./rpi-ws2805-python/library
