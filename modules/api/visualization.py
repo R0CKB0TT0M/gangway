@@ -125,6 +125,7 @@ def get_live_mapped():
 
         img = cv2.flip(img, -1)
         warped_img = cv2.warpPerspective(img, M, (width, height))
+        warped_img = cv2.flip(warped_img, 0)
 
         is_success, buffer = cv2.imencode(".jpg", warped_img)
         if not is_success:

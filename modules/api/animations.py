@@ -6,14 +6,8 @@ to serve as a single source of truth for the animation structures, which the
 frontend can then use to dynamically build its UI.
 """
 
-<<<<<<< HEAD
-import typing
-from inspect import Parameter
-from typing import Callable, List, Literal
-=======
 import inspect
 from typing import Any, Dict, ForwardRef, List, Union, get_args, get_origin
->>>>>>> dca5af6 (simplified transfer models)
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -51,6 +45,12 @@ def _get_type_info(annotation: Any) -> Dict[str, Any]:
     # Handle generic types like List[T] and Union[T, U]
     if origin:
         origin_name = getattr(origin, "__name__", str(origin))
+
+        if origin_name == "Literal":
+            # For Literal["x", "y"], args are ("x", "y"). We need to wrap them.
+            processed_args = [{"name": arg} for arg in args]
+            return {"name": "Literal", "args": processed_args}
+
         # Filter out NoneType for Optional[T] which is Union[T, None]
         processed_args = [_get_type_info(arg) for arg in args if arg is not type(None)]
         return {"name": origin_name, "args": processed_args}
@@ -113,68 +113,6 @@ def _parse_animation_union(union_model: Any, module_name: str) -> List[Dict[str,
 
 
 @router.get("/")
-<<<<<<< HEAD
-def get_animations():
-    return ANIMATIONS
-
-
-def get_model_for_animation(animation_name: str, validation_mode: bool = False):
-    animation = next((a for a in ANIMATIONS if a["name"] == animation_name), None)
-    if not animation:
-        return None
-
-    fields = {}
-    for param in animation["params"]:
-        param_type = param["type"]
-        # This is a simplification, a more robust solution would handle
-        # the complex types like IdleAnimation and ObjectAnimation
-        if param_type == "Callable":
-            if validation_mode:
-                param_type = (
-                    List[typing.Dict[str, typing.Any]]
-                    if param["kind"] == Parameter.VAR_POSITIONAL
-                    else typing.Dict[str, typing.Any]
-                )
-            else:
-                param_type = (
-                    List[Literal["Animation"]]
-                    if param["kind"] == Parameter.VAR_POSITIONAL
-                    else Literal["Animation"]
-                )
-        else:
-            param_type = eval(
-                param_type,
-                {
-                    "typing": typing,
-                    "rpi_ws2805": rpi_ws2805,
-                    "Literal": Literal,
-                    "List": typing.List,
-                    "Callable": Callable,
-                    "RGBCCT": rpi_ws2805.RGBCCT,
-                },
-            )
-
-            if validation_mode:
-                origin = getattr(param_type, "__origin__", None)
-                if param_type == rpi_ws2805.RGBCCT:
-                    param_type = typing.Dict[str, int]
-                elif (origin is list or origin is typing.List) and getattr(
-                    param_type, "__args__", []
-                )[0] == rpi_ws2805.RGBCCT:
-                    param_type = typing.List[typing.Dict[str, int]]
-
-        fields[param["name"]] = (param_type, param["default"])
-
-    return create_model(f"{animation_name}Config", **fields)
-
-
-@router.get("/{animation_name}/schema")
-def get_animation_schema(animation_name: str):
-    AnimationConfig = get_model_for_animation(animation_name)
-    if not AnimationConfig:
-        raise HTTPException(status_code=404, detail="Animation not found")
-    return AnimationConfig.model_json_schema()
-=======
 def get_animations() -> List[Dict[str, Any]]:
     """
     Returns a list of all available idle and object animations, introspected
@@ -183,4 +121,3 @@ def get_animations() -> List[Dict[str, Any]]:
     idle_anims = _parse_animation_union(IdleAnimationModel, "idle")
     object_anims = _parse_animation_union(ObjectAnimationModel, "object")
     return idle_anims + object_anims
->>>>>>> dca5af6 (simplified transfer models)
