@@ -5,12 +5,12 @@ Controller Thread for Animations
 
 import time
 from threading import Thread
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 from rpi_ws2805 import RGBCCT, PixelStrip
 
-from .animations.object import ObjectAnimation, exponential
-from .config import FLOOR, LED, LEDS, TARGET_WEIGHT, Point
+from . import config
+from .animations.object import ObjectAnimation
 from .defaults import (
     LED_BRIGHTNESS,
     LED_CHANNEL,
@@ -21,7 +21,7 @@ from .defaults import (
     WS2805_STRIP,
 )
 from .helpers import interpolate_rgbcct
-from .types import IdleColor
+from .types import LED, IdleColor, Point
 
 
 class LEDController(Thread):
@@ -72,17 +72,20 @@ class LEDController(Thread):
 
     def __init__(
         self,
-        leds: List[LED] = LEDS,
-        idle_color: IdleColor = RGBCCT(cw=255),
-        object_animation: ObjectAnimation = exponential(),
-        floor: Tuple[float, float, float, float] = FLOOR,
+        leds: Optional[List[LED]] = None,
+        idle_color: Optional[IdleColor] = None,
+        object_animation: Optional[ObjectAnimation] = None,
+        floor: Optional[Tuple[float, float, float, float]] = None,
         gpio_pin: int = LED_PIN,
     ) -> None:
         super().__init__()
-        self.leds = leds
+        self.leds = leds or config.CONFIG.LEDS
+        self.idle_color = idle_color or config.CONFIG.IDLE_ANIMATION
+        self.object_animation = object_animation or config.CONFIG.OBJECT_ANIMATION
+        self.floor = floor or config.CONFIG.FLOOR
 
         self.strip = PixelStrip(
-            len(LEDS),
+            len(self.leds),
             gpio_pin,
             LED_FREQ_HZ,
             LED_DMA,
@@ -92,11 +95,6 @@ class LEDController(Thread):
             strip_type=WS2805_STRIP,
         )
         self.strip.begin()
-
-        self.idle_color = idle_color
-
-        self.floor = floor
-        self.object_animation = object_animation
 
         self.init_time = time.time()
 
@@ -230,7 +228,8 @@ class LEDController(Thread):
                 led.index: interpolate_rgbcct(
                     self.target_of(led),
                     self.color_of(led),
-                    weight_a=(1 - (2 ** (loop_time - time.time()))) * TARGET_WEIGHT,
+                    weight_a=(1 - (2 ** (loop_time - time.time())))
+                    * config.CONFIG.TARGET_WEIGHT,
                 )
                 for led in self.leds
             }

@@ -7,9 +7,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from typing import List
 
-from .config import STRIPS, Point
+from . import config
 from .helpers import to_hex
 from .led_controller import LEDController
+from .types import Point
 
 
 def create_request_handler(server_instance: "VisualizationServer"):
@@ -58,7 +59,7 @@ def create_request_handler(server_instance: "VisualizationServer"):
         def _generate_strips_svg(self) -> str:
             svg_elements = [
                 f'<line x1="{s.start.x}" y1="{s.start.y}" x2="{s.end.x}" y2="{s.end.y}" stroke="black" stroke-width="5" />'
-                for s in STRIPS
+                for s in config.CONFIG.STRIPS
             ]
 
             return f'<svg width="{server_instance._led_controller.floor[2]}" height="{server_instance._led_controller.floor[3]}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
@@ -67,7 +68,7 @@ def create_request_handler(server_instance: "VisualizationServer"):
             defs = []
             svg_elements = []
 
-            for i, strip in enumerate(STRIPS):
+            for i, strip in enumerate(config.CONFIG.STRIPS):
                 gradient_id = f"gradient{i}"
                 stops = []
                 for j in range(strip.len):

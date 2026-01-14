@@ -13,16 +13,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path(__file__).parent / "config.yaml",
         help="Path to the config.yaml file",
     )
     args = parser.parse_args()
 
-    config.load_config(args.config)
+    if args.config:
+        config.CONFIG.path = args.config
+        config.CONFIG.load()
 
     led_controller = LEDController(
-        idle_color=config.IDLE_ANIMATION,
-        object_animation=config.OBJECT_ANIMATION,
+        idle_color=config.CONFIG.IDLE_ANIMATION,
+        object_animation=config.CONFIG.OBJECT_ANIMATION,
     )
     led_controller.start()
 
