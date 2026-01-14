@@ -30,6 +30,7 @@ def get_animations_from_module(module_name: str) -> List[Dict[str, Any]]:
                         "default": param.default
                         if param.default != inspect.Parameter.empty
                         else None,
+                        "kind": param.kind,
                     }
                     for param in sig.parameters.values()
                 ],

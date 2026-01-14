@@ -105,6 +105,19 @@ class LEDController(Thread):
         else:
             self.target_colors = {led.index: RGBCCT(cw=255) for led in self.leds}
 
+    def reload_config(self) -> None:
+        self.leds = config.CONFIG.LEDS
+        self.idle_color = config.CONFIG.IDLE_ANIMATION
+        self.object_animation = config.CONFIG.OBJECT_ANIMATION
+        self.floor = config.CONFIG.FLOOR
+
+        if isinstance(self.idle_color, dict):
+            self.target_colors = self.idle_color
+        elif isinstance(self.idle_color, RGBCCT):
+            self.target_colors = {led.index: self.idle_color for led in self.leds}
+        else:
+            self.target_colors = {led.index: RGBCCT(cw=255) for led in self.leds}
+
     def set_object_smooth(self) -> None:
         self.object_instant_update = False
 

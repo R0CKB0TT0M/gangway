@@ -8,8 +8,8 @@ import uvicorn
 
 from modules import config
 from modules.api import app
-from modules.api.visualization import objects
 from modules.led_controller import LEDController
+from modules.state import STATE
 from modules.xovis.server import XOVISServer
 
 
@@ -42,19 +42,18 @@ if __name__ == "__main__":
         config.CONFIG.path = args.config
         config.CONFIG.load()
 
-    led_controller = LEDController(
+    STATE.led_controller = LEDController(
         idle_color=config.CONFIG.IDLE_ANIMATION,
         object_animation=config.CONFIG.OBJECT_ANIMATION,
     )
-    led_controller.start()
+    STATE.led_controller.start()
 
     xovis_server = XOVISServer()
-    xovis_server.subscribe_position(led_controller.update_objects)
+    xovis_server.subscribe_position(STATE.led_controller.update_objects)
     xovis_http_server = xovis_server.start_server()
 
     def update_api_objects(new_objects):
-        objects.clear()
-        objects.extend(new_objects)
+        STATE.objects = new_objects
 
     xovis_server.subscribe_position(update_api_objects)
 
@@ -69,4 +68,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Shutting down.")
         xovis_http_server.shutdown()
-        led_controller.stop()
+        STATE.led_controller.stop()
