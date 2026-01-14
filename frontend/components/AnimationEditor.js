@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 
 /**
  * A recursive component to edit an animation and its parameters.
@@ -80,7 +81,7 @@ export default function AnimationEditor({
                 <select
                     value={selectedAnimName}
                     onChange={(e) => handleNameChange(e.target.value)}
-                    className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-gray-600 focus:border-teal-500 outline-none text-sm"
+                    className="w-full bg-gray-700 text-white rounded px-3 py-2 outline-none text-sm focus:ring-0"
                 >
                     <option value="" disabled>
                         Select Animation
@@ -136,12 +137,15 @@ function ParamInput({ param, value, onChange, allAnimations }) {
     };
 
     const isColor = (typeObj) => !!findTypeByName(typeObj, "RGBCCT");
-    const isAnimation = (typeObj) => !!findTypeByName(typeObj, "Animation");
-    const isList = (typeObj) => typeObj && typeObj.name === "List";
-    const isUnion = (typeObj) => typeObj && typeObj.name === "Union";
+    const isAnimation = (typeObj) =>
+        !!findTypeByName(typeObj, "Animation") ||
+        !!findTypeByName(typeObj, "Union");
+    const isList = (typeObj) =>
+        typeObj && typeObj.name.toLowerCase() === "list";
     const isNumber = (typeObj) =>
         typeObj && (typeObj.name === "int" || typeObj.name === "float");
     const isBool = (typeObj) => typeObj && typeObj.name === "bool";
+    const isLiteral = (typeObj) => typeObj && typeObj.name === "Literal";
 
     // --- Determine Child Animation Availability ---
     const getChildAnimations = () => {
@@ -163,12 +167,27 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                 : { r: 0, g: 0, b: 0, cw: 0, ww: 0 };
 
         const updateColor = (channel, val) => {
-            const numVal = parseInt(val, 10);
-            onColorChange({ ...c, [channel]: isNaN(numVal) ? 0 : numVal });
+            if (val === "") {
+                // If the input is cleared, pass an empty string to allow the input field to be empty.
+                onColorChange({ ...c, [channel]: "" });
+            } else {
+                const numVal = parseInt(val, 10);
+                // If the parsed value is NaN (e.g., incomplete number or invalid input), default to 0.
+                // Otherwise, use the parsed number.
+                onColorChange({ ...c, [channel]: isNaN(numVal) ? 0 : numVal });
+            }
+        };
+
+        const channelColors = {
+            r: "border-red-500/50 focus:border-red-500",
+            g: "border-green-500/50 focus:border-green-500",
+            b: "border-blue-500/50 focus:border-blue-500",
+            cw: "border-cyan-300/50 focus:border-cyan-300",
+            ww: "border-yellow-300/50 focus:border-yellow-300",
         };
 
         return (
-            <div className="grid grid-cols-5 gap-1 p-2 bg-gray-900 border border-gray-700 rounded">
+            <div className="grid grid-cols-5 gap-1">
                 {["r", "g", "b", "cw", "ww"].map((chan) => (
                     <input
                         key={chan}
@@ -176,9 +195,17 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                         min="0"
                         max="255"
                         placeholder={chan.toUpperCase()}
-                        value={c[chan] ?? 0}
+                        value={c[chan]}
                         onChange={(e) => updateColor(chan, e.target.value)}
-                        className="w-full bg-gray-800 border border-gray-600 rounded px-1 py-1 text-center text-xs text-gray-300 focus:border-teal-500 outline-none"
+                        onBlur={(e) => {
+                            // On blur, normalize empty or invalid values to 0
+                            const val = e.target.value;
+                            const numVal = parseInt(val, 10);
+                            if (val === "" || isNaN(numVal)) {
+                                onColorChange({ ...c, [chan]: 0 });
+                            }
+                        }}
+                        className={`w-full bg-gray-800 border-2 rounded px-1 py-1 text-center text-xs text-gray-300 outline-none focus:ring-0 ${channelColors[chan]}`}
                     />
                 ))}
             </div>
@@ -186,6 +213,54 @@ function ParamInput({ param, value, onChange, allAnimations }) {
     };
 
     // --- Render Logic based on Parameter Type ---
+
+    // Case: VAR_POSITIONAL is always a list of animations
+    if (param.kind === 2) {
+        const list = Array.isArray(value) ? value : [];
+        const childAnims = getChildAnimations();
+        const addItem = () => {
+            const defaultAnim = childAnims[0]?.name || "static";
+            onChange([...list, { [defaultAnim]: {} }]);
+        };
+        const updateItem = (idx, newVal) => {
+            const newList = [...list];
+            newList[idx] = newVal;
+            onChange(newList);
+        };
+        const removeItem = (idx) => onChange(list.filter((_, i) => i !== idx));
+
+        return (
+            <div className="space-y-2">
+                {list.map((item, idx) => (
+                    <div
+                        key={idx}
+                        className="bg-gray-800 p-3 rounded relative pr-10"
+                    >
+                        <button
+                            onClick={() => removeItem(idx)}
+                            className="absolute top-2 right-2 text-red-400 hover:text-red-300"
+                            aria-label="Remove"
+                            title="Remove"
+                        >
+                            <Trash2 size={16} />
+                        </button>
+                        <AnimationEditor
+                            config={item}
+                            onChange={(val) => updateItem(idx, val)}
+                            availableAnimations={childAnims}
+                            allAnimations={allAnimations}
+                        />
+                    </div>
+                ))}
+                <button
+                    onClick={addItem}
+                    className="text-teal-400 text-xs hover:text-teal-300"
+                >
+                    + Add Animation
+                </button>
+            </div>
+        );
+    }
 
     // Case: List of items (e.g., List[RGBCCT] or List[Animation])
     if (isList(param.type)) {
@@ -218,7 +293,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                                 onClick={() => removeItem(idx)}
                                 className="text-red-400 text-xs"
                             >
-                                X
+                                <Trash2 size={16} />
                             </button>
                         </div>
                     ))}
@@ -232,8 +307,8 @@ function ParamInput({ param, value, onChange, allAnimations }) {
             );
         }
 
-        // List of Animations (also handles VAR_POSITIONAL)
-        if (isAnimation(innerType) || param.kind === 2) {
+        // List of Animations
+        if (isAnimation(innerType)) {
             const childAnims = getChildAnimations();
             const addItem = () => {
                 const defaultAnim = childAnims[0]?.name || "static";
@@ -252,13 +327,15 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                     {list.map((item, idx) => (
                         <div
                             key={idx}
-                            className="bg-gray-800 p-3 rounded border border-gray-700 relative"
+                            className="bg-gray-800 p-3 rounded relative pr-10"
                         >
                             <button
                                 onClick={() => removeItem(idx)}
-                                className="absolute top-2 right-2 text-red-400 hover:text-red-300 text-xs"
+                                className="absolute top-2 right-2 text-red-400 hover:text-red-300"
+                                aria-label="Remove"
+                                title="Remove"
                             >
-                                Remove
+                                <Trash2 size={16} />
                             </button>
                             <AnimationEditor
                                 config={item}
@@ -280,7 +357,11 @@ function ParamInput({ param, value, onChange, allAnimations }) {
     }
 
     // Case: Union of Color and Animation (e.g., for `dot` animation's `primary` param)
-    if (isUnion(param.type) && isColor(param.type) && isAnimation(param.type)) {
+    if (
+        isAnimation(param.type) &&
+        isColor(param.type) &&
+        isAnimation(param.type)
+    ) {
         // Heuristic to determine if the current value is a color or an animation.
         const isValColor =
             value &&
@@ -311,7 +392,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                 {mode === "color" ? (
                     <ColorInputs value={value} onChange={onChange} />
                 ) : (
-                    <div className="bg-gray-800 p-3 rounded border border-gray-700">
+                    <div className="bg-gray-800 p-3 rounded">
                         <AnimationEditor
                             config={value || {}}
                             onChange={onChange}
@@ -324,17 +405,21 @@ function ParamInput({ param, value, onChange, allAnimations }) {
         );
     }
 
-    // Case: Single Nested Animation
-    if (isAnimation(param.type)) {
+    // Case: Literal (dropdown for string options)
+    if (isLiteral(param.type)) {
+        const options = param.type.args.map((arg) => arg.name);
         return (
-            <div className="bg-gray-800 p-3 rounded border border-gray-700">
-                <AnimationEditor
-                    config={value || {}}
-                    onChange={onChange}
-                    availableAnimations={getChildAnimations()}
-                    allAnimations={allAnimations}
-                />
-            </div>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-300 focus:border-teal-500 outline-none"
+            >
+                {options.map((opt) => (
+                    <option key={opt} value={opt}>
+                        {opt}
+                    </option>
+                ))}
+            </select>
         );
     }
 
