@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-tail -f output.log
+cat output.log

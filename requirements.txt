@@ -1,4 +1,6 @@
 numpy
 setuptools
 PyYAML
+fastapi
+uvicorn
 ./rpi-ws2805-python/library
