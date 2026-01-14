@@ -1,9 +1,13 @@
+import cv2
+import numpy as np
+import requests
 from fastapi import APIRouter
 from fastapi.responses import Response
 
 from .. import config
 from ..helpers import to_hex
 from ..state import STATE
+from ..xovis.homographic_projection import get_homography
 
 router = APIRouter()
 
@@ -69,3 +73,65 @@ def get_state():
 
     content = f'<svg width="{STATE.led_controller.floor[2]}" height="{STATE.led_controller.floor[3]}" xmlns="http://www.w3.org/2000/svg"><defs>{"".join(defs)}</defs><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
     return Response(content=content, media_type="image/svg+xml")
+
+
+@router.get("/live", response_class=Response)
+def get_live():
+    if not STATE.led_controller:
+        return Response(status_code=503, content="LED Controller not ready")
+
+    try:
+        response = requests.get("http://localhost:80/live", verify=False)
+        response.raise_for_status()
+
+        image_array = np.frombuffer(response.content, np.uint8)
+        img = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+        if img is None:
+            return Response(status_code=502, content="Failed to decode upstream image")
+
+        img = cv2.flip(img, -1)
+
+        is_success, buffer = cv2.imencode(".jpg", img)
+        if not is_success:
+            return Response(status_code=500, content="Failed to encode image")
+
+        return Response(content=buffer.tobytes(), media_type="image/jpeg")
+
+    except Exception as e:
+        print(f"Error in /live: {e}")
+        return Response(status_code=500, content=str(e))
+
+
+@router.get("/live_mapped", response_class=Response)
+def get_live_mapped():
+    if not STATE.led_controller:
+        return Response(status_code=503, content="LED Controller not ready")
+
+    try:
+        response = requests.get("http://localhost:80/live", verify=False)
+        response.raise_for_status()
+
+        image_array = np.frombuffer(response.content, np.uint8)
+        img = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+        if img is None:
+            return Response(status_code=502, content="Failed to decode upstream image")
+
+        M = get_homography(src=[(232, 77), (263, 77), (278, 240), (200, 240)])
+
+        width = int(STATE.led_controller.floor[2])
+        height = int(STATE.led_controller.floor[3])
+
+        img = cv2.flip(img, -1)
+        warped_img = cv2.warpPerspective(img, M, (width, height))
+
+        is_success, buffer = cv2.imencode(".jpg", warped_img)
+        if not is_success:
+            return Response(status_code=500, content="Failed to encode image")
+
+        return Response(content=buffer.tobytes(), media_type="image/jpeg")
+
+    except Exception as e:
+        print(f"Error in /live: {e}")
+        return Response(status_code=500, content=str(e))
