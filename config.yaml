@@ -100,18 +100,30 @@ strips:
   - 82.5
   - 490.0
 animation:
-  schedule:
-    start: 00:00
-    end: 06:00
-    primary:
-      r: 255
-      g: 0
-      b: 0
-      cw: 0
-      ww: 0
-    secondary:
-      r: 0
-      g: 255
-      b: 0
-      cw: 0
-      ww: 0
+  blend:
+    animations:
+    - paint:
+        primary:
+          r: 255
+          g: 255
+          b: 255
+          cw: 0
+          ww: 0
+        secondary:
+          r: 0
+          g: 0
+          b: 0
+          cw: 0
+          ww: 0
+        radius: 150.0
+        persistence: 2.0
+    - swing:
+        color:
+          r: 255
+          g: 255
+          b: 255
+          cw: 255
+          ww: 0
+        direction: y
+        wavelength: 50
+        speed: 10.0

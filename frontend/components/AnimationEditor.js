@@ -88,10 +88,15 @@ export default function AnimationEditor({
                     </option>
                     {availableAnimations.map((anim) => (
                         <option key={anim.name} value={anim.name}>
-                            {anim.name}
+                            {anim.title || anim.name}
                         </option>
                     ))}
                 </select>
+                {currentAnimDef?.description && (
+                    <p className="mt-2 text-gray-400 text-xs italic">
+                        {currentAnimDef.description}
+                    </p>
+                )}
             </div>
 
             {/* Parameters Editor */}

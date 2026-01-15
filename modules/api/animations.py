@@ -78,6 +78,16 @@ def _parse_animation_union(union_model: Any) -> List[Dict[str, Any]]:
         anim_name, params_field = list(wrapper_model.model_fields.items())[0]
         params_model = params_field.annotation
 
+        # Extract Meta
+        title = params_field.title
+        if not title:
+            title = anim_name.replace("_", " ").title()
+
+        description = params_field.description
+        if not description:
+            # Fallback to the wrapper model docstring if available
+            description = wrapper_model.__doc__
+
         params_list = []
         if issubclass(params_model, BaseModel):
             for param_name, param_field in params_model.model_fields.items():
@@ -103,7 +113,14 @@ def _parse_animation_union(union_model: Any) -> List[Dict[str, Any]]:
                 }
                 params_list.append(param_info)
 
-        animations.append({"name": anim_name, "params": params_list})
+        animations.append(
+            {
+                "name": anim_name,
+                "title": title,
+                "description": description,
+                "params": params_list,
+            }
+        )
 
     # Sort animations alphabetically by name
     animations.sort(key=lambda x: x["name"])

@@ -180,13 +180,26 @@ class LinearRainbowParams(BaseModel):
     spread: float = 3.0
 
 
+class SmoothParams(BaseModel):
+    """Parameters for the smooth animation."""
+
+    animation: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
+    )
+    smoothing: float = Field(0.5, ge=0.0, le=1.0)
+
+
 # --- Animation Wrapper Models (to enforce {'name': params} structure) ---
 
 
 class AlternateAnimation(BaseModel):
     """Wrapper for the alternate animation."""
 
-    alternate: AlternateParams = Field(...)
+    alternate: AlternateParams = Field(
+        ...,
+        title="Alternate",
+        description="Alternates between multiple animations over time.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -195,7 +208,9 @@ class AlternateAnimation(BaseModel):
 class FireAnimation(BaseModel):
     """Wrapper for the fire animation."""
 
-    fire: FireParams = Field(...)
+    fire: FireParams = Field(
+        ..., title="Fire", description="Simulates a flickering fire effect."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -204,7 +219,9 @@ class FireAnimation(BaseModel):
 class RainbowAnimation(BaseModel):
     """Wrapper for the rainbow animation."""
 
-    rainbow: RainbowParams = Field(...)
+    rainbow: RainbowParams = Field(
+        ..., title="Rainbow", description="A moving rainbow gradient across the floor."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -213,7 +230,9 @@ class RainbowAnimation(BaseModel):
 class StaticAnimation(BaseModel):
     """Wrapper for the static animation."""
 
-    static: StaticParams = Field(...)
+    static: StaticParams = Field(
+        ..., title="Static Color", description="Displays a single static color."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -222,7 +241,9 @@ class StaticAnimation(BaseModel):
 class StroboAnimation(BaseModel):
     """Wrapper for the strobo animation."""
 
-    strobo: StroboParams = Field(...)
+    strobo: StroboParams = Field(
+        ..., title="Stroboscope", description="Flashes colors rapidly."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -231,7 +252,11 @@ class StroboAnimation(BaseModel):
 class SwingAnimation(BaseModel):
     """Wrapper for the swing animation."""
 
-    swing: SwingParams = Field(...)
+    swing: SwingParams = Field(
+        ...,
+        title="Swing",
+        description="A smooth swinging movement back and forth along an axis.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -240,7 +265,11 @@ class SwingAnimation(BaseModel):
 class Theater_chaseAnimation(BaseModel):
     """Wrapper for the theater_chase animation."""
 
-    theater_chase: Theater_chaseParams = Field(...)
+    theater_chase: Theater_chaseParams = Field(
+        ...,
+        title="Theater Chase",
+        description="A classic theater-style chasing lights effect.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -249,7 +278,11 @@ class Theater_chaseAnimation(BaseModel):
 class WaveAnimation(BaseModel):
     """Wrapper for the wave animation."""
 
-    wave: WaveParams = Field(...)
+    wave: WaveParams = Field(
+        ...,
+        title="Wave",
+        description="Multiple sine waves interfering with each other.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -258,7 +291,9 @@ class WaveAnimation(BaseModel):
 class DotAnimation(BaseModel):
     """Wrapper for the dot animation."""
 
-    dot: DotParams = Field(...)
+    dot: DotParams = Field(
+        ..., title="Dot", description="Lights up area around detected objects."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -267,7 +302,11 @@ class DotAnimation(BaseModel):
 class ExponentialAnimation(BaseModel):
     """Wrapper for the exponential animation."""
 
-    exponential: ExponentialParams = Field(...)
+    exponential: ExponentialParams = Field(
+        ...,
+        title="Exponential",
+        description="Exponential falloff brightness based on object proximity.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -276,7 +315,7 @@ class ExponentialAnimation(BaseModel):
 class OffAnimation(BaseModel):
     """Wrapper for the off animation."""
 
-    off: OffParams = Field(...)
+    off: OffParams = Field(..., title="Off", description="Turns all LEDs off.")
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -285,7 +324,11 @@ class OffAnimation(BaseModel):
 class IdleAnimation(BaseModel):
     """Wrapper for the idle animation."""
 
-    idle: IdleParams = Field(...)
+    idle: IdleParams = Field(
+        ...,
+        title="Idle Switch",
+        description="Switches between idle and active animations based on presence.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -294,7 +337,9 @@ class IdleAnimation(BaseModel):
 class BlendAnimation(BaseModel):
     """Wrapper for the blend animation."""
 
-    blend: BlendParams = Field(...)
+    blend: BlendParams = Field(
+        ..., title="Blend", description="Blends multiple animations together."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -303,7 +348,9 @@ class BlendAnimation(BaseModel):
 class RaveAnimation(BaseModel):
     """Wrapper for the rave animation."""
 
-    rave: RaveParams = Field(...)
+    rave: RaveParams = Field(
+        ..., title="Rave", description="High-energy intense light show."
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -312,7 +359,11 @@ class RaveAnimation(BaseModel):
 class ScheduleAnimation(BaseModel):
     """Wrapper for the schedule animation."""
 
-    schedule: ScheduleParams = Field(...)
+    schedule: ScheduleParams = Field(
+        ...,
+        title="Schedule",
+        description="Runs different animations based on the time of day.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -321,7 +372,11 @@ class ScheduleAnimation(BaseModel):
 class PaintAnimation(BaseModel):
     """Wrapper for the paint animation."""
 
-    paint: PaintParams = Field(...)
+    paint: PaintParams = Field(
+        ...,
+        title="Paint",
+        description="Draws trails that persist behind moving objects.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -330,7 +385,22 @@ class PaintAnimation(BaseModel):
 class LinearRainbowAnimation(BaseModel):
     """Wrapper for the linear_rainbow animation."""
 
-    linear_rainbow: LinearRainbowParams = Field(...)
+    linear_rainbow: LinearRainbowParams = Field(
+        ..., title="Linear Rainbow", description="A rainbow moving in a straight line."
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class SmoothAnimation(BaseModel):
+    """Wrapper for the smooth animation."""
+
+    smooth: SmoothParams = Field(
+        ...,
+        title="Smooth",
+        description="Smooths the output of another animation over time.",
+    )
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -355,6 +425,7 @@ AnimationModel = Union[
     ScheduleAnimation,
     PaintAnimation,
     LinearRainbowAnimation,
+    SmoothAnimation,
 ]
 
 # --- Rebuild Models to Resolve Forward References ---
@@ -375,3 +446,4 @@ RaveParams.model_rebuild()
 ScheduleParams.model_rebuild()
 PaintParams.model_rebuild()
 LinearRainbowParams.model_rebuild()
+SmoothParams.model_rebuild()

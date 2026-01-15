@@ -4,10 +4,11 @@ Meta-Animation Definitions
 """
 
 import datetime
-from typing import Iterable, Literal
+from typing import Dict, Iterable
 
 from rpi_ws2805 import RGBCCT
 
+from ..helpers import interpolate_rgbcct
 from ..types import LED, Animation, Point, SceneContext
 
 
@@ -98,3 +99,47 @@ def schedule(
         return target(time, ctx, led, objects, *args, **kwargs)
 
     return animation
+
+
+def smooth(
+    animation: Animation | RGBCCT,
+    smoothing: float = 0.5,
+) -> Animation:
+    """
+    Smooths the input animation over time using an exponential moving average.
+    smoothing: 0.0 = no smoothing (instant), 1.0 = infinite smoothing (no change).
+    """
+    last_colors: Dict[int, RGBCCT] = {}
+
+    def func(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        objects: Iterable[Point],
+        *args,
+        **kwargs,
+    ) -> RGBCCT:
+        nonlocal last_colors
+
+        target: RGBCCT
+        if isinstance(animation, RGBCCT):
+            target = animation
+        else:
+            target = animation(time, ctx, led, objects, *args, **kwargs)
+
+        current = last_colors.get(led.index)
+
+        if current is None:
+            # First frame, jump to target
+            last_colors[led.index] = target
+            return target
+
+        # Interpolate
+        # interpolate_rgbcct(current, target, smoothing) returns:
+        # current * smoothing + target * (1 - smoothing)
+        next_color = interpolate_rgbcct(current, target, smoothing, use_sign=False)
+        last_colors[led.index] = next_color
+
+        return next_color
+
+    return func
