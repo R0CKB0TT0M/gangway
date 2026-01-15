@@ -3,6 +3,7 @@
 Controller Thread for Animations
 """
 
+import collections
 import time
 from threading import Thread
 from typing import Dict, List, Tuple
@@ -44,12 +45,20 @@ class LEDController(Thread):
     # Time counters
     init_time: float
 
+    # Stats
+    fps: float = 0.0
+    tpf_min: float = 0.0
+    tpf_max: float = 0.0
+    tpf_avg: float = 0.0
+    _frame_times: collections.deque
+
     def __init__(self, gangway_config: GANGWAYConfig = CONFIG) -> None:
         super().__init__()
 
         self.init_time = time.time()
         self.config = gangway_config
         self.last_objects = []
+        self._frame_times = collections.deque(maxlen=100)
 
         self.reload_config()
 
@@ -145,8 +154,23 @@ class LEDController(Thread):
         """
 
         self.init_time = time.time()
+        last_frame_start = time.perf_counter()
 
         for colors in self.animate:
+            # Measure time since last frame start (Total Frame Time)
+            now = time.perf_counter()
+            dt = now - last_frame_start
+            last_frame_start = now
+
+            if dt > 0:
+                self._frame_times.append(dt)
+
+            if len(self._frame_times) > 0:
+                self.fps = 1.0 / (sum(self._frame_times) / len(self._frame_times))
+                self.tpf_min = min(self._frame_times)
+                self.tpf_max = max(self._frame_times)
+                self.tpf_avg = sum(self._frame_times) / len(self._frame_times)
+
             self.apply_colors(colors)
 
             if not self.running:

@@ -3,6 +3,7 @@
 Idle Animation Definitions
 """
 
+import datetime
 import math
 import random
 from typing import Iterable, List, Literal
@@ -11,6 +12,7 @@ from rpi_ws2805 import RGBCCT
 
 from ..helpers import interpolate_rgbcct
 from ..types import LED, Animation, Point, SceneContext
+from .meta import alternate
 
 
 def wave(
@@ -267,5 +269,93 @@ def idle(
                     **_kwargs,
                 )
             )
+
+    return animation
+
+
+def rave() -> Animation:
+    """
+    A high-energy blend of animations suitable for a rave.
+    """
+    return alternate(
+        strobo(frequency=15),
+        theater_chase(speed=3.0, color=RGBCCT(r=255, b=255)),
+        rainbow(speed=0.5, spread=1.0),
+        fire(flicker_speed=0.05, flicker_intensity=0.8),
+        length=5.0,
+    )
+
+
+def secret_rave(start_time: str = "22:00", end_time: str = "04:00") -> Animation:
+    """
+    Activates the rave animation only between specific hours.
+    Otherwise returns black (off).
+    """
+    rave_anim = rave()
+    fallback = static(RGBCCT())
+
+    def animation(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        objects: Iterable[Point],
+        *args,
+        **kwargs,
+    ) -> RGBCCT:
+        now = datetime.datetime.now().time()
+        try:
+            start = datetime.time.fromisoformat(start_time)
+            end = datetime.time.fromisoformat(end_time)
+        except ValueError:
+            # Fallback if time format is invalid
+            start = datetime.time(22, 0)
+            end = datetime.time(4, 0)
+
+        is_active = False
+        if start <= end:
+            is_active = start <= now <= end
+        else:  # crosses midnight
+            is_active = now >= start or now <= end
+
+        if is_active:
+            return rave_anim(time, ctx, led, objects, *args, **kwargs)
+        else:
+            return fallback(time, ctx, led, objects, *args, **kwargs)
+
+    return animation
+
+
+def linear_rainbow(
+    direction: Literal["x", "y"] = "x", speed: float = 0.1, spread: float = 3.0
+) -> Animation:
+    """
+    Rainbow animation that moves linearly across the floor in x or y direction.
+    """
+
+    def animation(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        *_args,
+        **_kwargs,
+    ) -> RGBCCT:
+        if direction == "x":
+            pos = led.p.x
+            min_p = ctx.floor.p1.x
+            max_p = ctx.floor.p2.x
+        else:
+            pos = led.p.y
+            min_p = ctx.floor.p1.y
+            max_p = ctx.floor.p2.y
+
+        length = max_p - min_p
+        # Avoid division by zero
+        if length == 0:
+            length = 1.0
+
+        x_norm = (pos - min_p) / length
+        hue = (x_norm * spread + time * speed) % 1.0
+        r, g, b = _hsv_to_rgb(hue, 1.0, 1.0)
+        return RGBCCT(r=r, g=g, b=b)
 
     return animation

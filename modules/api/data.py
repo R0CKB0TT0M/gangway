@@ -29,3 +29,16 @@ def get_leds():
             "ww": color.ww,
         }
     return leds_data
+
+
+@router.get("/fps")
+def get_fps():
+    if not STATE.led_controller:
+        return {"fps": 0, "tpf_min": 0, "tpf_max": 0, "tpf_avg": 0}
+
+    return {
+        "fps": round(STATE.led_controller.fps, 2),
+        "tpf_min": round(STATE.led_controller.tpf_min * 1000, 2),  # ms
+        "tpf_max": round(STATE.led_controller.tpf_max * 1000, 2),  # ms
+        "tpf_avg": round(STATE.led_controller.tpf_avg * 1000, 2),  # ms
+    }

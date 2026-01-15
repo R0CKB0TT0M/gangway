@@ -140,6 +140,40 @@ class BlendParams(BaseModel):
     animations: List["AnimationModel"] = Field(default_factory=list)
 
 
+class RaveParams(BaseModel):
+    """Parameters for the rave animation."""
+
+    pass
+
+
+class SecretRaveParams(BaseModel):
+    """Parameters for the secret_rave animation."""
+
+    start_time: str = "22:00"
+    end_time: str = "04:00"
+
+
+class PaintParams(BaseModel):
+    """Parameters for the paint animation."""
+
+    primary: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
+    )
+    secondary: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=0, g=0, b=0, cw=0, ww=0)
+    )
+    radius: float = 150
+    persistence: float = 2.0
+
+
+class LinearRainbowParams(BaseModel):
+    """Parameters for the linear_rainbow animation."""
+
+    direction: Literal["x", "y"] = "x"
+    speed: float = 0.1
+    spread: float = 3.0
+
+
 # --- Animation Wrapper Models (to enforce {'name': params} structure) ---
 
 
@@ -260,6 +294,42 @@ class BlendAnimation(BaseModel):
         extra = "forbid"  # Disallow other keys
 
 
+class RaveAnimation(BaseModel):
+    """Wrapper for the rave animation."""
+
+    rave: RaveParams = Field(...)
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class SecretRaveAnimation(BaseModel):
+    """Wrapper for the secret_rave animation."""
+
+    secret_rave: SecretRaveParams = Field(...)
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class PaintAnimation(BaseModel):
+    """Wrapper for the paint animation."""
+
+    paint: PaintParams = Field(...)
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class LinearRainbowAnimation(BaseModel):
+    """Wrapper for the linear_rainbow animation."""
+
+    linear_rainbow: LinearRainbowParams = Field(...)
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
 # --- Union of All Animation Models ---
 AnimationModel = Union[
     AlternateAnimation,
@@ -275,6 +345,10 @@ AnimationModel = Union[
     OffAnimation,
     IdleAnimation,
     BlendAnimation,
+    RaveAnimation,
+    SecretRaveAnimation,
+    PaintAnimation,
+    LinearRainbowAnimation,
 ]
 
 # --- Rebuild Models to Resolve Forward References ---
@@ -291,3 +365,7 @@ ExponentialParams.model_rebuild()
 OffParams.model_rebuild()
 IdleParams.model_rebuild()
 BlendParams.model_rebuild()
+RaveParams.model_rebuild()
+SecretRaveParams.model_rebuild()
+PaintParams.model_rebuild()
+LinearRainbowParams.model_rebuild()

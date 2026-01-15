@@ -9,6 +9,7 @@ export default function Visualization({ config }) {
     const [showColors, setShowColors] = useState(true);
     const [imageSrc, setImageSrc] = useState("");
     const [scale, setScale] = useState(1);
+    const [stats, setStats] = useState(null);
     const containerRef = useRef(null);
 
     const floorWidth = config?.projection?.floor?.[2] || 800;
@@ -66,15 +67,19 @@ export default function Visualization({ config }) {
         const render = async () => {
             // Fetch Data
             try {
-                const [ledsRes, objectsRes] = await Promise.all([
+                const [ledsRes, objectsRes, fpsRes] = await Promise.all([
                     fetch("/api/data/leds"),
                     fetch("/api/data/objects"),
+                    fetch("/api/data/fps"),
                 ]);
 
                 if (!isRunning) return;
 
                 const leds = showColors ? await ledsRes.json() : {};
                 const objects = showObjects ? await objectsRes.json() : [];
+                const fpsData = await fpsRes.json();
+
+                setStats(fpsData);
 
                 // Clear
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -160,6 +165,15 @@ export default function Visualization({ config }) {
                 ref={containerRef}
                 className="flex-1 relative bg-black overflow-hidden flex items-center justify-center"
             >
+                {stats && (
+                    <div className="absolute top-4 left-4 z-20 bg-black/50 text-teal-400 p-2 rounded text-xs font-mono">
+                        <div>FPS: {stats.fps}</div>
+                        <div className="text-gray-400 mt-1">TPF (ms)</div>
+                        <div>Min: {stats.tpf_min}</div>
+                        <div>Avg: {stats.tpf_avg}</div>
+                        <div>Max: {stats.tpf_max}</div>
+                    </div>
+                )}
                 <div
                     className="relative border border-gray-800 bg-gray-900 shadow-2xl origin-center"
                     style={{
