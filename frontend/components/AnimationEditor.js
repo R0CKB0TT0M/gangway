@@ -140,10 +140,11 @@ const ColorInputs = ({ value: colorValue, onChange: onColorChange }) => {
             // If the input is cleared, pass an empty string to allow the input field to be empty.
             onColorChange({ ...c, [channel]: "" });
         } else {
-            const numVal = parseInt(val, 10);
-            // If the parsed value is NaN (e.g., incomplete number or invalid input), default to 0.
-            // Otherwise, use the parsed number.
-            onColorChange({ ...c, [channel]: isNaN(numVal) ? 0 : numVal });
+            let numVal = parseInt(val, 10);
+            if (isNaN(numVal)) numVal = 0;
+            if (numVal > 255) numVal = 255;
+            if (numVal < 0) numVal = 0;
+            onColorChange({ ...c, [channel]: numVal });
         }
     };
 
@@ -155,28 +156,73 @@ const ColorInputs = ({ value: colorValue, onChange: onColorChange }) => {
         ww: "border-yellow-300/50 focus:border-yellow-300",
     };
 
+    const rgbToHex = (r, g, b) => {
+        const toHex = (n) => {
+            const hex = Math.max(0, Math.min(255, n || 0)).toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        };
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    };
+
+    const handleColorPick = (e) => {
+        const hex = e.target.value;
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (result) {
+            onColorChange({
+                ...c,
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16),
+            });
+        }
+    };
+
     return (
-        <div className="grid grid-cols-5 gap-1">
-            {["r", "g", "b", "cw", "ww"].map((chan) => (
+        <div className="flex items-center gap-2">
+            {/* Color Picker Button */}
+            <div className="relative w-8 h-8 shrink-0">
                 <input
-                    key={chan}
-                    type="number"
-                    min="0"
-                    max="255"
-                    placeholder={chan.toUpperCase()}
-                    value={c[chan]}
-                    onChange={(e) => updateColor(chan, e.target.value)}
-                    onBlur={(e) => {
-                        // On blur, normalize empty or invalid values to 0
-                        const val = e.target.value;
-                        const numVal = parseInt(val, 10);
-                        if (val === "" || isNaN(numVal)) {
-                            onColorChange({ ...c, [chan]: 0 });
-                        }
-                    }}
-                    className={`w-full bg-gray-800 border-2 rounded px-1 py-1 text-center text-xs text-gray-300 outline-none focus:ring-0 ${channelColors[chan]}`}
+                    type="color"
+                    value={rgbToHex(c.r, c.g, c.b)}
+                    onChange={handleColorPick}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
-            ))}
+                <div
+                    className="w-full h-full rounded border border-gray-600 shadow-sm"
+                    style={{
+                        backgroundColor: `rgb(${c.r || 0}, ${c.g || 0}, ${c.b || 0})`,
+                    }}
+                />
+            </div>
+
+            {/* Numeric Inputs */}
+            <div className="grid grid-cols-5 gap-1 flex-1">
+                {["r", "g", "b", "cw", "ww"].map((chan) => (
+                    <input
+                        key={chan}
+                        type="number"
+                        min="0"
+                        max="255"
+                        placeholder={chan.toUpperCase()}
+                        value={c[chan]}
+                        onChange={(e) => updateColor(chan, e.target.value)}
+                        onBlur={(e) => {
+                            // On blur, normalize empty or invalid values to 0-255
+                            const val = e.target.value;
+                            let numVal = parseInt(val, 10);
+                            if (val === "" || isNaN(numVal)) {
+                                numVal = 0;
+                            } else if (numVal > 255) {
+                                numVal = 255;
+                            } else if (numVal < 0) {
+                                numVal = 0;
+                            }
+                            onColorChange({ ...c, [chan]: numVal });
+                        }}
+                        className={`w-full bg-gray-800 border-2 rounded px-1 py-1 text-center text-xs text-gray-300 outline-none focus:ring-0 ${channelColors[chan]}`}
+                    />
+                ))}
+            </div>
         </div>
     );
 };
@@ -472,13 +518,44 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                 : parseFloat(e.target.value);
             onChange(isNaN(val) ? null : val);
         };
+
+        const handleBlur = (e) => {
+            let val = isInt
+                ? parseInt(e.target.value, 10)
+                : parseFloat(e.target.value);
+
+            if (isNaN(val)) return;
+
+            if (
+                param.max !== undefined &&
+                param.max !== null &&
+                val > param.max
+            ) {
+                val = param.max;
+            }
+            if (
+                param.min !== undefined &&
+                param.min !== null &&
+                val < param.min
+            ) {
+                val = param.min;
+            }
+
+            if (val !== value) {
+                onChange(val);
+            }
+        };
+
         return (
             <input
                 type="number"
                 value={value ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-300 focus:border-teal-500 outline-none"
+                onBlur={handleBlur}
+                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-300 focus:border-teal-500 outline-none invalid:border-red-500 invalid:text-red-500"
                 step={isInt ? "1" : "0.1"}
+                min={param.min}
+                max={param.max}
             />
         );
     }

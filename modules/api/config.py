@@ -17,6 +17,7 @@ class ProjectionModel(BaseModel):
     src_points: List[List[float]]
     dst_points: List[List[float]]
     floor: List[float]
+    cutout: List[List[float]] = []
 
 
 class LedsModel(BaseModel):

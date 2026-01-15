@@ -117,7 +117,8 @@ def smooth(
     Smooths the input animation over time using an exponential moving average.
     smoothing: 0.0 = no smoothing (instant), 1.0 = infinite smoothing (no change).
     """
-    last_colors: Dict[int, RGBCCT] = {}
+    # Store state as floats to prevent quantization artifacts
+    last_colors: Dict[int, tuple] = {}
 
     def func(
         time: float,
@@ -139,15 +140,33 @@ def smooth(
 
         if current is None:
             # First frame, jump to target
-            last_colors[led.index] = target
+            current = (
+                float(target.r),
+                float(target.g),
+                float(target.b),
+                float(target.cw),
+                float(target.ww),
+            )
+            last_colors[led.index] = current
             return target
 
-        # Interpolate
-        # interpolate_rgbcct(current, target, smoothing) returns:
-        # current * smoothing + target * (1 - smoothing)
-        next_color = interpolate_rgbcct(current, target, smoothing, use_sign=False)
-        last_colors[led.index] = next_color
+        # Interpolate using floats
+        # next = current * smoothing + target * (1 - smoothing)
+        weight = 1.0 - smoothing
+        next_r = current[0] * smoothing + target.r * weight
+        next_g = current[1] * smoothing + target.g * weight
+        next_b = current[2] * smoothing + target.b * weight
+        next_cw = current[3] * smoothing + target.cw * weight
+        next_ww = current[4] * smoothing + target.ww * weight
 
-        return next_color
+        last_colors[led.index] = (next_r, next_g, next_b, next_cw, next_ww)
+
+        return RGBCCT(
+            r=int(next_r),
+            g=int(next_g),
+            b=int(next_b),
+            cw=int(next_cw),
+            ww=int(next_ww),
+        )
 
     return func

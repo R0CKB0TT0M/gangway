@@ -36,6 +36,7 @@ ANIMATION_FUNCTIONS = _get_animation_functions()
 class GANGWAYConfig:
     SRC_POINTS: List[Tuple[int, int]]
     DST_POINTS: List[Tuple[int, int]]
+    CUTOUT: List[Tuple[float, float]]
     FLOOR: Rectangle
     TARGET_WEIGHT: float
     STRIPS: List[Strip]
@@ -58,6 +59,7 @@ class GANGWAYConfig:
             projection = config.get("projection", {})
             self.SRC_POINTS = [tuple(p) for p in projection.get("src_points", [])]
             self.DST_POINTS = [tuple(p) for p in projection.get("dst_points", [])]
+            self.CUTOUT = [tuple(p) for p in projection.get("cutout", [])]
 
             floor_rect = tuple(projection.get("floor", (0, 0, 0, 0)))
 

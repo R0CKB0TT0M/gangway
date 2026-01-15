@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Visualization from "../components/Visualization";
 import AnimationEditor from "../components/AnimationEditor";
 import Image from "next/image";
@@ -13,6 +13,8 @@ export default function Home() {
     // layoutConfig state removed — using `config` as the single source of truth
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(true);
+    const formRef = useRef(null);
 
     // Initial Fetch
     useEffect(() => {
@@ -102,6 +104,14 @@ export default function Home() {
         setRawConfigString(JSON.stringify(configData, null, 2));
     };
 
+    const handleFormChange = () => {
+        if (formRef.current) {
+            // Check if any input is invalid
+            const invalid = formRef.current.querySelector(":invalid");
+            setIsFormValid(!invalid);
+        }
+    };
+
     if (loading) {
         return (
             <div className="h-screen flex items-center justify-center bg-gray-900 text-teal-400">
@@ -171,8 +181,12 @@ export default function Home() {
                                 </h2>
                                 <button
                                     onClick={saveConfig}
-                                    disabled={saving}
-                                    className="bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 px-6 rounded shadow transition-colors flex items-center gap-2 disabled:opacity-50"
+                                    disabled={saving || !isFormValid}
+                                    className={`font-bold py-2 px-6 rounded shadow transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                        !isFormValid
+                                            ? "bg-gray-600 text-gray-400"
+                                            : "bg-teal-600 hover:bg-teal-500 text-white"
+                                    }`}
                                 >
                                     {saving
                                         ? "Saving..."
@@ -180,7 +194,11 @@ export default function Home() {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-8">
+                            <form
+                                ref={formRef}
+                                onChange={handleFormChange}
+                                className="grid grid-cols-1 gap-8"
+                            >
                                 {/* Animation */}
                                 <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
                                     <h3 className="text-xl font-semibold mb-6 text-teal-300 flex items-center gap-2">
@@ -195,7 +213,7 @@ export default function Home() {
                                         isRoot={true}
                                     />
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>

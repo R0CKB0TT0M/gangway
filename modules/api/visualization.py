@@ -75,9 +75,6 @@ def get_state():
     return Response(content=content, media_type="image/svg+xml")
 
 
-SRC_POINTS = [(232.5, 75.5), (261, 76.5), (276.5, 245.5), (202.5, 240.5)]
-
-
 @router.get("/live", response_class=Response)
 def get_live():
     if not STATE.led_controller:
@@ -95,8 +92,10 @@ def get_live():
 
         img = cv2.flip(img, -1)
 
-        # Paint SRC_POINTS on as polygon
-        cv2.polylines(img, [np.array(SRC_POINTS, np.int32)], True, (0, 255, 0), 1)
+        # Paint cutout on as polygon
+        cv2.polylines(
+            img, [np.array(config.CONFIG.CUTOUT, np.int32)], True, (0, 255, 0), 1
+        )
 
         is_success, buffer = cv2.imencode(".jpg", img)
         if not is_success:
@@ -124,7 +123,7 @@ def get_live_mapped():
         if img is None:
             return Response(status_code=502, content="Failed to decode upstream image")
 
-        M = get_homography(src=SRC_POINTS)
+        M = get_homography(src=config.CONFIG.CUTOUT)
 
         width = int(STATE.led_controller.floor.p2.x)
         height = int(STATE.led_controller.floor.p2.y)

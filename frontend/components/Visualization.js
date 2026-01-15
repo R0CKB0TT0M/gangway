@@ -41,19 +41,41 @@ export default function Visualization({ config }) {
         return () => observer.disconnect();
     }, [floorWidth, floorHeight]);
 
-    // Image Refresh Loop
+    // Image Refresh Loop with Double Buffering
     useEffect(() => {
         if (!showImage) return;
 
-        // Immediate load
-        setImageSrc(`/api/visualization/live_mapped?t=${Date.now()}`);
-    }, [showImage]);
+        let isMounted = true;
+        let timeoutId;
 
-    const handleImageRefresh = () => {
-        setTimeout(() => {
-            setImageSrc(`/api/visualization/live_mapped?t=${Date.now()}`);
-        }, 200);
-    };
+        const loadNextImage = () => {
+            const nextSrc = `/api/visualization/live_mapped?t=${Date.now()}`;
+            const img = new Image();
+
+            img.onload = () => {
+                if (isMounted) {
+                    setImageSrc(nextSrc);
+                    timeoutId = setTimeout(loadNextImage, 200);
+                }
+            };
+
+            img.onerror = () => {
+                if (isMounted) {
+                    // On error, keep existing image and try again
+                    timeoutId = setTimeout(loadNextImage, 200);
+                }
+            };
+
+            img.src = nextSrc;
+        };
+
+        loadNextImage();
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
+    }, [showImage]);
 
     // Canvas Render Loop
     useEffect(() => {
@@ -187,8 +209,6 @@ export default function Visualization({ config }) {
                             src={imageSrc}
                             className="absolute top-0 left-0 w-full h-full object-cover opacity-60"
                             alt="Live View"
-                            onLoad={handleImageRefresh}
-                            onError={handleImageRefresh}
                         />
                     )}
                     <canvas

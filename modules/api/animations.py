@@ -105,11 +105,17 @@ def _parse_animation_union(union_model: Any) -> List[Dict[str, Any]]:
                 # of POSITIONAL_OR_KEYWORD vs VAR_POSITIONAL. The type info is enough.
                 kind = inspect.Parameter.POSITIONAL_OR_KEYWORD
 
+                # Extract constraints
+                min_val = getattr(param_field, "ge", None)
+                max_val = getattr(param_field, "le", None)
+
                 param_info = {
                     "name": param_name,
                     "type": _get_type_info(param_field.annotation),
                     "default": serializable_default,
                     "kind": kind,
+                    "min": min_val,
+                    "max": max_val,
                 }
                 params_list.append(param_info)
 
