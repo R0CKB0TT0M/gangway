@@ -1,12 +1,12 @@
-from typing import Any, Dict, List, Optional
+from typing import List
 
 import yaml
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from ..config import CONFIG
 from ..state import STATE
-from .models import IdleAnimationModel, ObjectAnimationModel
+from .models import AnimationModel
 
 router = APIRouter()
 
@@ -32,16 +32,11 @@ class StripModel(BaseModel):
     end: List[float]
 
 
-class AnimationsConfigModel(BaseModel):
-    idle: Optional[IdleAnimationModel] = None
-    object: Optional[ObjectAnimationModel] = None
-
-
 class ConfigModel(BaseModel):
     projection: ProjectionModel
     leds: LedsModel
     strips: List[StripModel]
-    animations: AnimationsConfigModel
+    animation: AnimationModel
 
 
 # --- Endpoints ---

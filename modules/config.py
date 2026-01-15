@@ -6,14 +6,14 @@ Definitions for LED positions
 import inspect
 import threading
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import yaml
 from rpi_ws2805 import RGBCCT
 
 from .animations import idle, object
 from .helpers import interpolate_points
-from .types import LED, IdleAnimation, ObjectAnimation, Point, Strip
+from .types import LED, Animation, Point, Strip
 
 
 def _get_animation_functions():
@@ -42,8 +42,7 @@ class GANGWAYConfig:
     OFFSET_X: int
     OFFSET_Y: int
     LEDS: List[LED]
-    IDLE_ANIMATION: IdleAnimation
-    OBJECT_ANIMATION: ObjectAnimation
+    ANIMATION: Animation | RGBCCT
 
     def __init__(self, path: Path):
         self._lock = threading.Lock()
@@ -86,23 +85,7 @@ class GANGWAYConfig:
                 for i in range(strip.len)
             ]
 
-            anim_config = config.get("animations", {})
-
-            all_animations = {}
-            idle_animation_config = anim_config.get("idle")
-            if idle_animation_config:
-                all_animations["idle"] = self._parse_animation(
-                    idle_animation_config, all_animations
-                )
-
-            object_animation_config = anim_config.get("object")
-            if object_animation_config:
-                all_animations["object"] = self._parse_animation(
-                    object_animation_config, all_animations
-                )
-
-            self.IDLE_ANIMATION = all_animations.get("idle")
-            self.OBJECT_ANIMATION = all_animations.get("object")
+            self.ANIMATION = self._parse_animation(config.get("animation", {}))
 
     def save(self):
         with self._lock:
@@ -118,15 +101,12 @@ class GANGWAYConfig:
             with open(self.path, "w") as f:
                 yaml.dump(config, f)
 
-    def _parse_animation(self, anim_config, all_animations):
+    def _parse_animation(self, anim_config: Any) -> Animation | RGBCCT:
         if not isinstance(anim_config, dict):
             return anim_config
 
         if "r" in anim_config and "g" in anim_config and "b" in anim_config:
             return RGBCCT(**anim_config)
-
-        if "ref" in anim_config:
-            return all_animations[anim_config["ref"]]
 
         anim_name = list(anim_config.keys())[0]
         anim_args = list(anim_config.values())[0]
@@ -152,18 +132,16 @@ class GANGWAYConfig:
             if param.kind == inspect.Parameter.VAR_POSITIONAL:
                 if param.name in anim_args:
                     for arg in anim_args[param.name]:
-                        var_args.append(self._parse_animation(arg, all_animations))
+                        var_args.append(self._parse_animation(arg))
                 continue
 
             if param.name in anim_args:
                 arg_value = anim_args[param.name]
                 if isinstance(arg_value, dict):
-                    parsed_args[param.name] = self._parse_animation(
-                        arg_value, all_animations
-                    )
+                    parsed_args[param.name] = self._parse_animation(arg_value)
                 elif isinstance(arg_value, list):
                     parsed_args[param.name] = [
-                        self._parse_animation(v, all_animations) for v in arg_value
+                        self._parse_animation(v) for v in arg_value
                     ]
                 else:
                     parsed_args[param.name] = arg_value

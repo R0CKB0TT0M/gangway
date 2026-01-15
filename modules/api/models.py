@@ -2,9 +2,9 @@
 This file contains the Pydantic models for validating animation configurations.
 """
 
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, parse_obj_as, root_validator, validator
+from pydantic import BaseModel, Field
 
 # --- Base Models ---
 
@@ -28,7 +28,7 @@ class RGBCCTModel(BaseModel):
 class AlternateParams(BaseModel):
     """Parameters for the alternate animation."""
 
-    animations: List["IdleAnimationModel"] = Field(default_factory=list)
+    animations: List["AnimationModel"] = Field(default_factory=list)
     length: float = 10
 
 
@@ -97,23 +97,21 @@ class WaveParams(BaseModel):
 class DotParams(BaseModel):
     """Parameters for the dot animation."""
 
-    primary: Optional[Union["IdleAnimationModel", RGBCCTModel]] = None
-    secondary: Optional[Union["IdleAnimationModel", RGBCCTModel]] = None
+    primary: Optional[Union["AnimationModel", RGBCCTModel]] = None
+    secondary: Optional[Union["AnimationModel", RGBCCTModel]] = None
     radius: float = 150
-    force_instant: bool = False
 
 
 class ExponentialParams(BaseModel):
     """Parameters for the exponential animation."""
 
-    primary: Union["IdleAnimationModel", RGBCCTModel] = Field(
+    primary: Union["AnimationModel", RGBCCTModel] = Field(
         default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
     )
-    secondary: Union["IdleAnimationModel", RGBCCTModel] = Field(
+    secondary: Union["AnimationModel", RGBCCTModel] = Field(
         default=RGBCCTModel(r=0, g=255, b=0, cw=0, ww=0)
     )
     radius: float = 150
-    force_instant: bool = False
 
 
 class OffParams(BaseModel):
@@ -225,7 +223,7 @@ class OffAnimation(BaseModel):
 
 
 # --- Union of All Animation Models ---
-AnyAnimationModel = Union[
+AnimationModel = Union[
     AlternateAnimation,
     FireAnimation,
     RainbowAnimation,
@@ -238,19 +236,6 @@ AnyAnimationModel = Union[
     ExponentialAnimation,
     OffAnimation,
 ]
-
-# --- Module-specific Animation Unions ---
-IdleAnimationModel = Union[
-    AlternateAnimation,
-    FireAnimation,
-    RainbowAnimation,
-    StaticAnimation,
-    StroboAnimation,
-    SwingAnimation,
-    Theater_chaseAnimation,
-    WaveAnimation,
-]
-ObjectAnimationModel = Union[DotAnimation, ExponentialAnimation, OffAnimation]
 
 # --- Rebuild Models to Resolve Forward References ---
 AlternateParams.model_rebuild()

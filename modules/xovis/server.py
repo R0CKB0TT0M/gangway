@@ -100,5 +100,5 @@ class XOVISServer:
         thread = Thread(target=http_server.serve_forever)
         thread.daemon = True
         thread.start()
-        print(f"HTTP server started on {self._host}:{self._port}")
+        print(f"XOVIS callback server receiver running on {self._host}:{self._port}")
         return http_server

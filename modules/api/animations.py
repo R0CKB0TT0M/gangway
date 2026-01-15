@@ -7,13 +7,13 @@ frontend can then use to dynamically build its UI.
 """
 
 import inspect
-from typing import Any, Dict, ForwardRef, List, Union, get_args, get_origin
+from typing import Any, Dict, ForwardRef, List, get_args, get_origin
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefined
 
-from .models import IdleAnimationModel, ObjectAnimationModel, RGBCCTModel
+from .models import AnimationModel, RGBCCTModel
 
 router = APIRouter()
 
@@ -24,7 +24,7 @@ def _get_type_info(annotation: Any) -> Dict[str, Any]:
     JSON-serializable dictionary that describes the type for the frontend.
     """
     if isinstance(annotation, ForwardRef):
-        # This handles nested animations, like "AnyAnimationModel"
+        # This handles nested animations, like "AnimationModel"
         return {"name": "Animation", "module": "any"}
 
     # Base cases for simple types
@@ -59,9 +59,9 @@ def _get_type_info(annotation: Any) -> Dict[str, Any]:
     return {"name": "any"}
 
 
-def _parse_animation_union(union_model: Any, module_name: str) -> List[Dict[str, Any]]:
+def _parse_animation_union(union_model: Any) -> List[Dict[str, Any]]:
     """
-    Parses a Pydantic Union model (e.g., IdleAnimationModel) and extracts the
+    Parses a Pydantic Union model (e.g., AnimationModel) and extracts the
     details of each animation within it.
     """
     animations = []
@@ -103,9 +103,7 @@ def _parse_animation_union(union_model: Any, module_name: str) -> List[Dict[str,
                 }
                 params_list.append(param_info)
 
-        animations.append(
-            {"name": anim_name, "module": module_name, "params": params_list}
-        )
+        animations.append({"name": anim_name, "params": params_list})
 
     # Sort animations alphabetically by name
     animations.sort(key=lambda x: x["name"])
@@ -118,6 +116,4 @@ def get_animations() -> List[Dict[str, Any]]:
     Returns a list of all available idle and object animations, introspected
     from the API's own Pydantic models.
     """
-    idle_anims = _parse_animation_union(IdleAnimationModel, "idle")
-    object_anims = _parse_animation_union(ObjectAnimationModel, "object")
-    return idle_anims + object_anims
+    return _parse_animation_union(AnimationModel)

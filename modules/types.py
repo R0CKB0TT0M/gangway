@@ -48,32 +48,13 @@ class LED:
     p: Point
 
 
-ObjectAnimation = Callable[
+Animation = Callable[
     [
         float,
         Tuple[float, float, float, float],
         Tuple[float, float],
         int,
         Iterable[Point],
-        Callable[[], None],  # Set smooth update
-        Callable[[], None],  # Set instant update
     ],
     RGBCCT,
 ]
-
-IdleAnimation = (
-    Callable[
-        [
-            float,  # Time
-            Tuple[float, float, float, float],  # Floor
-            Tuple[float, float],  # LED Position
-            int,  # Index
-            Callable[[], None],  # Set smooth
-            Callable[[], None],  # Set instant
-        ],
-        RGBCCT,
-    ]
-    | RGBCCT
-)
-
-IdleColor = Dict[int, RGBCCT] | IdleAnimation

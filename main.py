@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import argparse
-import time
+import asyncio
 from pathlib import Path
-from threading import Thread
 
 import uvicorn
 
@@ -13,59 +12,65 @@ from modules.state import STATE
 from modules.xovis.server import XOVISServer
 
 
-class UvicornServer(Thread):
-    def __init__(self, app, host, port):
-        super().__init__()
-        self.daemon = True
-        self.app = app
-        self.host = host
-        self.port = port
-        self.server = None
-
-    def run(self):
-        self.server = uvicorn.Server(
-            uvicorn.Config(self.app, host=self.host, port=self.port)
-        )
-        self.server.run()
-
-
-if __name__ == "__main__":
+async def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config",
-        type=Path,
-        help="Path to the config.yaml file",
-    )
+    parser.add_argument("--config", type=Path, help="Path to config.yaml")
     args = parser.parse_args()
 
     if args.config:
         config.CONFIG.path = args.config
         config.CONFIG.load()
 
-    STATE.led_controller = LEDController(
-        idle_color=config.CONFIG.IDLE_ANIMATION,
-        object_animation=config.CONFIG.OBJECT_ANIMATION,
-    )
+    print("Starting components...")
+
+    # 1. LED Controller
+    STATE.led_controller = LEDController()
     STATE.led_controller.start()
 
+    # 2. Xovis Server
     xovis_server = XOVISServer()
     xovis_server.subscribe_position(STATE.led_controller.update_objects)
-    xovis_http_server = xovis_server.start_server()
 
     def update_api_objects(new_objects):
         STATE.objects = new_objects
 
     xovis_server.subscribe_position(update_api_objects)
 
-    api_server = UvicornServer(app, host="0.0.0.0", port=8082)
-    api_server.start()
-    print("API server started on 0.0.0.0:8082")
+    xovis_http_server = xovis_server.start_server()
+
+    # --- Start Uvicorn (Blocking Mode) ---
+    # We let Uvicorn control the loop. It handles Ctrl+C automatically.
+    config_uvicorn = uvicorn.Config(app, host="0.0.0.0", port=8082, log_level="info")
+    server = uvicorn.Server(config_uvicorn)
 
     try:
-        # Keep the main thread alive
-        while True:
-            time.sleep(1)
+        # This will block here until Ctrl+C is pressed.
+        # Uvicorn catches the signal, shuts down gracefully, and then this returns.
+        await server.serve()
+    except asyncio.CancelledError:
+        # Occurs if the outer loop is cancelled
+        pass
+    finally:
+        # --- Cleanup Sequence ---
+        # This block runs ALWAYS after Uvicorn finishes (or crashes)
+        print("\nShutting down background components...")
+
+        try:
+            xovis_http_server.shutdown()
+            print("XOVIS callback handler stopped.")
+        except Exception as e:
+            print(f"Error stopping Xovis: {e}")
+
+        try:
+            STATE.led_controller.stop()
+            print("LED Controller stopped.")
+        except Exception as e:
+            print(f"Error stopping LED Controller: {e}")
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
     except KeyboardInterrupt:
-        print("Shutting down.")
-        xovis_http_server.shutdown()
-        STATE.led_controller.stop()
+        # Catch any lingering interrupts that Uvicorn missed
+        pass
