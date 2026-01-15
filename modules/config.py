@@ -13,7 +13,7 @@ from rpi_ws2805 import RGBCCT
 
 from .animations import idle, object
 from .helpers import interpolate_points
-from .types import LED, Animation, Point, Strip
+from .types import LED, Animation, Point, Rectangle, Strip
 
 
 def _get_animation_functions():
@@ -36,7 +36,7 @@ ANIMATION_FUNCTIONS = _get_animation_functions()
 class GANGWAYConfig:
     SRC_POINTS: List[Tuple[int, int]]
     DST_POINTS: List[Tuple[int, int]]
-    FLOOR: Tuple[int, int, int, int]
+    FLOOR: Rectangle
     TARGET_WEIGHT: float
     STRIPS: List[Strip]
     OFFSET_X: int
@@ -58,7 +58,13 @@ class GANGWAYConfig:
             projection = config.get("projection", {})
             self.SRC_POINTS = [tuple(p) for p in projection.get("src_points", [])]
             self.DST_POINTS = [tuple(p) for p in projection.get("dst_points", [])]
-            self.FLOOR = tuple(projection.get("floor", (0, 0, 0, 0)))
+
+            floor_rect = tuple(projection.get("floor", (0, 0, 0, 0)))
+
+            self.FLOOR = Rectangle(
+                Point.from_tuple(floor_rect[:2]),
+                Point.from_tuple(floor_rect[2:]),
+            )
 
             leds_config = config.get("leds", {})
             self.TARGET_WEIGHT = leds_config.get("target_weight", 0.1)

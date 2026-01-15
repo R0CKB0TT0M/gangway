@@ -21,7 +21,7 @@ def get_objects():
         f'<circle cx="{p.x}" cy="{p.y}" r="5" fill="red" />' for p in STATE.objects
     ]
 
-    content = f'<svg width="{STATE.led_controller.floor[2]}" height="{STATE.led_controller.floor[3]}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
+    content = f'<svg width="{STATE.led_controller.floor.p2.x}" height="{STATE.led_controller.floor.p2.y}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
     return Response(content=content, media_type="image/svg+xml")
 
 
@@ -35,7 +35,7 @@ def get_strips():
         for s in config.CONFIG.STRIPS
     ]
 
-    content = f'<svg width="{STATE.led_controller.floor[2]}" height="{STATE.led_controller.floor[3]}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
+    content = f'<svg width="{STATE.led_controller.floor.p2.x}" height="{STATE.led_controller.floor.p2.y}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
     return Response(content=content, media_type="image/svg+xml")
 
 
@@ -71,7 +71,7 @@ def get_state():
             f'<line x1="{strip.start.x}" y1="{strip.start.y}" x2="{strip.end.x}" y2="{strip.end.y}" stroke="url(#{gradient_id})" stroke-width="5" />'
         )
 
-    content = f'<svg width="{STATE.led_controller.floor[2]}" height="{STATE.led_controller.floor[3]}" xmlns="http://www.w3.org/2000/svg"><defs>{"".join(defs)}</defs><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
+    content = f'<svg width="{STATE.led_controller.floor.p2.x}" height="{STATE.led_controller.floor.p2.y}" xmlns="http://www.w3.org/2000/svg"><defs>{"".join(defs)}</defs><rect width="100%" height="100%" fill="transparent" stroke="black"/>{"".join(svg_elements)}</svg>'
     return Response(content=content, media_type="image/svg+xml")
 
 
@@ -126,8 +126,8 @@ def get_live_mapped():
 
         M = get_homography(src=SRC_POINTS)
 
-        width = int(STATE.led_controller.floor[2])
-        height = int(STATE.led_controller.floor[3])
+        width = int(STATE.led_controller.floor.p2.x)
+        height = int(STATE.led_controller.floor.p2.y)
 
         img = cv2.flip(img, -1)
         warped_img = cv2.warpPerspective(img, M, (width, height))

@@ -21,7 +21,7 @@ from .defaults import (
     LED_PIN,
     WS2805_STRIP,
 )
-from .types import LED, Point
+from .types import LED, Point, Rectangle, SceneContext
 
 
 class LEDController(Thread):
@@ -33,8 +33,8 @@ class LEDController(Thread):
     leds: List[LED]
     running: bool = True
     strip: PixelStrip
-    floor: Tuple[float, float, float, float]
-    _animation: Animation | RGBCCT
+    floor: Rectangle
+    animation: Animation | RGBCCT
 
     config: GANGWAYConfig
 
@@ -71,7 +71,7 @@ class LEDController(Thread):
 
     def reload_config(self) -> None:
         self.leds = self.config.LEDS
-        self._animation = self.config.ANIMATION
+        self.animation = self.config.ANIMATION
         self.floor = self.config.FLOOR
 
         if isinstance(self.animation, RGBCCT):
@@ -115,13 +115,27 @@ class LEDController(Thread):
         self.strip.show()
 
     @property
-    def animation(self):
+    def context(self):
+        return SceneContext(
+            self.floor,
+            self.leds,
+        )
+
+    @property
+    def animate(self):
+        """
+        Infinite iterator of colors
+        """
+
         while True:
             yield {
-                led.index: self._animation
-                if isinstance(self._animation, RGBCCT)
-                else self._animation(
-                    self.time, self.floor, led.p.tuple, led.index, self.last_objects
+                led.index: self.animation
+                if isinstance(self.animation, RGBCCT)
+                else self.animation(
+                    self.time,
+                    self.context,
+                    led,
+                    self.last_objects,
                 )
                 for led in self.leds
             }
@@ -133,7 +147,7 @@ class LEDController(Thread):
 
         self.init_time = time.time()
 
-        for colors in self.animation:
+        for colors in self.animate:
             self.apply_colors(colors)
 
             if not self.running:

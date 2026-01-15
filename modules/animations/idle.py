@@ -10,7 +10,7 @@ from typing import Iterable, List, Literal, Tuple
 from rpi_ws2805 import RGBCCT
 
 from ..helpers import interpolate_rgbcct
-from ..types import Animation, Point
+from ..types import LED, Animation, Point, SceneContext
 
 
 def wave(
@@ -36,8 +36,8 @@ def wave(
 
     def animation(
         time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
+        _ctx: SceneContext,
+        led: LED,
         *_args,
         **_kwargs,
     ) -> RGBCCT:
@@ -48,7 +48,7 @@ def wave(
             color = wave_params["color"]
             phase = wave_params["phase"]
 
-            proj = led_pos[0] * direction[0] + led_pos[1] * direction[1]
+            proj = led.p.x * direction[0] + led.p.y * direction[1]
             intensity = (1 + math.sin(k * proj - (k * speed * time) + phase)) / 2
 
             r += color.r * intensity
@@ -95,12 +95,12 @@ def _hsv_to_rgb(h, s, v):
 def rainbow(speed: float = 0.1, spread: float = 3.0) -> Animation:
     def animation(
         time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
+        ctx: SceneContext,
+        led: LED,
         *_args,
         **_kwargs,
     ) -> RGBCCT:
-        x_norm = (led_pos[0] - floor[0]) / (floor[2] - floor[0])
+        x_norm = (led.p.x - ctx.floor.p1.x) / (ctx.floor.p2.x - ctx.floor.p1.x)
         hue = (x_norm * spread + time * speed) % 1.0
         r, g, b = _hsv_to_rgb(hue, 1.0, 1.0)
         return RGBCCT(r=r, g=g, b=b)
@@ -115,13 +115,13 @@ def fire(
 ) -> Animation:
     def animation(
         time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
+        _ctx: SceneContext,
+        led: LED,
         *_args,
         **_kwargs,
     ) -> RGBCCT:
         time_bucket = int(time / flicker_speed)
-        seed = hash((led_pos, time_bucket))
+        seed = hash((led.p.x, time_bucket))
         rand_gen = random.Random(seed)
         brightness_factor = 1.0 - flicker_intensity * rand_gen.random()
 
@@ -143,14 +143,13 @@ def theater_chase(
 ) -> Animation:
     def animation(
         time: float,
-        _floor: Tuple[float, float, float, float],
-        _led_pos: Tuple[float, float],
-        index: int,
+        _ctx: SceneContext,
+        led: LED,
         *_args,
         **_kwargs,
     ) -> RGBCCT:
         time_offset = int(time * speed * 10)
-        if (index - time_offset) % spacing == 0:
+        if (led.index - time_offset) % spacing == 0:
             return color
         return RGBCCT()
 
@@ -183,15 +182,14 @@ def alternate(
 ) -> Animation:
     def animation(
         time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
-        index: int,
+        _ctx: SceneContext,
+        led: LED,
         objects: Iterable[Point],
         *_args,
         **_kwargs,
     ) -> RGBCCT:
         return animations[int(time / length) % len(animations)](
-            time, floor, led_pos, index, objects
+            time, _ctx, led, objects
         )
 
     return animation
@@ -205,13 +203,17 @@ def swing(
 ) -> Animation:
     def animation(
         time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
+        ctx: SceneContext,
+        led: LED,
         *_args,
         **_kwargs,
     ) -> RGBCCT:
-        coordinate: float = led_pos[0] if direction == "x" else led_pos[1]
-        floor_len: float = floor[2] if direction == "x" else floor[3]
+        coordinate: float = led.p.x if direction == "x" else led.p.y
+        floor_len: float = (
+            ctx.floor.p2.x - ctx.floor.p1.x
+            if direction == "x"
+            else ctx.floor.p2.y - ctx.floor.p1.y
+        )
 
         target_coordinate: float = (
             math.sin(time * speed) * floor_len / 2 + floor_len / 2
@@ -248,9 +250,8 @@ def idle(idle_animation: Animation, active_animation: Animation) -> Animation:
 
     def animation(
         time: float,
-        floor: Tuple[float, float, float, float],
-        led_pos: Tuple[float, float],
-        index: int,
+        ctx: SceneContext,
+        led: LED,
         objects: Iterable[Point],
         *_args,
         **_kwargs,
@@ -260,9 +261,8 @@ def idle(idle_animation: Animation, active_animation: Animation) -> Animation:
         if len(objects) == 0:
             return idle_animation(
                 time,
-                floor,
-                led_pos,
-                index,
+                ctx,
+                led,
                 objects,
                 *_args,
                 **_kwargs,
@@ -270,9 +270,8 @@ def idle(idle_animation: Animation, active_animation: Animation) -> Animation:
         else:
             return active_animation(
                 time,
-                floor,
-                led_pos,
-                index,
+                ctx,
+                led,
                 objects,
                 *_args,
                 **_kwargs,

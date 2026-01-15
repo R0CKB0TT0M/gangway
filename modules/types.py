@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, Tuple, Union
+from typing import Callable, Iterable, List, Tuple, Union
 
 from rpi_ws2805 import RGBCCT
 
@@ -35,6 +35,27 @@ class Point:
 
 
 @dataclass
+class Rectangle:
+    p1: Point
+    p2: Point
+
+    @property
+    def width(self) -> float:
+        return abs(self.p2.x - self.p1.x)
+
+    @property
+    def height(self) -> float:
+        return abs(self.p2.y - self.p1.y)
+
+    @property
+    def center(self) -> Point:
+        return Point(
+            x=(self.p1.x + self.p2.x) / 2,
+            y=(self.p1.y + self.p2.y) / 2,
+        )
+
+
+@dataclass
 class Strip:
     index: int
     len: int
@@ -48,13 +69,18 @@ class LED:
     p: Point
 
 
+@dataclass
+class SceneContext:
+    floor: Rectangle
+    leds: List[LED]
+
+
 Animation = Callable[
     [
-        float,
-        Tuple[float, float, float, float],
-        Tuple[float, float],
-        int,
-        Iterable[Point],
+        float,  # Time since start in seconds
+        SceneContext,  # Floor profile and other LEDs
+        LED,  # LED to generate color for
+        Iterable[Point],  # Detected objects (persons as coordinates)
     ],
     RGBCCT,
 ]
