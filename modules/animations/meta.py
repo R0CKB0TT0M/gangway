@@ -3,6 +3,7 @@
 Meta-Animation Definitions
 """
 
+import datetime
 from typing import Iterable, Literal
 
 from rpi_ws2805 import RGBCCT
@@ -51,5 +52,49 @@ def blend(*animations: Animation | RGBCCT) -> Animation:
         return RGBCCT(
             r=average[0], g=average[1], b=average[2], cw=average[3], ww=average[4]
         )
+
+    return animation
+
+
+def schedule(
+    primary: Animation | RGBCCT,
+    secondary: Animation | RGBCCT,
+    start: str = "18:00",
+    end: str = "06:00",
+) -> Animation:
+    """
+    Activates the primary animation only between specific hours.
+    Otherwise returns secondary animation.
+    """
+
+    def animation(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        objects: Iterable[Point],
+        *args,
+        **kwargs,
+    ) -> RGBCCT:
+        now = datetime.datetime.now().time()
+        try:
+            start_t = datetime.time.fromisoformat(start)
+            end_t = datetime.time.fromisoformat(end)
+        except ValueError:
+            # Fallback if time format is invalid
+            start_t = datetime.time(18, 0)
+            end_t = datetime.time(6, 0)
+
+        is_active = False
+        if start_t <= end_t:
+            is_active = start_t <= now <= end_t
+        else:  # crosses midnight
+            is_active = now >= start_t or now <= end_t
+
+        target = primary if is_active else secondary
+
+        if isinstance(target, RGBCCT):
+            return target
+
+        return target(time, ctx, led, objects, *args, **kwargs)
 
     return animation

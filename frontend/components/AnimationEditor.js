@@ -441,6 +441,23 @@ function ParamInput({ param, value, onChange, allAnimations }) {
         );
     }
 
+    // Case: Time String (Heuristic)
+    if (
+        (param.type?.name === "str" || param.type === "str") &&
+        (param.name === "start" ||
+            param.name === "end" ||
+            param.name.includes("time"))
+    ) {
+        return (
+            <input
+                type="time"
+                value={value ?? ""}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-300 focus:border-teal-500 outline-none [color-scheme:dark]"
+            />
+        );
+    }
+
     // Case: Number (int or float)
     if (isNumber(param.type)) {
         const isInt = param.type.name === "int";

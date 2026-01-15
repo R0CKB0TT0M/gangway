@@ -85,8 +85,15 @@ def paint(
     """
     Like dot() but persists object-locations for n seconds.
     """
-    history: List[Tuple[Point, float]] = []
+    # History stores (x, y, timestamp)
+    history: List[Tuple[float, float, float]] = []
     last_frame_time = -1.0
+    last_sample_time = -1.0
+    active_points: List[Tuple[float, float]] = []
+
+    # Parameters for optimization
+    sample_rate = 0.05  # 20 Hz
+    radius_sq = radius**2
 
     def animation(
         time: float,
@@ -94,16 +101,25 @@ def paint(
         led: LED,
         objects: Iterable[Point],
     ) -> RGBCCT:
-        nonlocal history, last_frame_time
+        nonlocal history, last_frame_time, last_sample_time, active_points
 
         # Update history once per frame
         # We assume 'time' is monotonic and strictly increasing per frame
         if time > last_frame_time:
             cutoff = time - persistence
-            history = [(p, t) for p, t in history if t > cutoff]
+            # 1. Prune history (x, y, t)
+            history = [h for h in history if h[2] > cutoff]
 
-            for obj in objects:
-                history.append((obj, time))
+            # 2. Sample new points if interval elapsed
+            if time - last_sample_time >= sample_rate:
+                for obj in objects:
+                    history.append((obj.x, obj.y, time))
+                last_sample_time = time
+
+            # 3. Prepare active points for this frame: History + Current Objects
+            active_points = [(x, y) for x, y, _ in history]
+            # Add current objects to ensure immediate responsiveness
+            active_points.extend((obj.x, obj.y) for obj in objects)
 
             last_frame_time = time
 
@@ -118,9 +134,15 @@ def paint(
         else:
             secondary_rgbcct = secondary(time, ctx, led, objects)
 
-        # Check against current objects AND history
-        # (History includes current objects if we just added them)
-        hit = any((led.p - p).length < radius for p, _ in history)
+        # Check against active_points using squared distance
+        led_x = led.p.x
+        led_y = led.p.y
+        hit = False
+        for px, py in active_points:
+            dist_sq = (led_x - px) ** 2 + (led_y - py) ** 2
+            if dist_sq < radius_sq:
+                hit = True
+                break
 
         return primary_rgbcct if hit else secondary_rgbcct
 

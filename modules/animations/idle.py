@@ -12,7 +12,7 @@ from rpi_ws2805 import RGBCCT
 
 from ..helpers import interpolate_rgbcct
 from ..types import LED, Animation, Point, SceneContext
-from .meta import alternate
+from .meta import alternate, blend
 
 
 def wave(
@@ -273,56 +273,58 @@ def idle(
     return animation
 
 
+def sparkle(density: float = 0.1, speed: float = 20.0) -> Animation:
+    def animation(
+        time: float, ctx: SceneContext, led: LED, *_args, **_kwargs
+    ) -> RGBCCT:
+        seed = hash((led.index, int(time * speed)))
+        rng = random.Random(seed)
+        if rng.random() < density:
+            return RGBCCT(
+                r=rng.randint(0, 255),
+                g=rng.randint(0, 255),
+                b=rng.randint(0, 255),
+            )
+        return RGBCCT()
+
+    return animation
+
+
 def rave() -> Animation:
     """
     A high-energy blend of animations suitable for a rave.
     """
-    return alternate(
-        strobo(frequency=15),
-        theater_chase(speed=3.0, color=RGBCCT(r=255, b=255)),
-        rainbow(speed=0.5, spread=1.0),
-        fire(flicker_speed=0.05, flicker_intensity=0.8),
-        length=5.0,
+    # 1. Intense Strobe
+    strobe_anim = strobo(
+        colors=[
+            RGBCCT(r=255),
+            RGBCCT(),
+            RGBCCT(g=255),
+            RGBCCT(),
+            RGBCCT(b=255),
+            RGBCCT(),
+            RGBCCT(cw=255),
+            RGBCCT(),
+        ],
+        frequency=25,
     )
 
+    # 2. Fast Rainbow
+    rainbow_anim = rainbow(speed=2.0, spread=2.0)
 
-def secret_rave(start_time: str = "22:00", end_time: str = "04:00") -> Animation:
-    """
-    Activates the rave animation only between specific hours.
-    Otherwise returns black (off).
-    """
-    rave_anim = rave()
-    fallback = static(RGBCCT())
+    # 3. Sparkle
+    sparkle_anim = sparkle(density=0.2, speed=30.0)
 
-    def animation(
-        time: float,
-        ctx: SceneContext,
-        led: LED,
-        objects: Iterable[Point],
-        *args,
-        **kwargs,
-    ) -> RGBCCT:
-        now = datetime.datetime.now().time()
-        try:
-            start = datetime.time.fromisoformat(start_time)
-            end = datetime.time.fromisoformat(end_time)
-        except ValueError:
-            # Fallback if time format is invalid
-            start = datetime.time(22, 0)
-            end = datetime.time(4, 0)
+    # 4. Chase
+    chase_anim = theater_chase(color=RGBCCT(r=255, g=0, b=255), speed=4.0, spacing=5)
 
-        is_active = False
-        if start <= end:
-            is_active = start <= now <= end
-        else:  # crosses midnight
-            is_active = now >= start or now <= end
-
-        if is_active:
-            return rave_anim(time, ctx, led, objects, *args, **kwargs)
-        else:
-            return fallback(time, ctx, led, objects, *args, **kwargs)
-
-    return animation
+    return alternate(
+        strobe_anim,
+        blend(rainbow_anim, sparkle_anim),  # Glittery rainbow
+        chase_anim,
+        sparkle_anim,
+        length=1.5,
+    )
 
 
 def linear_rainbow(

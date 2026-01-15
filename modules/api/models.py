@@ -146,11 +146,17 @@ class RaveParams(BaseModel):
     pass
 
 
-class SecretRaveParams(BaseModel):
-    """Parameters for the secret_rave animation."""
+class ScheduleParams(BaseModel):
+    """Parameters for the schedule animation."""
 
-    start_time: str = "22:00"
-    end_time: str = "04:00"
+    start: str = "18:00"
+    end: str = "06:00"
+    primary: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
+    )
+    secondary: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=0, g=255, b=0, cw=0, ww=0)
+    )
 
 
 class PaintParams(BaseModel):
@@ -303,10 +309,10 @@ class RaveAnimation(BaseModel):
         extra = "forbid"  # Disallow other keys
 
 
-class SecretRaveAnimation(BaseModel):
-    """Wrapper for the secret_rave animation."""
+class ScheduleAnimation(BaseModel):
+    """Wrapper for the schedule animation."""
 
-    secret_rave: SecretRaveParams = Field(...)
+    schedule: ScheduleParams = Field(...)
 
     class Config:
         extra = "forbid"  # Disallow other keys
@@ -346,7 +352,7 @@ AnimationModel = Union[
     IdleAnimation,
     BlendAnimation,
     RaveAnimation,
-    SecretRaveAnimation,
+    ScheduleAnimation,
     PaintAnimation,
     LinearRainbowAnimation,
 ]
@@ -366,6 +372,6 @@ OffParams.model_rebuild()
 IdleParams.model_rebuild()
 BlendParams.model_rebuild()
 RaveParams.model_rebuild()
-SecretRaveParams.model_rebuild()
+ScheduleParams.model_rebuild()
 PaintParams.model_rebuild()
 LinearRainbowParams.model_rebuild()
