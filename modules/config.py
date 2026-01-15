@@ -70,8 +70,9 @@ class GANGWAYConfig:
                 Strip(
                     index=s.get("index"),
                     len=s.get("len"),
-                    start=Point(*s.get("start")),
-                    end=Point(*s.get("end")),
+                    start=Point(*s.get("start"))
+                    + Point(x=self.OFFSET_X, y=self.OFFSET_Y),
+                    end=Point(*s.get("end")) + Point(x=self.OFFSET_X, y=self.OFFSET_Y),
                 )
                 for s in config.get("strips", [])
             ]
@@ -79,8 +80,7 @@ class GANGWAYConfig:
             self.LEDS = [
                 LED(
                     i + strip.index,
-                    interpolate_points(strip.start, strip.end, strip.len, i)
-                    + Point(x=self.OFFSET_X, y=self.OFFSET_Y),
+                    interpolate_points(strip.start, strip.end, strip.len, i),
                 )
                 for strip in self.STRIPS
                 for i in range(strip.len)

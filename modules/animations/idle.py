@@ -39,10 +39,10 @@ def wave(
         floor: Tuple[float, float, float, float],
         led_pos: Tuple[float, float],
         index: int,
-        smooth: Callable[[], None],
         _: Callable[[], None],
+        instant: Callable[[], None],
     ) -> RGBCCT:
-        smooth()
+        instant()
 
         r, g, b, cw, ww = 0, 0, 0, 0, 0
 
@@ -161,7 +161,7 @@ def theater_chase(
         instant()
 
         time_offset = int(time * speed * 10)
-        if (index + time_offset) % spacing == 0:
+        if (index - time_offset) % spacing == 0:
             return color
         return RGBCCT()
 

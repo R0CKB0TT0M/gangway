@@ -69,7 +69,11 @@ def update_config(new_config: ConfigModel):
     Updates the configuration, saves it to disk, and reloads the system.
     """
     try:
-        # Convert model to dict
+        with open(CONFIG.path, "r") as f:
+            raw_config = yaml.safe_load(f)
+        old_config = ConfigModel(**raw_config)
+
+        new_config.strips = old_config.strips
         config_dict = new_config.model_dump()
 
         # Save to file

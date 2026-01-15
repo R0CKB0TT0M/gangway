@@ -1,18 +1,18 @@
 projection:
   src_points:
-  - - 252.0
-    - 357.0
-  - - 366.0
-    - 358.0
-  - - 351.0
-    - 101.0
-  - - 312.0
-    - 102.0
+  - - 251.0
+    - 359.0
+  - - 365.0
+    - 364.0
+  - - 349.0
+    - 114.0
+  - - 308.0
+    - 113.0
   dst_points:
   - - 0.0
-    - 490.0
+    - 505.0
   - - 115.0
-    - 490.0
+    - 505.0
   - - 115.0
     - 0.0
   - - 0.0
@@ -21,11 +21,11 @@ projection:
   - 0.0
   - 0.0
   - 115.0
-  - 490.0
+  - 505.0
 leds:
   target_weight: 0.05
   offset_x: 0.0
-  offset_y: 10.0
+  offset_y: 0.0
 strips:
 - index: 1
   len: 24
@@ -75,33 +75,64 @@ strips:
   end:
   - 45.0
   - 290.0
+- index: 145
+  len: 24
+  start:
+  - 28.0
+  - 346.0
+  end:
+  - 23.0
+  - 146.0
+- index: 169
+  len: 24
+  start:
+  - 38.0
+  - 128.0
+  end:
+  - 74.0
+  - 327.0
+- index: 193
+  len: 24
+  start:
+  - 82.5
+  - 290.0
+  end:
+  - 82.5
+  - 490.0
 animations:
   idle:
-    wave:
-      colors:
-      - r: 255
-        g: 0
-        b: 0
-        cw: 0
-        ww: 0
-      - r: 0
-        g: 255
-        b: 0
-        cw: 0
-        ww: 0
-      n_waves: 3
-      speed: 50.0
-      wavelength: 200.0
-  object:
-    dot:
-      primary:
-        r: 255
-        g: 255
-        b: 255
-        cw: 255
-        ww: 255
-      secondary:
-        fire:
+    alternate:
+      animations:
+      - swing:
+          color:
+            r: 255
+            g: 255
+            b: 255
+            cw: 255
+            ww: 0
+          direction: y
+          wavelength: 50
+          speed: 10.0
+      - swing:
+          color:
+            r: 255
+            g: 255
+            b: 255
+            cw: 255
+            ww: 0
+          direction: x
+          wavelength: 10
+          speed: 10.0
+      - theater_chase:
+          color:
+            r: 255
+            g: 255
+            b: 255
+            cw: 0
+            ww: 0
+          speed: 1.0
+          spacing: 4
+      - fire:
           base_color:
             r: 255
             g: 140
@@ -110,5 +141,23 @@ animations:
             ww: 0
           flicker_speed: 0.1
           flicker_intensity: 0.5
-      radius: 150.0
+      - rainbow:
+          speed: 0.1
+          spread: 3.0
+      length: 5.0
+  object:
+    exponential:
+      primary:
+        static:
+          color:
+            r: 255
+            g: 255
+            b: 255
+            cw: 255
+            ww: 255
+      secondary:
+        rainbow:
+          speed: 0.1
+          spread: 3.0
+      radius: 20.0
       force_instant: true
