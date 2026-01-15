@@ -4,7 +4,7 @@ Meta-Animation Definitions
 """
 
 import datetime
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Literal
 
 from rpi_ws2805 import RGBCCT
 
@@ -31,7 +31,9 @@ def alternate(
     return animation
 
 
-def blend(*animations: Animation | RGBCCT) -> Animation:
+def blend(
+    *animations: Animation | RGBCCT, mode: Literal["average", "max"] = "average"
+) -> Animation:
     def animation(
         time: float,
         _ctx: SceneContext,
@@ -40,19 +42,25 @@ def blend(*animations: Animation | RGBCCT) -> Animation:
         *_args,
         **_kwargs,
     ) -> RGBCCT:
-        colors = (
-            animation
-            if isinstance(animation, RGBCCT)
-            else animation(time, _ctx, led, objects)
-            for animation in animations
-        )
+        colors_list = [
+            anim if isinstance(anim, RGBCCT) else anim(time, _ctx, led, objects)
+            for anim in animations
+        ]
 
-        tuples = ((color.r, color.g, color.b, color.cw, color.ww) for color in colors)
-        average = tuple(int(sum(values) / len(animations)) for values in zip(*tuples))
+        if not colors_list:
+            return RGBCCT()
 
-        return RGBCCT(
-            r=average[0], g=average[1], b=average[2], cw=average[3], ww=average[4]
+        tuples = (
+            (color.r, color.g, color.b, color.cw, color.ww) for color in colors_list
         )
+        zipped = zip(*tuples)
+
+        if mode == "max":
+            result = tuple(max(values) for values in zipped)
+        else:
+            result = tuple(int(sum(values) / len(colors_list)) for values in zipped)
+
+        return RGBCCT(r=result[0], g=result[1], b=result[2], cw=result[3], ww=result[4])
 
     return animation
 

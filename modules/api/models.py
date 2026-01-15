@@ -138,6 +138,7 @@ class BlendParams(BaseModel):
     """Parameters for the blend animation."""
 
     animations: List["AnimationModel"] = Field(default_factory=list)
+    mode: Literal["average", "max"] = "average"
 
 
 class RaveParams(BaseModel):
