@@ -68,8 +68,10 @@ def update_config(new_config: ConfigModel):
             raw_config = yaml.safe_load(f)
         old_config = ConfigModel(**raw_config)
 
-        new_config.strips = old_config.strips
-        config_dict = new_config.model_dump()
+        # Apply only animation changes for security reasons
+        old_config.animation = new_config.animation
+
+        config_dict = old_config.model_dump()
 
         # Save to file
         with open(CONFIG.path, "w") as f:
