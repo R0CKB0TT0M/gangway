@@ -10,7 +10,6 @@ from typing import Dict, List, Tuple
 from rpi_ws2805 import RGBCCT, PixelStrip
 
 from . import config
-from .animations.object import Animation
 from .config import CONFIG, GANGWAYConfig
 from .defaults import (
     LED_BRIGHTNESS,
@@ -21,7 +20,7 @@ from .defaults import (
     LED_PIN,
     WS2805_STRIP,
 )
-from .types import LED, Point, Rectangle, SceneContext
+from .types import LED, Animation, Point, Rectangle, SceneContext
 
 
 class LEDController(Thread):

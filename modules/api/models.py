@@ -120,6 +120,20 @@ class OffParams(BaseModel):
     pass
 
 
+class IdleParams(BaseModel):
+    """Parameters for the idle animation."""
+
+    idle_animation: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
+    )
+    active_animation: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=0, g=255, b=0, cw=0, ww=0)
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
 # --- Animation Wrapper Models (to enforce {'name': params} structure) ---
 
 
@@ -222,6 +236,15 @@ class OffAnimation(BaseModel):
         extra = "forbid"  # Disallow other keys
 
 
+class IdleAnimation(BaseModel):
+    """Wrapper for the idle animation."""
+
+    idle: IdleParams = Field(...)
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
 # --- Union of All Animation Models ---
 AnimationModel = Union[
     AlternateAnimation,
@@ -235,6 +258,7 @@ AnimationModel = Union[
     DotAnimation,
     ExponentialAnimation,
     OffAnimation,
+    IdleAnimation,
 ]
 
 # --- Rebuild Models to Resolve Forward References ---
@@ -249,3 +273,4 @@ WaveParams.model_rebuild()
 DotParams.model_rebuild()
 ExponentialParams.model_rebuild()
 OffParams.model_rebuild()
+IdleParams.model_rebuild()

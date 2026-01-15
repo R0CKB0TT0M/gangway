@@ -243,7 +243,9 @@ def static(color: RGBCCT = RGBCCT(r=255, g=255, b=255)) -> Animation:
     return animation
 
 
-def idle(idle_animation: Animation, active_animation: Animation) -> Animation:
+def idle(
+    idle_animation: Animation | RGBCCT, active_animation: Animation | RGBCCT
+) -> Animation:
     """
     A simple animation that returns a static color.
     """
@@ -259,22 +261,30 @@ def idle(idle_animation: Animation, active_animation: Animation) -> Animation:
         objects = [object for object in objects]
 
         if len(objects) == 0:
-            return idle_animation(
-                time,
-                ctx,
-                led,
-                objects,
-                *_args,
-                **_kwargs,
+            return (
+                idle_animation
+                if isinstance(idle_animation, RGBCCT)
+                else idle_animation(
+                    time,
+                    ctx,
+                    led,
+                    objects,
+                    *_args,
+                    **_kwargs,
+                )
             )
         else:
-            return active_animation(
-                time,
-                ctx,
-                led,
-                objects,
-                *_args,
-                **_kwargs,
+            return (
+                active_animation
+                if isinstance(active_animation, RGBCCT)
+                else active_animation(
+                    time,
+                    ctx,
+                    led,
+                    objects,
+                    *_args,
+                    **_kwargs,
+                )
             )
 
     return animation

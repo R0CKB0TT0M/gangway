@@ -38,19 +38,10 @@ export default function Home() {
     }, []);
 
     // Update logic for Animation Editor
-    const updateIdleConfig = (newVal) => {
+    const updateAnimationConfig = (newVal) => {
         const newConfig = {
             ...config,
-            animations: { ...config.animations, idle: newVal },
-        };
-        setConfig(newConfig);
-        setRawConfigString(JSON.stringify(newConfig, null, 2));
-    };
-
-    const updateObjectConfig = (newVal) => {
-        const newConfig = {
-            ...config,
-            animations: { ...config.animations, object: newVal },
+            animation: newVal,
         };
         setConfig(newConfig);
         setRawConfigString(JSON.stringify(newConfig, null, 2));
@@ -190,36 +181,17 @@ export default function Home() {
                             </div>
 
                             <div className="grid grid-cols-1 gap-8">
-                                {/* Idle Animation */}
+                                {/* Animation */}
                                 <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
                                     <h3 className="text-xl font-semibold mb-6 text-teal-300 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-teal-300"></span>
-                                        Idle Animation
+                                        Animation
                                     </h3>
                                     <AnimationEditor
-                                        config={config.animations?.idle}
-                                        onChange={updateIdleConfig}
+                                        config={config.animation}
+                                        onChange={updateAnimationConfig}
                                         allAnimations={animations}
-                                        availableAnimations={animations.filter(
-                                            (a) => a.module === "idle",
-                                        )}
-                                        isRoot={true}
-                                    />
-                                </div>
-
-                                {/* Object Animation */}
-                                <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
-                                    <h3 className="text-xl font-semibold mb-6 text-pink-300 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-pink-300"></span>
-                                        Object Animation
-                                    </h3>
-                                    <AnimationEditor
-                                        config={config.animations?.object}
-                                        onChange={updateObjectConfig}
-                                        allAnimations={animations}
-                                        availableAnimations={animations.filter(
-                                            (a) => a.module === "object",
-                                        )}
+                                        availableAnimations={animations}
                                         isRoot={true}
                                     />
                                 </div>

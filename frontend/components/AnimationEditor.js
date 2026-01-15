@@ -121,6 +121,61 @@ export default function AnimationEditor({
 /**
  * Renders the correct input control based on a parameter's type definition.
  */
+
+// --- Component for RGBCCT Color Inputs ---
+const ColorInputs = ({ value: colorValue, onChange: onColorChange }) => {
+    // Ensure we have a valid object to work with, even for null/undefined input.
+    const c =
+        typeof colorValue === "object" && colorValue !== null
+            ? colorValue
+            : { r: 0, g: 0, b: 0, cw: 0, ww: 0 };
+
+    const updateColor = (channel, val) => {
+        if (val === "") {
+            // If the input is cleared, pass an empty string to allow the input field to be empty.
+            onColorChange({ ...c, [channel]: "" });
+        } else {
+            const numVal = parseInt(val, 10);
+            // If the parsed value is NaN (e.g., incomplete number or invalid input), default to 0.
+            // Otherwise, use the parsed number.
+            onColorChange({ ...c, [channel]: isNaN(numVal) ? 0 : numVal });
+        }
+    };
+
+    const channelColors = {
+        r: "border-red-500/50 focus:border-red-500",
+        g: "border-green-500/50 focus:border-green-500",
+        b: "border-blue-500/50 focus:border-blue-500",
+        cw: "border-cyan-300/50 focus:border-cyan-300",
+        ww: "border-yellow-300/50 focus:border-yellow-300",
+    };
+
+    return (
+        <div className="grid grid-cols-5 gap-1">
+            {["r", "g", "b", "cw", "ww"].map((chan) => (
+                <input
+                    key={chan}
+                    type="number"
+                    min="0"
+                    max="255"
+                    placeholder={chan.toUpperCase()}
+                    value={c[chan]}
+                    onChange={(e) => updateColor(chan, e.target.value)}
+                    onBlur={(e) => {
+                        // On blur, normalize empty or invalid values to 0
+                        const val = e.target.value;
+                        const numVal = parseInt(val, 10);
+                        if (val === "" || isNaN(numVal)) {
+                            onColorChange({ ...c, [chan]: 0 });
+                        }
+                    }}
+                    className={`w-full bg-gray-800 border-2 rounded px-1 py-1 text-center text-xs text-gray-300 outline-none focus:ring-0 ${channelColors[chan]}`}
+                />
+            ))}
+        </div>
+    );
+};
+
 function ParamInput({ param, value, onChange, allAnimations }) {
     // --- Type Parsing Helpers ---
     // These functions inspect the detailed type object from the backend API.
@@ -156,60 +211,6 @@ function ParamInput({ param, value, onChange, allAnimations }) {
             return allAnimations.filter((a) => a.module === module);
         }
         return allAnimations; // Fallback for generic "Animation"
-    };
-
-    // --- Component for RGBCCT Color Inputs ---
-    const ColorInputs = ({ value: colorValue, onChange: onColorChange }) => {
-        // Ensure we have a valid object to work with, even for null/undefined input.
-        const c =
-            typeof colorValue === "object" && colorValue !== null
-                ? colorValue
-                : { r: 0, g: 0, b: 0, cw: 0, ww: 0 };
-
-        const updateColor = (channel, val) => {
-            if (val === "") {
-                // If the input is cleared, pass an empty string to allow the input field to be empty.
-                onColorChange({ ...c, [channel]: "" });
-            } else {
-                const numVal = parseInt(val, 10);
-                // If the parsed value is NaN (e.g., incomplete number or invalid input), default to 0.
-                // Otherwise, use the parsed number.
-                onColorChange({ ...c, [channel]: isNaN(numVal) ? 0 : numVal });
-            }
-        };
-
-        const channelColors = {
-            r: "border-red-500/50 focus:border-red-500",
-            g: "border-green-500/50 focus:border-green-500",
-            b: "border-blue-500/50 focus:border-blue-500",
-            cw: "border-cyan-300/50 focus:border-cyan-300",
-            ww: "border-yellow-300/50 focus:border-yellow-300",
-        };
-
-        return (
-            <div className="grid grid-cols-5 gap-1">
-                {["r", "g", "b", "cw", "ww"].map((chan) => (
-                    <input
-                        key={chan}
-                        type="number"
-                        min="0"
-                        max="255"
-                        placeholder={chan.toUpperCase()}
-                        value={c[chan]}
-                        onChange={(e) => updateColor(chan, e.target.value)}
-                        onBlur={(e) => {
-                            // On blur, normalize empty or invalid values to 0
-                            const val = e.target.value;
-                            const numVal = parseInt(val, 10);
-                            if (val === "" || isNaN(numVal)) {
-                                onColorChange({ ...c, [chan]: 0 });
-                            }
-                        }}
-                        className={`w-full bg-gray-800 border-2 rounded px-1 py-1 text-center text-xs text-gray-300 outline-none focus:ring-0 ${channelColors[chan]}`}
-                    />
-                ))}
-            </div>
-        );
     };
 
     // --- Render Logic based on Parameter Type ---
