@@ -9,7 +9,14 @@ class RGBCCT(int):
     def __new__(cls, r=0, g=0, b=0, cw=0, ww=0, value=None) -> "RGBCCT":
         if value is not None:
             return int.__new__(cls, value)
-        return int.__new__(cls, (cw << 32) | (ww << 24) | (b << 16) | (g << 8) | r)
+        return int.__new__(
+            cls,
+            (cw & 0xFF) << 32
+            | (ww & 0xFF) << 24
+            | (b & 0xFF) << 16
+            | (g & 0xFF) << 8
+            | r & 0xFF,
+        )
 
     def __set(self, value: int, shift: int = 0) -> None:
         self = self & ~(0xFF << shift) & (value << shift)

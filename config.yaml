@@ -100,27 +100,25 @@ strips:
   - 82.5
   - 490.0
 animation:
-  idle:
-    idle_animation:
-      r: 255
-      g: 255
-      b: 255
-      cw: 0
-      ww: 0
-    active_animation:
-      exponential:
-        primary:
-          static:
-            color:
-              r: 255
-              g: 0
-              b: 0
-              cw: 0
-              ww: 0
-        secondary:
+  blend:
+    animations:
+    - swing:
+        color:
           r: 255
           g: 255
           b: 255
-          cw: 0
+          cw: 255
           ww: 0
-        radius: 150.0
+        direction: x
+        wavelength: 10
+        speed: 2.0
+    - swing:
+        color:
+          r: 255
+          g: 255
+          b: 255
+          cw: 255
+          ww: 0
+        direction: y
+        wavelength: 10
+        speed: 2.0

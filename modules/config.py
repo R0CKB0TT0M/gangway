@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Tuple
 import yaml
 from rpi_ws2805 import RGBCCT
 
-from .animations import idle, responsive
+from .animations import idle, meta, responsive
 from .helpers import interpolate_points
 from .types import LED, Animation, Point, Rectangle, Strip
 
@@ -20,7 +20,7 @@ def _get_animation_functions():
     """Dynamically collects all animation functions from imported modules."""
     functions = {}
     # Inspect idle and object animation modules
-    for module in [idle, responsive]:
+    for module in [idle, responsive, meta]:
         for name, func in inspect.getmembers(module, inspect.isfunction):
             # Add function to registry if it's not a private helper
             if not name.startswith("_") and name != "interpolate_rgbcct":

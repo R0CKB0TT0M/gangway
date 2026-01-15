@@ -5,7 +5,7 @@ Idle Animation Definitions
 
 import math
 import random
-from typing import Iterable, List, Literal, Tuple
+from typing import Iterable, List, Literal
 
 from rpi_ws2805 import RGBCCT
 
@@ -172,25 +172,6 @@ def strobo(
         **_kwargs,
     ) -> RGBCCT:
         return colors[int(time * frequency) % len(colors)]
-
-    return animation
-
-
-def alternate(
-    *animations: Animation,
-    length: float = 10,
-) -> Animation:
-    def animation(
-        time: float,
-        _ctx: SceneContext,
-        led: LED,
-        objects: Iterable[Point],
-        *_args,
-        **_kwargs,
-    ) -> RGBCCT:
-        return animations[int(time / length) % len(animations)](
-            time, _ctx, led, objects
-        )
 
     return animation
 

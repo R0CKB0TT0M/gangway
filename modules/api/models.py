@@ -134,6 +134,12 @@ class IdleParams(BaseModel):
         extra = "forbid"  # Disallow other keys
 
 
+class BlendParams(BaseModel):
+    """Parameters for the blend animation."""
+
+    animations: List["AnimationModel"] = Field(default_factory=list)
+
+
 # --- Animation Wrapper Models (to enforce {'name': params} structure) ---
 
 
@@ -245,6 +251,15 @@ class IdleAnimation(BaseModel):
         extra = "forbid"  # Disallow other keys
 
 
+class BlendAnimation(BaseModel):
+    """Wrapper for the blend animation."""
+
+    blend: BlendParams = Field(...)
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
 # --- Union of All Animation Models ---
 AnimationModel = Union[
     AlternateAnimation,
@@ -259,6 +274,7 @@ AnimationModel = Union[
     ExponentialAnimation,
     OffAnimation,
     IdleAnimation,
+    BlendAnimation,
 ]
 
 # --- Rebuild Models to Resolve Forward References ---
@@ -274,3 +290,4 @@ DotParams.model_rebuild()
 ExponentialParams.model_rebuild()
 OffParams.model_rebuild()
 IdleParams.model_rebuild()
+BlendParams.model_rebuild()
