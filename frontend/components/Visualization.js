@@ -197,13 +197,13 @@ export default function Visualization({ config }) {
         <div className="h-full flex flex-col">
             <div
                 ref={containerRef}
-                className="flex-1 relative bg-black overflow-hidden flex items-center justify-center"
+                className="flex-1 relative bg-gray-900 overflow-hidden flex items-center justify-center"
             >
                 {stats && (
                     <div className="absolute top-4 left-4 z-20 bg-black/50 text-teal-400 p-2 rounded text-xs font-mono">
-                        <div>FPS: {stats.fps}</div>
-                        <div>UPS: {stats.ups}</div>
-                        <div className="text-gray-400 mt-1">TPF (ms)</div>
+                        <div>RPS: {stats.fps} (LED refresh rate)</div>
+                        <div>UPS: {stats.ups} (sensor updates per second)</div>
+                        <div className="text-gray-400 mt-1">MSPR (ms)</div>
                         <div>Min: {stats.tpf_min}</div>
                         <div>Avg: {stats.tpf_avg}</div>
                         <div>Max: {stats.tpf_max}</div>
@@ -211,11 +211,19 @@ export default function Visualization({ config }) {
                 )}
                 <div
                     className="relative border border-gray-800 bg-gray-900 shadow-2xl origin-center"
-                    style={{
-                        width: floorWidth,
-                        height: floorHeight,
-                        transform: `scale(${scale})`,
-                    }}
+                    style={
+                        viewMode === "mapped"
+                            ? {
+                                  width: floorWidth,
+                                  height: floorHeight,
+                                  transform: `scale(${scale})`,
+                              }
+                            : {
+                                  width: "100%",
+                                  height: "100%",
+                                  transform: "none",
+                              }
+                    }
                 >
                     {showImage && imageSrc && (
                         <img
