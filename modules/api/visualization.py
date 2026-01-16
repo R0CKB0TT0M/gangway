@@ -94,7 +94,7 @@ def get_live():
 
         # Paint cutout on as polygon
         cv2.polylines(
-            img, [np.array(config.CONFIG.CUTOUT, np.int32)], True, (0, 255, 0), 2
+            img, [np.array(config.CONFIG.CUTOUT, np.int32)], True, (0, 255, 0), 1
         )
 
         # Superimpose projected floor and strips
@@ -116,7 +116,7 @@ def get_live():
             )
             # transform expects shape (1, N, 2)
             floor_pts_cam = cv2.perspectiveTransform(np.array([floor_pts]), M_inv)[0]
-            cv2.polylines(img, [np.int32(floor_pts_cam)], True, (255, 0, 0), 2)
+            cv2.polylines(img, [np.int32(floor_pts_cam)], True, (255, 0, 0), 1)
 
             # Draw Strips (Red)
             for strip in config.CONFIG.STRIPS:
@@ -129,7 +129,39 @@ def get_live():
                 ]
                 pt1 = tuple(np.int32(strip_pts_cam[0]))
                 pt2 = tuple(np.int32(strip_pts_cam[1]))
-                cv2.line(img, pt1, pt2, (0, 0, 255), 2)
+                cv2.line(img, pt1, pt2, (0, 0, 255), 1)
+
+            # Draw LEDs with current colors
+            led_points_floor = np.array(
+                [[led.p.x, led.p.y] for led in STATE.led_controller.leds],
+                dtype=np.float32,
+            )
+            if len(led_points_floor) > 0:
+                led_points_cam = cv2.perspectiveTransform(
+                    np.array([led_points_floor]), M_inv
+                )[0]
+
+                for i, led in enumerate(STATE.led_controller.leds):
+                    pt = tuple(np.int32(led_points_cam[i]))
+                    color = STATE.led_controller.color_of(led)
+                    # OpenCV uses BGR
+                    r = min(255, color.r + color.cw + color.ww)
+                    g = min(255, color.g + color.cw + color.ww)
+                    b = min(255, color.b + color.cw + color.ww)
+
+                    cv2.circle(img, pt, 2, (b, g, r), -1)
+
+            # Draw Objects
+            object_points_floor = np.array(
+                [[p.x, p.y] for p in STATE.objects], dtype=np.float32
+            )
+            if len(object_points_floor) > 0:
+                obj_points_cam = cv2.perspectiveTransform(
+                    np.array([object_points_floor]), M_inv
+                )[0]
+                for pt_arr in obj_points_cam:
+                    pt = tuple(np.int32(pt_arr))
+                    cv2.circle(img, pt, 5, (0, 0, 255), 2)
 
         except Exception as e:
             print(f"Error projecting visualization overlays: {e}")

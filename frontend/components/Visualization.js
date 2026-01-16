@@ -10,6 +10,7 @@ export default function Visualization({ config }) {
     const [imageSrc, setImageSrc] = useState("");
     const [scale, setScale] = useState(1);
     const [stats, setStats] = useState(null);
+    const [viewMode, setViewMode] = useState("mapped");
     const containerRef = useRef(null);
 
     const floorWidth = config?.projection?.floor?.[2] || 800;
@@ -49,7 +50,11 @@ export default function Visualization({ config }) {
         let timeoutId;
 
         const loadNextImage = () => {
-            const nextSrc = `/api/visualization/live_mapped?t=${Date.now()}`;
+            const endpoint =
+                viewMode === "mapped"
+                    ? "/api/visualization/live_mapped"
+                    : "/api/visualization/live";
+            const nextSrc = `${endpoint}?t=${Date.now()}`;
             const img = new Image();
 
             img.onload = () => {
@@ -75,7 +80,7 @@ export default function Visualization({ config }) {
             isMounted = false;
             clearTimeout(timeoutId);
         };
-    }, [showImage]);
+    }, [showImage, viewMode]);
 
     // Canvas Render Loop
     useEffect(() => {
@@ -105,6 +110,13 @@ export default function Visualization({ config }) {
 
                 // Clear
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (viewMode === "raw") {
+                    if (isRunning) {
+                        animationFrameId = requestAnimationFrame(render);
+                    }
+                    return;
+                }
 
                 // Draw Strips
                 ctx.lineWidth = 4;
@@ -179,7 +191,7 @@ export default function Visualization({ config }) {
             isRunning = false;
             cancelAnimationFrame(animationFrameId);
         };
-    }, [config, showColors, showObjects]);
+    }, [config, showColors, showObjects, viewMode]);
 
     return (
         <div className="h-full flex flex-col">
@@ -208,7 +220,11 @@ export default function Visualization({ config }) {
                     {showImage && imageSrc && (
                         <img
                             src={imageSrc}
-                            className="absolute top-0 left-0 w-full h-full object-cover opacity-60"
+                            className={`absolute top-0 left-0 w-full h-full ${
+                                viewMode === "raw"
+                                    ? "object-contain opacity-100"
+                                    : "object-cover opacity-60"
+                            }`}
                             alt="Live View"
                         />
                     )}
@@ -216,12 +232,23 @@ export default function Visualization({ config }) {
                         ref={canvasRef}
                         width={floorWidth}
                         height={floorHeight}
-                        className="absolute top-0 left-0 w-full h-full z-10"
+                        className={`absolute top-0 left-0 w-full h-full z-10 ${
+                            viewMode === "raw" ? "hidden" : ""
+                        }`}
                     />
                 </div>
             </div>
 
             <div className="bg-gray-800 p-4 border-t border-gray-700 flex justify-center gap-8">
+                <select
+                    value={viewMode}
+                    onChange={(e) => setViewMode(e.target.value)}
+                    className="bg-gray-700 text-white rounded px-2 py-1 outline-none text-sm border border-gray-600 focus:border-teal-500"
+                >
+                    <option value="mapped">Top Down</option>
+                    <option value="raw">Camera View</option>
+                </select>
+                <div className="w-px h-6 bg-gray-600 mx-2"></div>
                 <Label
                     checked={showImage}
                     onChange={setShowImage}
