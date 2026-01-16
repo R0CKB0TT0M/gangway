@@ -103,6 +103,8 @@ def get_live():
             M = get_homography(src=config.CONFIG.CUTOUT)
             M_inv = np.linalg.inv(M)
 
+            floor_height = STATE.led_controller.floor.p2.y
+
             # Draw Floor (Blue)
             floor = STATE.led_controller.floor
             floor_pts = np.array(
@@ -118,22 +120,12 @@ def get_live():
             floor_pts_cam = cv2.perspectiveTransform(np.array([floor_pts]), M_inv)[0]
             cv2.polylines(img, [np.int32(floor_pts_cam)], True, (255, 0, 0), 1)
 
-            # Draw Strips (Red)
-            for strip in config.CONFIG.STRIPS:
-                strip_pts = np.array(
-                    [[strip.start.x, strip.start.y], [strip.end.x, strip.end.y]],
-                    dtype=np.float32,
-                )
-                strip_pts_cam = cv2.perspectiveTransform(np.array([strip_pts]), M_inv)[
-                    0
-                ]
-                pt1 = tuple(np.int32(strip_pts_cam[0]))
-                pt2 = tuple(np.int32(strip_pts_cam[1]))
-                cv2.line(img, pt1, pt2, (0, 0, 255), 1)
-
             # Draw LEDs with current colors
             led_points_floor = np.array(
-                [[led.p.x, led.p.y] for led in STATE.led_controller.leds],
+                [
+                    [led.p.x, floor_height - led.p.y]
+                    for led in STATE.led_controller.leds
+                ],
                 dtype=np.float32,
             )
             if len(led_points_floor) > 0:
@@ -149,11 +141,11 @@ def get_live():
                     g = min(255, color.g + color.cw + color.ww)
                     b = min(255, color.b + color.cw + color.ww)
 
-                    cv2.circle(img, pt, 2, (b, g, r), -1)
+                    cv2.circle(img, pt, 2, (b, g, r), cv2.FILLED, cv2.LINE_AA)
 
             # Draw Objects
             object_points_floor = np.array(
-                [[p.x, p.y] for p in STATE.objects], dtype=np.float32
+                [[p.x, floor_height - p.y] for p in STATE.objects], dtype=np.float32
             )
             if len(object_points_floor) > 0:
                 obj_points_cam = cv2.perspectiveTransform(
