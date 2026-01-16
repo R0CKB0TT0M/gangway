@@ -109,6 +109,42 @@ def _parse_animation_union(union_model: Any) -> List[Dict[str, Any]]:
                 min_val = getattr(param_field, "ge", None)
                 max_val = getattr(param_field, "le", None)
 
+                # Try gt/lt if ge/le not found (mapping to inclusive for UI hint)
+                if min_val is None:
+                    min_val = getattr(param_field, "gt", None)
+                if max_val is None:
+                    max_val = getattr(param_field, "lt", None)
+
+                # Pydantic V2 stores constraints in metadata
+                if hasattr(param_field, "metadata"):
+                    for meta in param_field.metadata:
+                        # Check ge/gt
+                        if hasattr(meta, "ge") and meta.ge is not None:
+                            min_val = meta.ge
+                        elif hasattr(meta, "gt") and meta.gt is not None:
+                            min_val = meta.gt
+
+                        # Check le/lt
+                        if hasattr(meta, "le") and meta.le is not None:
+                            max_val = meta.le
+                        elif hasattr(meta, "lt") and meta.lt is not None:
+                            max_val = meta.lt
+
+                # Check json_schema_extra (sometimes used for manual overrides)
+                if param_field.json_schema_extra and isinstance(
+                    param_field.json_schema_extra, dict
+                ):
+                    extra = param_field.json_schema_extra
+                    if "ge" in extra:
+                        min_val = extra["ge"]
+                    elif "minimum" in extra:
+                        min_val = extra["minimum"]
+
+                    if "le" in extra:
+                        max_val = extra["le"]
+                    elif "maximum" in extra:
+                        max_val = extra["maximum"]
+
                 param_info = {
                     "name": param_name,
                     "type": _get_type_info(param_field.annotation),

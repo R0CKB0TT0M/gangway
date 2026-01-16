@@ -190,6 +190,7 @@ export default function Visualization({ config }) {
                 {stats && (
                     <div className="absolute top-4 left-4 z-20 bg-black/50 text-teal-400 p-2 rounded text-xs font-mono">
                         <div>FPS: {stats.fps}</div>
+                        <div>UPS: {stats.ups}</div>
                         <div className="text-gray-400 mt-1">TPF (ms)</div>
                         <div>Min: {stats.tpf_min}</div>
                         <div>Avg: {stats.tpf_avg}</div>

@@ -3,9 +3,11 @@
 Web Server to receive XOVIS-Events and forward them to listening threads
 """
 
+import collections
 import json
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from threading import Thread
+from threading import Lock, Thread
 from typing import Callable, Dict, List, Optional, Tuple
 
 from ..config import Point
@@ -43,6 +45,7 @@ class XOVISServer:
 
     _objects: Dict[int, EventObject]
     _timestamps: Dict[int, int]
+    _update_times: collections.deque
 
     def __init__(self, host: str = "0.0.0.0", port: int = 8081) -> None:
         self._host = host
@@ -51,6 +54,8 @@ class XOVISServer:
         self._subscribers_position = list()
         self._objects = dict()
         self._timestamps = dict()
+        self._update_times = collections.deque(maxlen=100)
+        self._lock = Lock()
 
     def subscribe(
         self, callback: Callable[[Event], None], filter: Optional[List[Event]]
@@ -60,7 +65,21 @@ class XOVISServer:
     def subscribe_position(self, callback: Callable[[List[Point]], None]) -> None:
         self._subscribers_position.append(callback)
 
+    @property
+    def ups(self) -> int:
+        now = time.time()
+        with self._lock:
+            while len(self._update_times) > 0 and self._update_times[0] < now - 1.0:
+                self._update_times.popleft()
+            return len(self._update_times)
+
     def _notify(self, data) -> None:
+        now = time.time()
+        with self._lock:
+            self._update_times.append(now)
+            while len(self._update_times) > 0 and self._update_times[0] < now - 1.0:
+                self._update_times.popleft()
+
         events = create_events_from_json(data)
 
         self._notify_event(events)

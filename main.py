@@ -29,6 +29,7 @@ async def main():
 
     # 2. Xovis Server
     xovis_server = XOVISServer()
+    STATE.xovis_server = xovis_server
     xovis_server.subscribe_position(STATE.led_controller.update_objects)
 
     def update_api_objects(new_objects):

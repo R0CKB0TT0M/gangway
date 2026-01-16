@@ -13,7 +13,7 @@ from ..types import LED, Animation, Point, SceneContext
 
 
 def alternate(
-    *animations: Animation,
+    *animations: Animation | RGBCCT,
     length: float = 10,
 ) -> Animation:
     def animation(
@@ -24,8 +24,12 @@ def alternate(
         *_args,
         **_kwargs,
     ) -> RGBCCT:
-        return animations[int(time / length) % len(animations)](
-            time, _ctx, led, objects
+        return (
+            anim
+            if isinstance(
+                (anim := animations[int(time / length) % len(animations)]), RGBCCT
+            )
+            else anim(time, _ctx, led, objects)
         )
 
     return animation

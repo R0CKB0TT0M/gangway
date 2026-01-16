@@ -289,6 +289,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                         className="bg-gray-800 p-3 rounded relative pr-10"
                     >
                         <button
+                            type="button"
                             onClick={() => removeItem(idx)}
                             className="absolute top-2 right-2 text-red-400 hover:text-red-300"
                             aria-label="Remove"
@@ -305,6 +306,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                     </div>
                 ))}
                 <button
+                    type="button"
                     onClick={addItem}
                     className="text-teal-400 text-xs hover:text-teal-300"
                 >
@@ -342,6 +344,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                                 />
                             </div>
                             <button
+                                type="button"
                                 onClick={() => removeItem(idx)}
                                 className="text-red-400 text-xs"
                             >
@@ -350,6 +353,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                         </div>
                     ))}
                     <button
+                        type="button"
                         onClick={addItem}
                         className="text-teal-400 text-xs hover:text-teal-300"
                     >
@@ -382,6 +386,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                             className="bg-gray-800 p-3 rounded relative pr-10"
                         >
                             <button
+                                type="button"
                                 onClick={() => removeItem(idx)}
                                 className="absolute top-2 right-2 text-red-400 hover:text-red-300"
                                 aria-label="Remove"
@@ -398,6 +403,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                         </div>
                     ))}
                     <button
+                        type="button"
                         onClick={addItem}
                         className="text-teal-400 text-xs hover:text-teal-300"
                     >
@@ -425,6 +431,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
             <div className="space-y-2">
                 <div className="flex gap-2 text-xs">
                     <button
+                        type="button"
                         onClick={() =>
                             onChange({ r: 255, g: 255, b: 255, cw: 0, ww: 0 })
                         }
@@ -433,6 +440,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                         Color
                     </button>
                     <button
+                        type="button"
                         onClick={() =>
                             onChange({ [childAnims[0]?.name || "static"]: {} })
                         }
@@ -552,7 +560,7 @@ function ParamInput({ param, value, onChange, allAnimations }) {
                 value={value ?? ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-300 focus:border-teal-500 outline-none invalid:border-red-500 invalid:text-red-500"
+                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-300 focus:border-teal-500 outline-none invalid:!border-red-500 invalid:!text-red-500"
                 step={isInt ? "1" : "0.1"}
                 min={param.min}
                 max={param.max}

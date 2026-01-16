@@ -106,9 +106,7 @@ export default function Home() {
 
     const handleFormChange = () => {
         if (formRef.current) {
-            // Check if any input is invalid
-            const invalid = formRef.current.querySelector(":invalid");
-            setIsFormValid(!invalid);
+            setIsFormValid(formRef.current.checkValidity());
         }
     };
 
@@ -196,7 +194,7 @@ export default function Home() {
 
                             <form
                                 ref={formRef}
-                                onChange={handleFormChange}
+                                onInput={handleFormChange}
                                 className="grid grid-cols-1 gap-8"
                             >
                                 {/* Animation */}

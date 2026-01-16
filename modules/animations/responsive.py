@@ -23,7 +23,12 @@ def exponential(
         led: LED,
         objects: Iterable[Point],
     ) -> RGBCCT:
-        intensity = max(2 ** (-(led.p - object).length / radius) for object in objects)
+        objects = list(objects)
+        intensity = (
+            max(2 ** (-(led.p - object).length / radius) for object in objects)
+            if len(objects) != 0
+            else 0
+        )
 
         primary_rgbcct: RGBCCT
 
