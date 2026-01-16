@@ -10,7 +10,6 @@ from rpi_ws2805 import RGBCCT
 
 from ..helpers import interpolate_rgbcct
 from ..types import LED, Animation, Point, SceneContext
-from .idle import static
 
 
 def alternate(
@@ -18,7 +17,7 @@ def alternate(
     length: float = 10,
 ) -> Animation:
     if len(animations) == 0:
-        return static(RGBCCT())
+        return lambda *args, **kwargs: RGBCCT()
 
     def animation(
         time: float,

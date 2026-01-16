@@ -94,8 +94,45 @@ def get_live():
 
         # Paint cutout on as polygon
         cv2.polylines(
-            img, [np.array(config.CONFIG.CUTOUT, np.int32)], True, (0, 255, 0), 1
+            img, [np.array(config.CONFIG.CUTOUT, np.int32)], True, (0, 255, 0), 2
         )
+
+        # Superimpose projected floor and strips
+        try:
+            # Calculate inverse homography (Floor -> Camera)
+            M = get_homography(src=config.CONFIG.CUTOUT)
+            M_inv = np.linalg.inv(M)
+
+            # Draw Floor (Blue)
+            floor = STATE.led_controller.floor
+            floor_pts = np.array(
+                [
+                    [floor.p1.x, floor.p1.y],
+                    [floor.p2.x, floor.p1.y],
+                    [floor.p2.x, floor.p2.y],
+                    [floor.p1.x, floor.p2.y],
+                ],
+                dtype=np.float32,
+            )
+            # transform expects shape (1, N, 2)
+            floor_pts_cam = cv2.perspectiveTransform(np.array([floor_pts]), M_inv)[0]
+            cv2.polylines(img, [np.int32(floor_pts_cam)], True, (255, 0, 0), 2)
+
+            # Draw Strips (Red)
+            for strip in config.CONFIG.STRIPS:
+                strip_pts = np.array(
+                    [[strip.start.x, strip.start.y], [strip.end.x, strip.end.y]],
+                    dtype=np.float32,
+                )
+                strip_pts_cam = cv2.perspectiveTransform(np.array([strip_pts]), M_inv)[
+                    0
+                ]
+                pt1 = tuple(np.int32(strip_pts_cam[0]))
+                pt2 = tuple(np.int32(strip_pts_cam[1]))
+                cv2.line(img, pt1, pt2, (0, 0, 255), 2)
+
+        except Exception as e:
+            print(f"Error projecting visualization overlays: {e}")
 
         is_success, buffer = cv2.imencode(".jpg", img)
         if not is_success:

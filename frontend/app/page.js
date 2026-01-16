@@ -161,6 +161,12 @@ export default function Home() {
                         Live
                     </NavButton>
                     <NavButton
+                        active={currentView === "camera"}
+                        onClick={() => setCurrentView("camera")}
+                    >
+                        Camera
+                    </NavButton>
+                    <NavButton
                         active={currentView === "animations"}
                         onClick={() => setCurrentView("animations")}
                     >
@@ -172,14 +178,28 @@ export default function Home() {
             <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
                 {/* Visualization View */}
                 <div
-                    className={`h-full flex-col ${currentView === "viz" ? "flex w-full md:w-full" : "hidden md:flex md:w-1/2"}`}
+                    className={`h-full flex-col ${
+                        currentView === "viz" || currentView === "camera"
+                            ? "flex w-full md:w-full"
+                            : "hidden md:flex md:w-1/2"
+                    }`}
                 >
-                    <Visualization config={config} />
+                    {currentView === "camera" ? (
+                        <div className="flex-1 bg-black flex items-center justify-center overflow-hidden">
+                            <AutoRefreshingImage src="/api/visualization/live" />
+                        </div>
+                    ) : (
+                        <Visualization config={config} />
+                    )}
                 </div>
 
                 {/* Right Panel for other tabs */}
                 <div
-                    className={`flex-1 overflow-y-auto ${currentView === "viz" ? "hidden md:hidden" : "block w-full md:block md:w-1/2"}`}
+                    className={`flex-1 overflow-y-auto ${
+                        currentView === "viz" || currentView === "camera"
+                            ? "hidden md:hidden"
+                            : "block w-full md:block md:w-1/2"
+                    }`}
                 >
                     {/* Animations View */}
                     <div
@@ -256,5 +276,42 @@ function NavButton({ active, onClick, children }) {
         >
             {children}
         </button>
+    );
+}
+
+function AutoRefreshingImage({ src }) {
+    const [imageSrc, setImageSrc] = useState(src);
+
+    useEffect(() => {
+        let isMounted = true;
+        let timeoutId;
+
+        const loadNext = () => {
+            const nextSrc = `${src}?t=${Date.now()}`;
+            const img = new window.Image();
+            img.onload = () => {
+                if (isMounted) {
+                    setImageSrc(nextSrc);
+                    timeoutId = setTimeout(loadNext, 200);
+                }
+            };
+            img.onerror = () => {
+                if (isMounted) timeoutId = setTimeout(loadNext, 200);
+            };
+            img.src = nextSrc;
+        };
+        loadNext();
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
+    }, [src]);
+
+    return (
+        <img
+            src={imageSrc}
+            className="max-w-full max-h-full object-contain"
+            alt="Live Camera"
+        />
     );
 }
