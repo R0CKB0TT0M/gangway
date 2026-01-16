@@ -29,22 +29,22 @@ class AlternateParams(BaseModel):
     """Parameters for the alternate animation."""
 
     animations: List["AnimationModel"] = Field(default_factory=list)
-    length: float = 10
+    length: float = Field(default=10, ge=0)
 
 
 class FireParams(BaseModel):
     """Parameters for the fire animation."""
 
     base_color: RGBCCTModel = Field(default=RGBCCTModel(r=255, g=140, b=0, cw=0, ww=0))
-    flicker_speed: float = 0.1
-    flicker_intensity: float = 0.5
+    flicker_speed: float = Field(default=0.1, ge=0)
+    flicker_intensity: float = Field(default=0.5, ge=0, le=1)
 
 
 class RainbowParams(BaseModel):
     """Parameters for the rainbow animation."""
 
-    speed: float = 0.1
-    spread: float = 3.0
+    speed: float = Field(default=0.1, ge=0)
+    spread: float = Field(default=3.0, ge=0)
 
 
 class StaticParams(BaseModel):
@@ -65,7 +65,7 @@ class StroboParams(BaseModel):
             RGBCCTModel(r=0, g=0, b=255, cw=0, ww=0),
         ]
     )
-    frequency: int = 100
+    frequency: int = Field(default=100, ge=0)
 
 
 class SwingParams(BaseModel):
@@ -73,25 +73,25 @@ class SwingParams(BaseModel):
 
     color: RGBCCTModel = Field(default=RGBCCTModel(r=255, g=255, b=255, cw=255, ww=0))
     direction: Literal["x", "y"] = "y"
-    wavelength: int = 50
-    speed: float = 10
+    wavelength: int = Field(default=50, ge=0)
+    speed: float = Field(default=10, ge=0)
 
 
 class Theater_chaseParams(BaseModel):
     """Parameters for the theater_chase animation."""
 
     color: RGBCCTModel = Field(default=RGBCCTModel(r=255, g=255, b=255, cw=0, ww=0))
-    speed: float = 1.0
-    spacing: int = 4
+    speed: float = Field(default=1.0, ge=0)
+    spacing: int = Field(default=4, ge=0)
 
 
 class WaveParams(BaseModel):
     """Parameters for the wave animation."""
 
-    colors: List[RGBCCTModel] = ...
-    n_waves: int = 3
-    speed: float = 50.0
-    wavelength: float = 200.0
+    colors: List[RGBCCTModel] = Field(default_factory=list)
+    n_waves: int = Field(default=3, ge=0)
+    speed: float = Field(default=50.0, ge=0)
+    wavelength: float = Field(default=200.0, ge=0)
 
 
 class DotParams(BaseModel):
@@ -99,7 +99,7 @@ class DotParams(BaseModel):
 
     primary: Optional[Union["AnimationModel", RGBCCTModel]] = None
     secondary: Optional[Union["AnimationModel", RGBCCTModel]] = None
-    radius: float = 150
+    radius: float = Field(default=150, ge=0)
 
 
 class ExponentialParams(BaseModel):
@@ -111,7 +111,7 @@ class ExponentialParams(BaseModel):
     secondary: Union["AnimationModel", RGBCCTModel] = Field(
         default=RGBCCTModel(r=0, g=255, b=0, cw=0, ww=0)
     )
-    radius: float = 150
+    radius: float = Field(default=150, ge=0)
 
 
 class OffParams(BaseModel):
@@ -150,8 +150,8 @@ class RaveParams(BaseModel):
 class ScheduleParams(BaseModel):
     """Parameters for the schedule animation."""
 
-    start: str = "18:00"
-    end: str = "06:00"
+    start: str = Field(default="18:00", pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    end: str = Field(default="06:00", pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
     primary: Union["AnimationModel", RGBCCTModel] = Field(
         default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
     )
@@ -169,16 +169,16 @@ class PaintParams(BaseModel):
     secondary: Union["AnimationModel", RGBCCTModel] = Field(
         default=RGBCCTModel(r=0, g=0, b=0, cw=0, ww=0)
     )
-    radius: float = 150
-    persistence: float = 2.0
+    radius: float = Field(default=150, ge=0)
+    persistence: float = Field(default=2.0, ge=0)
 
 
 class LinearRainbowParams(BaseModel):
     """Parameters for the linear_rainbow animation."""
 
     direction: Literal["x", "y"] = "x"
-    speed: float = 0.1
-    spread: float = 3.0
+    speed: float = Field(default=0.1, ge=0)
+    spread: float = Field(default=3.0, ge=0)
 
 
 class SmoothParams(BaseModel):
@@ -187,7 +187,58 @@ class SmoothParams(BaseModel):
     animation: Union["AnimationModel", RGBCCTModel] = Field(
         default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
     )
-    smoothing: float = Field(0.5, ge=0.0, le=1.0)
+    smoothing: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class PlasmaParams(BaseModel):
+    """Parameters for the plasma animation."""
+
+    speed: float = Field(default=0.5, ge=0)
+    scale: float = Field(default=0.05, ge=0)
+
+
+class ProximityParams(BaseModel):
+    """Parameters for the proximity animation."""
+
+    primary: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=255, b=255, cw=0, ww=0)
+    )
+    secondary: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=0, g=0, b=0, cw=0, ww=0)
+    )
+    x: float = 0.0
+    y: float = 0.0
+    radius: float = Field(default=200.0, ge=0)
+
+
+class ProximitySpeedParams(BaseModel):
+    """Parameters for the proximity animation."""
+
+    animation: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=255, b=255, cw=0, ww=0)
+    )
+    x: float = 0.0
+    y: float = 0.0
+    radius: float = Field(default=200.0, ge=0)
+    multiplier: float = Field(default=1.0, ge=0)
+    mode: Literal["speed up", "slow down"] = "speed up"
+    proximity_factor: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class SparkleParams(BaseModel):
+    """Parameters for the sparkle animation."""
+
+    density: float = Field(default=0.1, ge=0.0, le=1.0)
+    speed: float = Field(default=20.0, ge=0.0)
+
+
+class PersistParams(BaseModel):
+    """Parameters for the persist animation."""
+
+    animation: Union["AnimationModel", RGBCCTModel] = Field(
+        default=RGBCCTModel(r=255, g=0, b=0, cw=0, ww=0)
+    )
+    duration: float = Field(default=2.0, ge=0.0)
 
 
 # --- Animation Wrapper Models (to enforce {'name': params} structure) ---
@@ -407,6 +458,71 @@ class SmoothAnimation(BaseModel):
         extra = "forbid"  # Disallow other keys
 
 
+class PlasmaAnimation(BaseModel):
+    """Wrapper for the plasma animation."""
+
+    plasma: PlasmaParams = Field(
+        ...,
+        title="Plasma",
+        description="Generates a classic, smoothly shifting plasma effect.",
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class ProximityAnimation(BaseModel):
+    """Wrapper for the proximity animation."""
+
+    proximity: ProximityParams = Field(
+        ...,
+        title="Proximity to Intensity",
+        description="Blends animations based on object distance to a point.",
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class ProximitySpeedAnimation(BaseModel):
+    """Parameters for the proximity speed animation."""
+
+    proximity_speed: ProximitySpeedParams = Field(
+        ...,
+        title="Proximity to Speed",
+        description="Increases the speed of the animation based on the distance to the target point.",
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class SparkleAnimation(BaseModel):
+    """Wrapper for the sparkle animation."""
+
+    sparkle: SparkleParams = Field(
+        ...,
+        title="Sparkle",
+        description="Creates a field of randomly twinkling colored pixels.",
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
+class PersistAnimation(BaseModel):
+    """Wrapper for the persist animation."""
+
+    persist: PersistParams = Field(
+        ...,
+        title="Persist",
+        description="Keeps objects alive for a sub-animation after they disappear.",
+    )
+
+    class Config:
+        extra = "forbid"  # Disallow other keys
+
+
 # --- Union of All Animation Models ---
 AnimationModel = Union[
     AlternateAnimation,
@@ -427,6 +543,11 @@ AnimationModel = Union[
     PaintAnimation,
     LinearRainbowAnimation,
     SmoothAnimation,
+    PlasmaAnimation,
+    SparkleAnimation,
+    ProximityAnimation,
+    ProximitySpeedAnimation,
+    PersistAnimation,
 ]
 
 # --- Rebuild Models to Resolve Forward References ---
@@ -448,3 +569,8 @@ ScheduleParams.model_rebuild()
 PaintParams.model_rebuild()
 LinearRainbowParams.model_rebuild()
 SmoothParams.model_rebuild()
+PlasmaParams.model_rebuild()
+ProximityParams.model_rebuild()
+ProximitySpeedParams.model_rebuild()
+SparkleParams.model_rebuild()
+PersistParams.model_rebuild()

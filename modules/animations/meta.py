@@ -4,7 +4,8 @@ Meta-Animation Definitions
 """
 
 import datetime
-from typing import Dict, Iterable, Literal
+from time import sleep
+from typing import Dict, Iterable, Literal, Tuple
 
 from rpi_ws2805 import RGBCCT
 
@@ -177,3 +178,207 @@ def smooth(
         )
 
     return func
+
+
+def persist(
+    animation: Animation,
+    duration: float = 2.0,
+) -> Animation:
+    """
+    Keeps objects "alive" for the sub-animation for a few seconds
+    after they are no longer detected.
+    """
+    # {object_id: (Point, last_seen_time)}
+    persisted_objects: Dict[int, Tuple[Point, float]] = {}
+    last_frame_time = -1.0
+
+    def func(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        objects: Iterable[Point],
+        *args,
+        **kwargs,
+    ) -> RGBCCT:
+        nonlocal persisted_objects, last_frame_time
+
+        # --- This logic should only run once per frame ---
+        if time > last_frame_time:
+            # Update last_seen_time for currently visible objects
+            # Note: We don't have a stable object ID from the Xovis data,
+            # so we'll use the Point's hash as a pseudo-ID. This is not
+            # perfect but works for transient objects.
+            current_ids = {hash(o.tuple) for o in objects}
+            for obj in objects:
+                persisted_objects[hash(obj.tuple)] = (obj, time)
+
+            # Prune old objects
+            expired_ids = []
+            for obj_id, (point, last_seen) in persisted_objects.items():
+                if time - last_seen > duration:
+                    expired_ids.append(obj_id)
+                # Also prune if a "current" object is no longer detected
+                elif obj_id not in current_ids and time - last_seen > 0.1:
+                    expired_ids.append(obj_id)
+
+            for obj_id in expired_ids:
+                if obj_id in persisted_objects:
+                    del persisted_objects[obj_id]
+
+            last_frame_time = time
+        # --- End of per-frame logic ---
+
+        # Pass the combined list of current and persisted objects to the sub-animation
+        all_objects = [p for p, t in persisted_objects.values()]
+        return animation(time, ctx, led, all_objects, *args, **kwargs)
+
+    return func
+
+
+def proximity(
+    primary: Animation | RGBCCT,
+    secondary: Animation | RGBCCT,
+    x: float = 0.0,
+    y: float = 0.0,
+    radius: float = 200.0,
+) -> Animation:
+    """
+    Blends between primary and secondary based on the closest object's
+    distance to a target point.
+    """
+    target_point = Point(x=x, y=y)
+
+    def animation(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        objects: Iterable[Point],
+        *args,
+        **kwargs,
+    ) -> RGBCCT:
+        # Evaluate the base colors from the animations for this LED
+        primary_color = (
+            primary
+            if isinstance(primary, RGBCCT)
+            else primary(time, ctx, led, objects, *args, **kwargs)
+        )
+        secondary_color = (
+            secondary
+            if isinstance(secondary, RGBCCT)
+            else secondary(time, ctx, led, objects, *args, **kwargs)
+        )
+
+        object_list = list(objects)
+        if not object_list:
+            return secondary_color
+
+        # Find the distance of the closest object to the target point
+        min_dist = min((obj - target_point).length for obj in object_list)
+
+        # Calculate intensity (0 to 1)
+        intensity = 1.0 - (min_dist / radius)
+        if intensity < 0:
+            intensity = 0
+        if intensity > 1:
+            intensity = 1
+
+        # Interpolate between secondary (intensity 0) and primary (intensity 1)
+        return interpolate_rgbcct(
+            primary_color, secondary_color, intensity, use_sign=False
+        )
+
+    return animation
+
+
+last_time: Dict[
+    Tuple[
+        Tuple[float, float],
+        Literal["speed up", "slow down"],
+        float,
+        float,
+        float,
+        float,
+    ],
+    float,
+] = {}
+real_last_time: Dict[
+    Tuple[
+        Tuple[float, float],
+        Literal["speed up", "slow down"],
+        float,
+        float,
+        float,
+        float,
+    ],
+    float,
+] = {}
+
+
+def proximity_speed(
+    animation: Animation | RGBCCT,
+    x: float = 0.0,
+    y: float = 0.0,
+    radius: float = 200.0,
+    multiplier: float = 1.0,
+    mode: Literal["speed up", "slow down"] = "speed up",
+    proximity_factor: float = 0.5,
+) -> Animation:
+    """
+    Increases the speed of the animation based on the distance to the target point.
+    """
+
+    target_point = Point(x=x, y=y)
+
+    def _animation(
+        time: float,
+        ctx: SceneContext,
+        led: LED,
+        objects: Iterable[Point],
+        *args,
+        **kwargs,
+    ) -> RGBCCT:
+        key = (target_point.tuple, mode, x, y, radius, multiplier)
+
+        if last_time.get(key) is None:
+            last_time[key] = time
+            real_last_time[key] = time
+
+        object_list = list(objects)
+        if not object_list:
+            last_time[key] += time - real_last_time[key]
+            real_last_time[key] = time
+
+            return (
+                animation
+                if isinstance(animation, RGBCCT)
+                else animation(last_time[key], ctx, led, objects, *args, **kwargs)
+            )
+
+        # Find the distance of the closest object to the target point
+        min_dist = min((obj - target_point).length for obj in object_list)
+
+        # Calculate intensity (0 to 1)
+        intensity = (1.0 - (min_dist / radius)) * max(min(proximity_factor, 1), 0)
+        if intensity < 0:
+            intensity = 0
+        if intensity > 1:
+            intensity = 1
+
+        t_diff = time - real_last_time[key]
+        real_last_time[key] = time
+
+        if mode == "speed up":
+            last_time[key] = last_time[key] + t_diff / (1 - intensity) * multiplier
+        elif mode == "slow down":
+            last_time[key] = last_time[key] + t_diff / (1 + intensity) * multiplier
+        else:
+            raise ValueError("Invalid mode")
+
+        # Interpolate between secondary (intensity 0) and primary (intensity 1)
+        return (
+            animation
+            if isinstance(animation, RGBCCT)
+            else animation(last_time[key], ctx, led, objects, *args, **kwargs)
+        )
+
+    return _animation

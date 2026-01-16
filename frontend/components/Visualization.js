@@ -197,12 +197,12 @@ export default function Visualization({ config }) {
         <div className="h-full flex flex-col">
             <div
                 ref={containerRef}
-                className="flex-1 relative bg-gray-900 overflow-hidden flex items-center justify-center"
+                className="flex-1 relative bg-gray-900 border border-gray-800 overflow-hidden flex items-center justify-center"
             >
                 {stats && (
                     <div className="absolute top-4 left-4 z-20 bg-black/50 text-teal-400 p-2 rounded text-xs font-mono">
-                        <div>RPS: {stats.fps} (LED refresh rate)</div>
-                        <div>UPS: {stats.ups} (sensor updates per second)</div>
+                        <div>RPS: {stats.fps}</div>
+                        <div>UPS: {stats.ups}</div>
                         <div className="text-gray-400 mt-1">MSPR (ms)</div>
                         <div>Min: {stats.tpf_min}</div>
                         <div>Avg: {stats.tpf_avg}</div>
@@ -247,30 +247,30 @@ export default function Visualization({ config }) {
                 </div>
             </div>
 
-            <div className="bg-gray-800 p-4 border-t border-gray-700 flex justify-center gap-8">
+            <div className="bg-gray-800 p-4 border-t border-gray-700 flex justify-center gap-4">
                 <select
                     value={viewMode}
                     onChange={(e) => setViewMode(e.target.value)}
-                    className="bg-gray-700 text-white rounded px-2 py-1 outline-none text-sm border border-gray-600 focus:border-teal-500"
+                    className="bg-gray-700 text-white rounded px-1 py-1 outline-none text-sm border border-gray-600 focus:border-teal-500"
                 >
-                    <option value="mapped">Top Down</option>
-                    <option value="raw">Camera View</option>
+                    <option value="mapped">Mapped</option>
+                    <option value="raw">Raw</option>
                 </select>
                 <div className="w-px h-6 bg-gray-600 mx-2"></div>
                 <Label
                     checked={showImage}
                     onChange={setShowImage}
-                    label="Show Live Image"
+                    label="Live"
                 />
                 <Label
                     checked={showObjects}
                     onChange={setShowObjects}
-                    label="Show Objects"
+                    label="People"
                 />
                 <Label
                     checked={showColors}
                     onChange={setShowColors}
-                    label="Show LED Colors"
+                    label="Colors"
                 />
             </div>
         </div>

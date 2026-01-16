@@ -164,7 +164,7 @@ export default function Home() {
                         active={currentView === "animations"}
                         onClick={() => setCurrentView("animations")}
                     >
-                        Effekte
+                        Effects
                     </NavButton>
                 </nav>
             </header>
@@ -179,7 +179,7 @@ export default function Home() {
 
                 {/* Right Panel for other tabs */}
                 <div
-                    className={`flex-1 overflow-y-auto ${currentView === "viz" ? "hidden md:hidden" : "block w-full md:block md:w-1/2"}`}
+                    className={`border border-gray-800 flex-1 overflow-y-auto ${currentView === "viz" ? "hidden md:hidden" : "block w-full md:block md:w-1/2"}`}
                 >
                     {/* Animations View */}
                     <div
