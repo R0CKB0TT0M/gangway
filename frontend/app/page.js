@@ -14,7 +14,20 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [isFormValid, setIsFormValid] = useState(true);
+    const [snackbar, setSnackbar] = useState({
+        show: false,
+        message: "",
+        type: "success",
+    });
     const formRef = useRef(null);
+
+    const showSnackbar = (message, type = "success") => {
+        setSnackbar({ show: true, message, type });
+        setTimeout(
+            () => setSnackbar((prev) => ({ ...prev, show: false })),
+            3000,
+        );
+    };
 
     // Initial Fetch
     useEffect(() => {
@@ -86,9 +99,9 @@ export default function Home() {
 
             setConfig(newConfig);
             setRawConfigString(JSON.stringify(newConfig, null, 2));
-            alert("Configuration saved successfully!");
+            showSnackbar("Configuration saved successfully!", "success");
         } catch (e) {
-            alert("Error saving configuration: " + e.message);
+            showSnackbar("Error saving configuration: " + e.message, "error");
         } finally {
             setSaving(false);
         }
@@ -216,6 +229,17 @@ export default function Home() {
                     </div>
                 </div>
             </main>
+
+            {/* Snackbar */}
+            <div
+                className={`fixed bottom-4 right-4 px-6 py-3 rounded shadow-lg text-white transition-all duration-300 transform ${
+                    snackbar.show
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-2 opacity-0 pointer-events-none"
+                } ${snackbar.type === "error" ? "bg-red-600" : "bg-teal-600"}`}
+            >
+                {snackbar.message}
+            </div>
         </div>
     );
 }
